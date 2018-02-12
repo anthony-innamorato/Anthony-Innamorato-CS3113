@@ -1,10 +1,10 @@
 ﻿  main.cpp
-c:\users\tony innamorato\cs3113\project_template\windows\nyucodebase\nyucodebase\main.cpp(47): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
-c:\users\tony innamorato\cs3113\project_template\windows\nyucodebase\nyucodebase\main.cpp(57): warning C4244: 'argument': conversion from 'double' to 'GLsizei', possible loss of data
-c:\users\tony innamorato\cs3113\project_template\windows\nyucodebase\nyucodebase\main.cpp(69): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\tony innamorato\cs3113\project_template\windows\nyucodebase\nyucodebase\main.cpp(76): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\tony innamorato\cs3113\project_template\windows\nyucodebase\nyucodebase\main.cpp(92): warning C4305: '-=': truncation from 'double' to 'float'
-c:\users\tony innamorato\cs3113\project_template\windows\nyucodebase\nyucodebase\main.cpp(96): warning C4305: '+=': truncation from 'double' to 'float'
-c:\users\tony innamorato\cs3113\project_template\windows\nyucodebase\nyucodebase\main.cpp(101): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
-c:\users\tony innamorato\cs3113\project_template\windows\nyucodebase\nyucodebase\main.cpp(111): warning C4305: '+=': truncation from 'double' to 'float'
-  NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\CS3113\project_template\Windows\NYUCodebase\Debug\NYUCodebase.exe
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 1\nyucodebase\main.cpp(47): warning C4244: 'argument': conversion from 'double' to 'int', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 1\nyucodebase\main.cpp(57): warning C4244: 'argument': conversion from 'double' to 'GLsizei', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 1\nyucodebase\main.cpp(69): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 1\nyucodebase\main.cpp(76): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 1\nyucodebase\main.cpp(93): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 1\nyucodebase\main.cpp(97): warning C4305: '+=': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 1\nyucodebase\main.cpp(102): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 1\nyucodebase\main.cpp(112): warning C4305: '+=': truncation from 'double' to 'float'
+  NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 1\Debug\NYUCodebase.exe

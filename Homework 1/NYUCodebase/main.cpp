@@ -75,6 +75,7 @@ int main(int argc, char *argv[])
 	float angle = 45.0f;
 	float spinMultiplier = .1;
 	float xVal = 1;
+	float xMult = 0;
 
 	while (!done) {
 		while (SDL_PollEvent(&event)) {
@@ -89,11 +90,11 @@ int main(int argc, char *argv[])
 				}
 				else if (event.key.keysym.scancode == SDL_SCANCODE_LEFT)
 				{
-					xVal -= .1;
+					xMult -= .01;
 				}
 				else if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)
 				{
-					xVal += .1;
+					xMult += .01;
 				}
 			}
 		}
@@ -109,6 +110,7 @@ int main(int argc, char *argv[])
 		lastFrameTicks = ticks;
 		angle += elapsed * spinMultiplier;
 		spinMultiplier += .01;
+		xVal += elapsed * xMult;
 
 
 		//modelMatrix.Identity();
