@@ -64,19 +64,31 @@ int main(int argc, char *argv[])
 
 				if (event.key.keysym.scancode == SDL_SCANCODE_UP)
 				{
-					p1y += elapsed * 20;
-				}
-				else if (event.key.keysym.scancode == SDL_SCANCODE_LEFT)
-				{
-					p2y -= elapsed * 20;
-				}
-				else if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)
-				{
-					p2y += elapsed * 20;
+					if (p1y <= 1.5)
+					{
+						p1y += elapsed * 20;
+					}
 				}
 				else if (event.key.keysym.scancode == SDL_SCANCODE_DOWN)
 				{
-					p1y -= elapsed * 20;
+					if (p1y >= -1.5)
+					{
+						p1y -= elapsed * 20;
+					}
+				}
+				else if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)
+				{
+					if (p2y <= 1.5)
+					{
+						p2y += elapsed * 20;
+					}
+				}
+				else if (event.key.keysym.scancode == SDL_SCANCODE_LEFT)
+				{
+					if (p2y >= -1.5)
+					{
+						p2y -= elapsed * 20;
+					}
 				}
 			}
 		}
@@ -154,6 +166,70 @@ int main(int argc, char *argv[])
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDisableVertexAttribArray(unTextProg.positionAttribute);
+
+		//upper bound
+		Matrix modelMatrix5;
+		modelMatrix5.Translate(-3.0, 1.9, 0.0);
+		modelMatrix5.Rotate(270.0 * (3.14159265f / 180.0f));
+		modelMatrix5.Scale(.1, .1, 1.0);
+		unTextProg.SetProjectionMatrix(projectionMatrix);
+		unTextProg.SetViewMatrix(viewMatrix);
+		unTextProg.SetModelMatrix(modelMatrix5);
+
+		float vertices_bounds[] = { 1.0, 0.0, 0.0f, 60.0, 0.0, 0.0 };
+		glVertexAttribPointer(unTextProg.positionAttribute, 2, GL_FLOAT, false, 0, vertices_bounds);
+		glEnableVertexAttribArray(unTextProg.positionAttribute);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray(unTextProg.positionAttribute);
+
+		Matrix modelMatrix6;
+		modelMatrix6.Translate(3.0, 1.8, 0.0);
+		modelMatrix6.Rotate(90.0 * (3.14159265f / 180.0f));
+		modelMatrix6.Scale(.1, .1, 1.0);
+
+		unTextProg.SetProjectionMatrix(projectionMatrix);
+		unTextProg.SetViewMatrix(viewMatrix);
+		unTextProg.SetModelMatrix(modelMatrix6);
+
+		glVertexAttribPointer(unTextProg.positionAttribute, 2, GL_FLOAT, false, 0, vertices_bounds);
+		glEnableVertexAttribArray(unTextProg.positionAttribute);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray(unTextProg.positionAttribute);
+
+
+		//lower bound
+		Matrix modelMatrix7;
+		modelMatrix7.Translate(-3.0, -1.8, 0.0);
+		modelMatrix7.Rotate(270.0 * (3.14159265f / 180.0f));
+		modelMatrix7.Scale(.1, .1, 1.0);
+
+		unTextProg.SetProjectionMatrix(projectionMatrix);
+		unTextProg.SetViewMatrix(viewMatrix);
+		unTextProg.SetModelMatrix(modelMatrix7);
+
+		glVertexAttribPointer(unTextProg.positionAttribute, 2, GL_FLOAT, false, 0, vertices_bounds);
+		glEnableVertexAttribArray(unTextProg.positionAttribute);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray(unTextProg.positionAttribute);
+
+		Matrix modelMatrix8;
+		modelMatrix8.Translate(3.0, -1.9, 0.0);
+		modelMatrix8.Rotate(90.0 * (3.14159265f / 180.0f));
+		modelMatrix8.Scale(.1, .1, 1.0);
+
+		unTextProg.SetProjectionMatrix(projectionMatrix);
+		unTextProg.SetViewMatrix(viewMatrix);
+		unTextProg.SetModelMatrix(modelMatrix8);
+
+		glVertexAttribPointer(unTextProg.positionAttribute, 2, GL_FLOAT, false, 0, vertices_bounds);
+		glEnableVertexAttribArray(unTextProg.positionAttribute);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray(unTextProg.positionAttribute);
+
 		SDL_GL_SwapWindow(displayWindow);
 	}
 
