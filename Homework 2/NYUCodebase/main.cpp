@@ -16,6 +16,7 @@
 #include "Matrix.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <cmath>
 
 SDL_Window* displayWindow;
 
@@ -45,13 +46,17 @@ int main(int argc, char *argv[])
 	float lastFrameTicks = 0.0f;
 	float p1y = 0;
 	float p2y = 0;
+	float ballX = 0;
+	float ballY = 0;
 
-	//y_position += elapsed * distance_to_travel_in_one_second
 
 	while (!done) {
 		float ticks = (float)SDL_GetTicks() / 1000.0f;
 		float elapsed = ticks - lastFrameTicks;
 		lastFrameTicks = ticks;
+
+		ballX += cos(45) * elapsed * 1;
+		ballY += sin(45) * elapsed * 1;
 
 		while (SDL_PollEvent(&event)) {
 
@@ -67,6 +72,10 @@ int main(int argc, char *argv[])
 					if (p1y <= 1.5)
 					{
 						p1y += elapsed * 20;
+						if (p1y >= 1.5)
+						{
+							p1y = 1.5;
+						}
 					}
 				}
 				else if (event.key.keysym.scancode == SDL_SCANCODE_DOWN)
@@ -74,6 +83,10 @@ int main(int argc, char *argv[])
 					if (p1y >= -1.5)
 					{
 						p1y -= elapsed * 20;
+						if (p1y <= -1.5)
+						{
+							p1y = -1.5;
+						}
 					}
 				}
 				else if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)
@@ -81,6 +94,10 @@ int main(int argc, char *argv[])
 					if (p2y <= 1.5)
 					{
 						p2y += elapsed * 20;
+						if (p2y >= 1.5)
+						{
+							p2y = 1.5;
+						}
 					}
 				}
 				else if (event.key.keysym.scancode == SDL_SCANCODE_LEFT)
@@ -88,6 +105,10 @@ int main(int argc, char *argv[])
 					if (p2y >= -1.5)
 					{
 						p2y -= elapsed * 20;
+						if (p2y <= -1.5)
+						{
+							p2y = -1.5;
+						}
 					}
 				}
 			}
@@ -113,7 +134,7 @@ int main(int argc, char *argv[])
 		unTextProg.SetViewMatrix(viewMatrix);
 		unTextProg.SetModelMatrix(modelMatrix);
 
-		float vertices[] = { 2.0, 0.0, 0.0f, 10.0f, 0.0, 0.0 };
+		float vertices[] = { 2.0, 0.0, 0.0, 10.0, 0.0, 0.0 };
 		glVertexAttribPointer(unTextProg.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
 		glEnableVertexAttribArray(unTextProg.positionAttribute);
 
@@ -121,8 +142,8 @@ int main(int argc, char *argv[])
 		glDisableVertexAttribArray(unTextProg.positionAttribute);
 
 		Matrix modelMatrix2;
-		modelMatrix2.Translate(0.2f - 3.55, p1y + 0.5f, 0.0);
-		modelMatrix2.Rotate(180.0 * (3.14159265f / 180.0f));
+		modelMatrix2.Translate(0.2 - 3.55, p1y + 0.5, 0.0);
+		modelMatrix2.Rotate(180.0 * (3.14159265 / 180.0));
 		modelMatrix2.Scale(.1, .1, 1.0);
 
 		unTextProg.SetProjectionMatrix(projectionMatrix);
@@ -154,7 +175,7 @@ int main(int argc, char *argv[])
 
 		Matrix modelMatrix4;
 		modelMatrix4.Translate(3.55, p2y + .5, 0.0);
-		modelMatrix4.Rotate(180.0 * (3.14159265f / 180.0f));
+		modelMatrix4.Rotate(180.0 * (3.14159265 / 180.0));
 		modelMatrix4.Scale(.1, .1, 1.0);
 
 		unTextProg.SetProjectionMatrix(projectionMatrix);
@@ -170,13 +191,12 @@ int main(int argc, char *argv[])
 		//upper bound
 		Matrix modelMatrix5;
 		modelMatrix5.Translate(-3.0, 1.9, 0.0);
-		modelMatrix5.Rotate(270.0 * (3.14159265f / 180.0f));
-		modelMatrix5.Scale(.1, .1, 1.0);
+		modelMatrix5.Rotate(270.0 * (3.14159265 / 180.0));
 		unTextProg.SetProjectionMatrix(projectionMatrix);
 		unTextProg.SetViewMatrix(viewMatrix);
 		unTextProg.SetModelMatrix(modelMatrix5);
 
-		float vertices_bounds[] = { 1.0, 0.0, 0.0f, 60.0, 0.0, 0.0 };
+		float vertices_bounds[] = { .10, 0.0, 0.0, 6.0, 0.0, 0.0 };
 		glVertexAttribPointer(unTextProg.positionAttribute, 2, GL_FLOAT, false, 0, vertices_bounds);
 		glEnableVertexAttribArray(unTextProg.positionAttribute);
 
@@ -185,8 +205,7 @@ int main(int argc, char *argv[])
 
 		Matrix modelMatrix6;
 		modelMatrix6.Translate(3.0, 1.8, 0.0);
-		modelMatrix6.Rotate(90.0 * (3.14159265f / 180.0f));
-		modelMatrix6.Scale(.1, .1, 1.0);
+		modelMatrix6.Rotate(90.0 * (3.14159265 / 180.0));
 
 		unTextProg.SetProjectionMatrix(projectionMatrix);
 		unTextProg.SetViewMatrix(viewMatrix);
@@ -202,8 +221,7 @@ int main(int argc, char *argv[])
 		//lower bound
 		Matrix modelMatrix7;
 		modelMatrix7.Translate(-3.0, -1.8, 0.0);
-		modelMatrix7.Rotate(270.0 * (3.14159265f / 180.0f));
-		modelMatrix7.Scale(.1, .1, 1.0);
+		modelMatrix7.Rotate(270.0 * (3.14159265 / 180.0));
 
 		unTextProg.SetProjectionMatrix(projectionMatrix);
 		unTextProg.SetViewMatrix(viewMatrix);
@@ -217,8 +235,7 @@ int main(int argc, char *argv[])
 
 		Matrix modelMatrix8;
 		modelMatrix8.Translate(3.0, -1.9, 0.0);
-		modelMatrix8.Rotate(90.0 * (3.14159265f / 180.0f));
-		modelMatrix8.Scale(.1, .1, 1.0);
+		modelMatrix8.Rotate(90.0 * (3.14159265 / 180.0));
 
 		unTextProg.SetProjectionMatrix(projectionMatrix);
 		unTextProg.SetViewMatrix(viewMatrix);
@@ -229,6 +246,37 @@ int main(int argc, char *argv[])
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDisableVertexAttribArray(unTextProg.positionAttribute);
+
+		//ball
+		Matrix modelMatrixBall;
+		modelMatrixBall.Translate(ballX, ballY, 1.0);
+
+		unTextProg.SetProjectionMatrix(projectionMatrix);
+		unTextProg.SetViewMatrix(viewMatrix);
+		unTextProg.SetModelMatrix(modelMatrixBall);
+
+		float verticesBall[] = { .20, 0.0, 0.0, .20, 0.0, 0.0 };
+		glVertexAttribPointer(unTextProg.positionAttribute, 2, GL_FLOAT, false, 0, verticesBall);
+		glEnableVertexAttribArray(unTextProg.positionAttribute);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray(unTextProg.positionAttribute);
+
+		
+		Matrix modelMatrixBall2;
+		modelMatrixBall2.Translate(ballX + .2, ballY + .2, 1.0);
+		modelMatrixBall2.Rotate(180.0 * (3.14159265 / 180.0));
+
+		unTextProg.SetProjectionMatrix(projectionMatrix);
+		unTextProg.SetViewMatrix(viewMatrix);
+		unTextProg.SetModelMatrix(modelMatrixBall2);
+
+		glVertexAttribPointer(unTextProg.positionAttribute, 2, GL_FLOAT, false, 0, verticesBall);
+		glEnableVertexAttribArray(unTextProg.positionAttribute);
+
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDisableVertexAttribArray(unTextProg.positionAttribute);
+		
 
 		SDL_GL_SwapWindow(displayWindow);
 	}
