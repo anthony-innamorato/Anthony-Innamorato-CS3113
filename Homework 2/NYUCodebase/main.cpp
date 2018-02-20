@@ -48,6 +48,8 @@ int main(int argc, char *argv[])
 	float p2y = 0;
 	float ballX = 0;
 	float ballY = 0;
+	float ballXSpeed = -.75;
+	float ballYSpeed = -.75;
 
 
 	while (!done) {
@@ -55,8 +57,22 @@ int main(int argc, char *argv[])
 		float elapsed = ticks - lastFrameTicks;
 		lastFrameTicks = ticks;
 
-		ballX += cos(45) * elapsed * 1;
-		ballY += sin(45) * elapsed * 1;
+		ballX += cos(45) * elapsed * ballXSpeed;
+		ballY += sin(45) * elapsed * ballYSpeed;
+
+		if (ballX >= -3.0 && ballX <= 3.0)
+		{
+
+			if (ballY >= 1.8)
+			{
+				ballYSpeed *= -1.0;
+			}
+
+			else if (ballY <= -1.8)
+			{
+				ballYSpeed *= -1.0;
+			}
+		}
 
 		while (SDL_PollEvent(&event)) {
 
@@ -155,8 +171,6 @@ int main(int argc, char *argv[])
 
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDisableVertexAttribArray(unTextProg.positionAttribute);
-
-
 
 		//p2
 		Matrix modelMatrix3;
