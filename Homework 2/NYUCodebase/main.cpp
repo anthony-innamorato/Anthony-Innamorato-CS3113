@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-		else if (keys[SDL_SCANCODE_DOWN])
+		if (keys[SDL_SCANCODE_DOWN])
 		{
 			if (p1y >= -1.5)
 			{
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-		else if (keys[SDL_SCANCODE_RIGHT])
+		if (keys[SDL_SCANCODE_RIGHT])
 		{
 			if (p2y <= 1.5)
 			{
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-		else if (keys[SDL_SCANCODE_LEFT])
+		if (keys[SDL_SCANCODE_LEFT])
 		{
 			if (p2y >= -1.5)
 			{
