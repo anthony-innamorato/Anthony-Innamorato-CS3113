@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
 	float ballXSpeed = -1.55;
 	float ballYSpeed = -1.7;
 	bool justHit = false;
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 
 	while (!done) {
@@ -111,53 +112,49 @@ int main(int argc, char *argv[])
 			if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 				done = true;
 			}
+		}
 
-			else if (event.type == SDL_KEYDOWN)
+		if (keys[SDL_SCANCODE_UP])
+		{
+			if (p1y <= 1.5)
 			{
-
-				if (event.key.keysym.scancode == SDL_SCANCODE_UP)
+				p1y += elapsed * 5;
+				if (p1y >= 1.5)
 				{
-					if (p1y <= 1.5)
-					{
-						p1y += elapsed * 40;
-						if (p1y >= 1.5)
-						{
-							p1y = 1.5;
-						}
-					}
+					p1y = 1.5;
 				}
-				else if (event.key.keysym.scancode == SDL_SCANCODE_DOWN)
+			}
+		}
+		else if (keys[SDL_SCANCODE_DOWN])
+		{
+			if (p1y >= -1.5)
+			{
+				p1y -= elapsed * 5;
+				if (p1y <= -1.5)
 				{
-					if (p1y >= -1.5)
-					{
-						p1y -= elapsed * 40;
-						if (p1y <= -1.5)
-						{
-							p1y = -1.5;
-						}
-					}
+					p1y = -1.5;
 				}
-				else if (event.key.keysym.scancode == SDL_SCANCODE_RIGHT)
+			}
+		}
+		else if (keys[SDL_SCANCODE_RIGHT])
+		{
+			if (p2y <= 1.5)
+			{
+				p2y += elapsed * 5;
+				if (p2y >= 1.5)
 				{
-					if (p2y <= 1.5)
-					{
-						p2y += elapsed * 40;
-						if (p2y >= 1.5)
-						{
-							p2y = 1.5;
-						}
-					}
+					p2y = 1.5;
 				}
-				else if (event.key.keysym.scancode == SDL_SCANCODE_LEFT)
+			}
+		}
+		else if (keys[SDL_SCANCODE_LEFT])
+		{
+			if (p2y >= -1.5)
+			{
+				p2y -= elapsed * 5;
+				if (p2y <= -1.5)
 				{
-					if (p2y >= -1.5)
-					{
-						p2y -= elapsed * 40;
-						if (p2y <= -1.5)
-						{
-							p2y = -1.5;
-						}
-					}
+					p2y = -1.5;
 				}
 			}
 		}
