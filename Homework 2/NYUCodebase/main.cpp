@@ -48,9 +48,8 @@ int main(int argc, char *argv[])
 	float p2y = 0;
 	float ballX = 0;
 	float ballY = 0;
-	float ballXSpeed = -1.55;
-	float ballYSpeed = -1.7;
-	bool justHit = false;
+	float ballXSpeed = -1.0;
+	float ballYSpeed = -.75;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 
@@ -72,40 +71,27 @@ int main(int argc, char *argv[])
 		{
 			if (ballX >= -3.0 || ballX <= 3.0)
 			{
-				if (!justHit)
-				{
-					ballYSpeed *= -1.0;
-					justHit = true;
-				}
+				ballYSpeed *= -1.0;
 			}
 		}
 
 		//p1 hit
-		else if (ballX <= -3.4)
+		else if (ballX <= -3.3)
 		{
-			if (ballY >= (p1y - .5) && ballY <= p1y + .1)
+			if (ballY >= (p1y - .5) && ballY <= p1y + .5)
 			{
-				if (!justHit)
-				{
-					ballXSpeed *= -1.0;
-					justHit = true;
-				}
+				ballXSpeed *= -1.1;
 			}
 		}
 
 		//p2 hit
-		else if (ballX >= 3.15)
+		else if (ballX >= 3.1)
 		{
-			if (ballY >= (p2y - .5) && ballY <= p2y + .1)
+			if (ballY >= (p2y - .5) && ballY <= p2y + .5)
 			{
-				if (!justHit)
-				{
-					ballXSpeed *= -1.0;
-					justHit = true;
-				}
+				ballXSpeed *= -1.1;
 			}
 		}
-		else { justHit = false;}
 
 		while (SDL_PollEvent(&event)) {
 
