@@ -48,8 +48,9 @@ int main(int argc, char *argv[])
 	float p2y = 0;
 	float ballX = 0;
 	float ballY = 0;
-	float ballXSpeed = -.75;
-	float ballYSpeed = -.75;
+	float ballXSpeed = -.95;
+	float ballYSpeed = -1.2;
+	bool justHit = false;
 
 
 	while (!done) {
@@ -60,19 +61,50 @@ int main(int argc, char *argv[])
 		ballX += cos(45) * elapsed * ballXSpeed;
 		ballY += sin(45) * elapsed * ballYSpeed;
 
-		if (ballX >= -3.0 && ballX <= 3.0)
+		if (ballX <= -3.55 || ballX >= 3.55)
 		{
+			done = true;
+		}
 
-			if (ballY >= 1.8)
+		//collision with bounds
+		else if (ballY >= 1.6 || ballY <= -1.8)
+		{
+			if (ballX >= -3.0 || ballX <= 3.0)
 			{
-				ballYSpeed *= -1.0;
-			}
-
-			else if (ballY <= -1.8)
-			{
-				ballYSpeed *= -1.0;
+				if (!justHit)
+				{
+					ballYSpeed *= -1.0;
+					justHit = true;
+				}
 			}
 		}
+
+		//p1 hit
+		else if (ballX <= -3.3)
+		{
+			if (ballY >= (p1y - .5) && ballY <= p1y + .1)
+			{
+				if (!justHit)
+				{
+					ballXSpeed *= -1.0;
+					justHit = true;
+				}
+			}
+		}
+
+		//p2 hit
+		else if (ballX >= 3.3)
+		{
+			if (ballY >= (p2y - .5) && ballY <= p2y + .1)
+			{
+				if (!justHit)
+				{
+					ballXSpeed *= -1.0;
+					justHit = true;
+				}
+			}
+		}
+		else { justHit = false;}
 
 		while (SDL_PollEvent(&event)) {
 
