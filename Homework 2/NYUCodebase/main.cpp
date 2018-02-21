@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
 	float p2y = 0;
 	float ballX = 0;
 	float ballY = 0;
-	float ballXSpeed = -.95;
-	float ballYSpeed = -1.2;
+	float ballXSpeed = -1.55;
+	float ballYSpeed = -1.7;
 	bool justHit = false;
 
 
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 		}
 
 		//p1 hit
-		else if (ballX <= -3.3)
+		else if (ballX <= -3.4)
 		{
 			if (ballY >= (p1y - .5) && ballY <= p1y + .1)
 			{
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 		}
 
 		//p2 hit
-		else if (ballX >= 3.3)
+		else if (ballX >= 3.15)
 		{
 			if (ballY >= (p2y - .5) && ballY <= p2y + .1)
 			{
@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 				{
 					if (p1y <= 1.5)
 					{
-						p1y += elapsed * 20;
+						p1y += elapsed * 40;
 						if (p1y >= 1.5)
 						{
 							p1y = 1.5;
@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
 				{
 					if (p1y >= -1.5)
 					{
-						p1y -= elapsed * 20;
+						p1y -= elapsed * 40;
 						if (p1y <= -1.5)
 						{
 							p1y = -1.5;
@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
 				{
 					if (p2y <= 1.5)
 					{
-						p2y += elapsed * 20;
+						p2y += elapsed * 40;
 						if (p2y >= 1.5)
 						{
 							p2y = 1.5;
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 				{
 					if (p2y >= -1.5)
 					{
-						p2y -= elapsed * 20;
+						p2y -= elapsed * 40;
 						if (p2y <= -1.5)
 						{
 							p2y = -1.5;
