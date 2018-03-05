@@ -32,7 +32,6 @@ float lastFrameTicks = 0.0f;
 std::vector<Entity*> entities;
 std::vector<Entity*> enemyBullets;
 std::vector<Entity*> playerBullets;
-//Bullet bullets[MAX_BULLETS];
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 GLuint LoadTexture(const char *filePath) {
@@ -232,7 +231,7 @@ struct Player : public Entity
 
 struct Enemy : public Entity
 {
-	Enemy(const GLuint& texture) : Entity(texture, true) {}
+	Enemy(const GLuint& texture, int bulletIndex) : Entity(texture, true) , bullet(enemyBullets[bulletIndex]){}
 	void Draw(ShaderProgram* program)
 	{
 		if (alive)
@@ -280,30 +279,31 @@ struct Enemy : public Entity
 		}
 
 	}
+	Entity* bullet;
 };
 
 //phantom
 struct Enemy1 : public Enemy
 {
-	Enemy1(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"phantom.png")) { position.x = 0.0; position.y = y_pos; }
+	Enemy1(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"phantom.png"), 0) { position.x = 0.0; position.y = y_pos;}
 };
 
 //seraph
 struct Enemy2 : public Enemy
 {
-	Enemy2(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"seraph.png")) { position.x = 2.0; position.y = y_pos; }
+	Enemy2(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"seraph.png"), 1) { position.x = 2.0; position.y = y_pos;}
 };
 
 //destroyer
 struct Enemy3 : public Enemy
 {
-	Enemy3(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"destroyer.png")) { position.x = 4.0; position.y = y_pos; }
+	Enemy3(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"destroyer.png"), 2) { position.x = 4.0; position.y = y_pos;}
 };
 
 //curiser
 struct Enemy4 : public Enemy
 {
-	Enemy4(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"cruiser.jpg")) { position.x = 6.0; position.y = y_pos; }
+	Enemy4(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"cruiser.jpg"), 3) { position.x = 6.0; position.y = y_pos;}
 };
 
 
@@ -339,10 +339,13 @@ void ProcessEvents()
 
 void Update(float& elapsed)
 {
+	int alive = 0;
 	for (size_t i = 0; i < entities.size(); i++)
 	{
 		entities[i]->Update(elapsed);
+		if (entities[i]->alive) { alive++; }
 	}
+	if (alive == 1) { done = true; }
 	for (size_t i = 0; i < playerBullets.size(); i++)
 	{
 		playerBullets[i]->Update(elapsed);
@@ -379,6 +382,14 @@ int main(int argc, char *argv[])
 	Player* p1 = new Player();
 	entities.push_back(p1);
 
+	for (size_t i = 0; i < 4; i++)
+	{
+		EnemyBullet* eb = new EnemyBullet();
+		PlayerBullet* pb = new PlayerBullet();
+		enemyBullets.push_back(eb);
+		playerBullets.push_back(pb);
+	}
+
 	std::vector<Enemy1*> en1Vec;
 	std::vector<Enemy2*> en2Vec;
 	std::vector<Enemy3*> en3Vec;
@@ -411,14 +422,6 @@ int main(int argc, char *argv[])
 	for (Enemy4* e4 : en4Vec)
 	{
 		entities.push_back(e4);
-	}
-
-	for (size_t i = 0; i < 10; i++)
-	{
-		EnemyBullet* eb = new EnemyBullet();
-		PlayerBullet* pb = new PlayerBullet();
-		enemyBullets.push_back(eb);
-		playerBullets.push_back(pb);
 	}
 
 
