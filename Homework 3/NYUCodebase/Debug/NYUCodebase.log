@@ -1,20 +1,5 @@
-﻿  ShaderProgram.cpp
-  Matrix.cpp
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(148): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(149): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(150): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(151): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(165): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(166): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(167): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(168): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(172): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(173): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(174): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(175): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(213): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\matrix.cpp(214): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-  main.cpp
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\main.cpp(43): warning C4305: 'argument': truncation from 'double' to 'float'
-  Generating Code...
+﻿  main.cpp
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\main.cpp(71): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\main.cpp(268): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\main.cpp(334): warning C4305: 'initializing': truncation from 'double' to 'float'
   NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 3\Debug\NYUCodebase.exe
