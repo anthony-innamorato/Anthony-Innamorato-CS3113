@@ -32,6 +32,7 @@ float lastFrameTicks = 0.0f;
 std::vector<Entity*> entities;
 std::vector<Entity*> enemyBullets;
 std::vector<Entity*> playerBullets;
+int score = 0;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 GLuint LoadTexture(const char *filePath) {
@@ -161,6 +162,8 @@ struct PlayerBullet : public Entity
 					entities[i]->alive = false;
 					alive = false;
 					position.x = -5;
+					if (score == 0) { score += 2; }
+					else { score *= 2; }
 				}
 			}
 		}
@@ -304,6 +307,13 @@ struct Enemy3 : public Enemy
 struct Enemy4 : public Enemy
 {
 	Enemy4(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"cruiser.jpg"), 3) { position.x = 6.0; position.y = y_pos;}
+};
+
+struct Score
+{
+	Score() : texture(LoadTexture(RESOURCE_FOLDER"numbers.png")) {}
+	GLuint texture;
+	int curr_score = 0;
 };
 
 
