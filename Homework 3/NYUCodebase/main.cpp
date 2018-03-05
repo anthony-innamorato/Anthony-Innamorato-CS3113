@@ -71,6 +71,7 @@ struct Entity
 	Entity(const GLuint& texture, bool alive) : textureImage(texture), position(-3.55 * 2 + .8, 0, 0), alive(alive) {}
 	virtual void Draw(ShaderProgram* program) = 0;
 	virtual void Update(float elapsed) = 0;
+	virtual bool isColliding(float x, float y) const = 0;
 	bool alive;
 	Matrix modelMatrix;
 	Vector position;
@@ -110,11 +111,15 @@ struct EnemyBullet : public Entity
 	{
 
 	}
+	bool isColliding(float x, float y) const
+	{
+		return true;
+	}
 };
 
 struct PlayerBullet : public Entity
 {
-	PlayerBullet() : Entity(LoadTexture(RESOURCE_FOLDER"player_round.png"), false) {}
+	PlayerBullet() : Entity(LoadTexture(RESOURCE_FOLDER"player_round.png"), false) { position.x = -5; }
 	void Draw(ShaderProgram* program)
 	{
 		if (alive)
@@ -140,7 +145,30 @@ struct PlayerBullet : public Entity
 	}
 	void Update(float elapsed)
 	{
-		position.x += elapsed * speed ;
+		if (alive) 
+		{
+			position.x += elapsed * speed * 2;
+			if (position.x >= 7.1)
+			{
+				alive = false;
+				position.x = -5;
+				return;
+			}
+			for (size_t i = 1; i < entities.size(); i++)
+			{
+				bool collision = entities[i]->isColliding(position.x, position.y);
+				if (collision)
+				{
+					entities[i]->alive = false;
+					alive = false;
+					position.x = -5;
+				}
+			}
+		}
+	}
+	bool isColliding(float x, float y) const
+	{
+		return true;
 	}
 };
 
@@ -188,8 +216,16 @@ struct Player : public Entity
 		}
 		if (keys[SDL_SCANCODE_SPACE])
 		{
-			playerBullets[0]->alive = true;
+			if (playerBullets[0]->alive == false)
+			{
+				playerBullets[0]->position.y = position.y;
+				playerBullets[0]->alive = true;
+			}
 		}
+	}
+	bool isColliding(float x, float y) const
+	{
+		return true;
 	}
 
 };
@@ -227,6 +263,22 @@ struct Enemy : public Entity
 		{
 			done = true;
 		}
+	}
+	bool isColliding(float x, float y) const
+	{
+		if (!alive)
+		{
+			return false;
+		}
+		if (x >= position.x - 1.3 && y <= position.y + .3 && y >= position.y -.3)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+
 	}
 };
 

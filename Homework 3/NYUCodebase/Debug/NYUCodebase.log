@@ -1,5 +1,5 @@
 ﻿  main.cpp
 c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\main.cpp(71): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\main.cpp(268): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\main.cpp(334): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\main.cpp(320): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 3\nyucodebase\main.cpp(386): warning C4305: 'initializing': truncation from 'double' to 'float'
   NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 3\Debug\NYUCodebase.exe
