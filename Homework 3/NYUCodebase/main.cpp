@@ -36,7 +36,6 @@ std::vector<Entity*> enemyBullets;
 std::vector<Entity*> playerBullets;
 std::vector<Number*> numPtrs;
 int intScore;
-std::string strScore;
 bool first;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
@@ -382,7 +381,7 @@ struct Number
 			u, v + height,
 			u + width, v + height
 		};
-		float aspect = width / height;
+		float aspect = (width*4096) / (height*2048);
 		float vertices[] = {
 			-0.5f * size * aspect, -0.5f * size,
 			0.5f * size * aspect, 0.5f * size,
@@ -391,7 +390,6 @@ struct Number
 			-0.5f * size * aspect, -0.5f * size ,
 			0.5f * size * aspect, -0.5f * size };
 
-		//modelMatrix.Translate(position.x, position.y, 0);
 		glUseProgram(textured.programID);
 		textured.SetModelMatrix(modelMatrix);
 
@@ -482,18 +480,15 @@ void ProcessEvents()
 	//check input events
 }
 
-void drawCurr(int res, ShaderProgram* program, float offsetX, float offsetY)
-{
-	numPtrs[res]->Draw(program, offsetX, offsetY);
-}
 void drawScore(ShaderProgram* program)
 {
 	float offsetX = 0.0;
-	float offsetY = -4.0;
+	float offsetY = -3.8;
+	std::string strScore = std::to_string(intScore);
 	for (char c : strScore)
 	{
 		int res = c - '0';
-		drawCurr(c, program, offsetX, offsetY);
+		numPtrs[res]->Draw(program, offsetX, offsetY);
 		offsetX += .5;
 	}
 }
@@ -515,8 +510,6 @@ void Update(float& elapsed)
 	{
 		enemyBullets[i]->Update(elapsed);
 	}
-	strScore = std::to_string(intScore);
-	drawScore(&textured);
 	//move stuff and check for collisions
 }
 
@@ -534,6 +527,7 @@ void Render()
 	{
 		enemyBullets[i]->Draw(&textured);
 	}
+	drawScore(&textured);
 	//for all game elements
 	//setup transdorms, render sprites
 }
@@ -587,6 +581,61 @@ int main(int argc, char *argv[])
 		entities.push_back(e4);
 	}
 
+	//
+	for (int i = 0; i < 10; i++)
+	{
+		//int index, float u, float v, float width, float height, float size
+		if (i == 0)
+		{
+			Number* num = new Number(0, 1225.0 / 4096, 1902.0 / 2048, 89.0 / 4098, 101.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+		else if (i == 1)
+		{
+			Number* num = new Number(1, 1668.0 / 4096, 1902.0 / 2048, 69.0 / 4098, 101.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+		else if (i == 2)
+		{
+			Number* num = new Number(2, 1497.0 / 4096, 1902.0 / 2048, 87.0 / 4098, 102.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+		else if (i == 3)
+		{
+			Number* num = new Number(3, 1042.0 / 4096, 1902.0 / 2048, 90.0 / 4098, 102.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+		else if (i == 4)
+		{
+			Number* num = new Number(4, 1586.0 / 4096, 1902.0 / 2048, 80.0 / 4098, 99.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+		else if (i == 5)
+		{
+			Number* num = new Number(5, 948.0 / 4096, 1902.0 / 2048, 92.0 / 4098, 101.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+		else if (i == 6)
+		{
+			Number* num = new Number(6, 1134.0 / 4096, 1902.0 / 2048, 89.0 / 4098, 116.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+		else if (i == 7)
+		{
+			Number* num = new Number(7, 848.0 / 4096, 1902.0 / 2048, 98.0 / 4098, 101.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+		else if (i == 8)
+		{
+			Number* num = new Number(8, 1316.0 / 4096, 1902.0 / 2048, 89.0 / 4098, 101.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+		else
+		{
+			Number* num = new Number(9, 1407.0 / 4096, 1902.0 / 2048, 88.0 / 4098, 102.0 / 2048, .5);
+			numPtrs.push_back(num);
+		}
+	}
 
 	while (!done) {
 		float ticks = (float)SDL_GetTicks() / 1000.0f;
