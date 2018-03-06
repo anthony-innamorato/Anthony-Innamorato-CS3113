@@ -35,6 +35,8 @@ std::vector<Entity*> playerBullets;
 int score = 0;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
+GLuint spriteSheet;
+
 GLuint LoadTexture(const char *filePath) {
 	int w, h, comp;
 	unsigned char* image = stbi_load(filePath, &w, &h, &comp, STBI_rgb_alpha);
@@ -68,7 +70,7 @@ struct Vector
 struct Entity
 {
 	Entity() {}
-	Entity(const GLuint& texture, bool alive) : textureImage(texture), position(-3.55 * 2 + .8, 0, 0), alive(alive) {}
+	Entity(const GLuint& texture, bool alive) : textureImage(texture), position(-3.55 * 2 + 1.2, 0, 0), alive(alive) {}
 	virtual void Draw(ShaderProgram* program) = 0;
 	virtual void Update(float elapsed) = 0;
 	virtual bool isColliding(float x, float y) const = 0;
@@ -83,7 +85,7 @@ struct Entity
 
 struct EnemyBullet : public Entity
 {
-	EnemyBullet() : Entity(LoadTexture(RESOURCE_FOLDER"enemy_round.png"), false) {}
+	EnemyBullet() : Entity(spriteSheet, false) {}
 	void Draw(ShaderProgram* program)
 	{
 		if (alive)
@@ -93,12 +95,25 @@ struct EnemyBullet : public Entity
 			textured.SetModelMatrix(modelMatrix);
 
 			glBindTexture(GL_TEXTURE_2D, textureImage);
-			float text_vertices[] = { -1.5 / 2, -0.5 / 2, 1.5 / 2, -0.5 / 2, 1.5 / 2, 0.5 / 2, -1.5 / 2, -0.5 / 2, 1.5 / 2, 0.5 / 2, -1.5 / 2, 0.5 / 2 };
-			//float text_vertices[] = { -1.5, -0.5, 1.5, -0.5, 1.5, 0.5, -1.5, -0.5, 1.5, 0.5, -1.5, 0.5 };
-			glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, text_vertices);
+			float aspect = width / height;
+			float vertices[] = {
+				-0.5f * size * aspect, -0.5f * size,
+				0.5f * size * aspect, 0.5f * size,
+				-0.5f * size * aspect, 0.5f * size,
+				0.5f * size * aspect, 0.5f * size,
+				-0.5f * size * aspect, -0.5f * size ,
+				0.5f * size * aspect, -0.5f * size };
+			glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
 			glEnableVertexAttribArray(textured.positionAttribute);
 
-			float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+			GLfloat texCoords[] = {
+				u, v + height,
+				u + width, v,
+				u, v,
+				u + width, v,
+				u, v + height,
+				u + width, v + height
+			};
 			glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
 			glEnableVertexAttribArray(textured.texCoordAttribute);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -115,11 +130,16 @@ struct EnemyBullet : public Entity
 	{
 		return true;
 	}
+	float u = 0.0;
+	float v = 1902.0 / 2048.0;
+	float width = 422.0 / 4096.0;
+	float height = 90.0 / 2048.0;
+	float size = 1.0;
 };
 
 struct PlayerBullet : public Entity
 {
-	PlayerBullet() : Entity(LoadTexture(RESOURCE_FOLDER"player_round.png"), false) { position.x = -5; }
+	PlayerBullet() : Entity(spriteSheet, false) { position.x = -5; }
 	void Draw(ShaderProgram* program)
 	{
 		if (alive)
@@ -129,12 +149,25 @@ struct PlayerBullet : public Entity
 			textured.SetModelMatrix(modelMatrix);
 
 			glBindTexture(GL_TEXTURE_2D, textureImage);
-			float text_vertices[] = { -1.5 / 2, -0.5 / 2, 1.5 / 2, -0.5 / 2, 1.5 / 2, 0.5 / 2, -1.5 / 2, -0.5 / 2, 1.5 / 2, 0.5 / 2, -1.5 / 2, 0.5 / 2 };
-			//float text_vertices[] = { -1.5, -0.5, 1.5, -0.5, 1.5, 0.5, -1.5, -0.5, 1.5, 0.5, -1.5, 0.5 };
-			glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, text_vertices);
+			float aspect = width / height;
+			float vertices[] = {
+				-0.5f * size * aspect, -0.5f * size,
+				0.5f * size * aspect, 0.5f * size,
+				-0.5f * size * aspect, 0.5f * size,
+				0.5f * size * aspect, 0.5f * size,
+				-0.5f * size * aspect, -0.5f * size ,
+				0.5f * size * aspect, -0.5f * size };
+			glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
 			glEnableVertexAttribArray(textured.positionAttribute);
 
-			float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+			GLfloat texCoords[] = {
+				u, v + height,
+				u + width, v,
+				u, v,
+				u + width, v,
+				u, v + height,
+				u + width, v + height
+			};
 			glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
 			glEnableVertexAttribArray(textured.texCoordAttribute);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -172,11 +205,17 @@ struct PlayerBullet : public Entity
 	{
 		return true;
 	}
+
+	float u = 424.0 / 4096.0;
+	float v = 1902.0 / 2048.0;
+	float width = 422.0 / 4096.0;
+	float height = 90.0 / 2048.0;
+	float size = .5;
 };
 
 struct Player : public Entity
 {
-	Player() : Entity(LoadTexture(RESOURCE_FOLDER"ship.png"), true) {}
+	Player() : Entity(spriteSheet, true) {}
 	void Draw(ShaderProgram* program)
 	{
 		modelMatrix.Translate(position.x, position.y, 0);
@@ -184,12 +223,25 @@ struct Player : public Entity
 		textured.SetModelMatrix(modelMatrix);
 
 		glBindTexture(GL_TEXTURE_2D, textureImage);
-		float text_vertices[] = { -1.5 / 2, -0.5 / 2, 1.5 / 2, -0.5 / 2, 1.5 / 2, 0.5 / 2, -1.5 / 2, -0.5 / 2, 1.5 / 2, 0.5 / 2, -1.5 / 2, 0.5 / 2 };
-		//float text_vertices[] = { -1.5, -0.5, 1.5, -0.5, 1.5, 0.5, -1.5, -0.5, 1.5, 0.5, -1.5, 0.5 };
-		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, text_vertices);
+		float aspect = 1.7 * width / height;
+		float vertices[] = {
+			-0.5f * size * aspect, -0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, 0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, -0.5f * size ,
+			0.5f * size * aspect, -0.5f * size };
+		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
 		glEnableVertexAttribArray(textured.positionAttribute);
 
-		float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+		GLfloat texCoords[] = {
+			u, v + height,
+			u + width, v,
+			u, v,
+			u + width, v,
+			u, v + height,
+			u + width, v + height
+		};
 		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
 		glEnableVertexAttribArray(textured.texCoordAttribute);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -230,11 +282,17 @@ struct Player : public Entity
 		return true;
 	}
 
+	float u = 0.0;
+	float v = 0.0;
+	float width = 3288.0 / 4096.0;
+	float height = 888.0 / 2048.0;
+	float size = .7;
 };
 
 struct Enemy : public Entity
 {
-	Enemy(const GLuint& texture, int bulletIndex) : Entity(texture, true) , bullet(enemyBullets[bulletIndex]){}
+	Enemy(const GLuint& texture, int bulletIndex, float u, float v, float width, float height, float size) 
+		: Entity(texture, true) , bullet(enemyBullets[bulletIndex]), u(u), v(v), width(width), height(height), size(size){}
 	void Draw(ShaderProgram* program)
 	{
 		if (alive)
@@ -244,12 +302,25 @@ struct Enemy : public Entity
 			textured.SetModelMatrix(modelMatrix);
 
 			glBindTexture(GL_TEXTURE_2D, textureImage);
-			float text_vertices[] = { -1.5 / 2, -0.5 / 2, 1.5 / 2, -0.5 / 2, 1.5 / 2, 0.5 / 2, -1.5 / 2, -0.5 / 2, 1.5 / 2, 0.5 / 2, -1.5 / 2, 0.5 / 2 };
-			//float text_vertices[] = { -1.5, -0.5, 1.5, -0.5, 1.5, 0.5, -1.5, -0.5, 1.5, 0.5, -1.5, 0.5 };
-			glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, text_vertices);
+			float aspect = width / height;
+			float vertices[] = {
+				-0.5f * size * aspect, -0.5f * size,
+				0.5f * size * aspect, 0.5f * size,
+				-0.5f * size * aspect, 0.5f * size,
+				0.5f * size * aspect, 0.5f * size,
+				-0.5f * size * aspect, -0.5f * size ,
+				0.5f * size * aspect, -0.5f * size };
+			glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
 			glEnableVertexAttribArray(textured.positionAttribute);
 
-			float texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+			GLfloat texCoords[] = {
+				u, v + height,
+				u + width, v,
+				u, v,
+				u + width, v,
+				u, v + height,
+				u + width, v + height
+			};
 			glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
 			glEnableVertexAttribArray(textured.texCoordAttribute);
 			glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -283,38 +354,76 @@ struct Enemy : public Entity
 
 	}
 	Entity* bullet;
+	float u;
+	float v;
+	float width;
+	float height;
+	float size;
 };
 
-//phantom
-struct Enemy1 : public Enemy
-{
-	Enemy1(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"phantom.png"), 0) { position.x = 0.0; position.y = y_pos;}
-};
 
-//seraph
-struct Enemy2 : public Enemy
+struct Number
 {
-	Enemy2(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"seraph.png"), 1) { position.x = 2.0; position.y = y_pos;}
-};
+	Number(int index, float u, float v, float width, float height, float size) : texture(spriteSheet), index(index), u(u), v(v), width(width), height(height), size(size){}
+	void Draw(ShaderProgram* program)
+	{
+		GLfloat texCoords[] = {
+			u, v + height,
+			u + width, v,
+			u, v,
+			u + width, v,
+			u, v + height,
+			u + width, v + height
+		};
+		float aspect = width / height;
+		float vertices[] = {
+			-0.5f * size * aspect, -0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, 0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, -0.5f * size ,
+			0.5f * size * aspect, -0.5f * size };
 
-//destroyer
-struct Enemy3 : public Enemy
-{
-	Enemy3(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"destroyer.png"), 2) { position.x = 4.0; position.y = y_pos;}
-};
+		//modelMatrix.Translate(position.x, position.y, 0);
+		glUseProgram(textured.programID);
+		textured.SetModelMatrix(modelMatrix);
 
-//curiser
-struct Enemy4 : public Enemy
-{
-	Enemy4(float y_pos) : Enemy(LoadTexture(RESOURCE_FOLDER"cruiser.jpg"), 3) { position.x = 6.0; position.y = y_pos;}
-};
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		glEnableVertexAttribArray(textured.positionAttribute);
 
-struct Score
-{
-	Score() : texture(LoadTexture(RESOURCE_FOLDER"numbers.png")) {}
+		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+		glEnableVertexAttribArray(textured.texCoordAttribute);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDisableVertexAttribArray(textured.positionAttribute);
+		glDisableVertexAttribArray(textured.texCoordAttribute);
+		modelMatrix.Identity();
+	}
+	int index;
 	GLuint texture;
-	int curr_score = 0;
+	Matrix modelMatrix;
+	float u;
+	float v;
+	float width;
+	float height;
+	float size;
 };
+
+void drawNum(int num, ShaderProgram* program)
+{
+	//Number instance = Number(num);
+	//instance.Draw(program);
+}
+
+void drawScore(ShaderProgram* program)
+{
+	int curr = 0;
+	while (score << curr)
+	{
+		drawNum(curr, program);
+	}
+}
+
 
 
 void Setup()
@@ -333,7 +442,53 @@ void Setup()
 	textured.SetViewMatrix(viewMatrix);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	spriteSheet = LoadTexture(RESOURCE_FOLDER"sprites.png");
 }
+
+//phantom
+struct Enemy1 : public Enemy
+{
+	Enemy1(float y_pos) : Enemy(spriteSheet, 0, u, v, width, height, size) { position.x = 0.0; position.y = y_pos; }
+	float u = 2900.0/4096.0;
+	float v = 1369.0/2048.0;
+	float width = 932.0/4096.0;
+	float height = 531.0/2048.0;
+	float size = 1.0;
+};
+
+//seraph
+struct Enemy2 : public Enemy
+{
+	Enemy2(float y_pos) : Enemy(spriteSheet, 1, u, v, width, height, size) { position.x = 2.0; position.y = y_pos; }
+	float u = 1871.0 / 4096.0;
+	float v = 1240.0 / 2048.0;
+	float width = 1240.0 / 4096.0;
+	float height = 477.0 / 2048.0;
+	float size = 1.0;
+};
+
+//destroyer
+struct Enemy3 : public Enemy
+{
+	Enemy3(float y_pos) : Enemy(spriteSheet, 2, u, v, width, height, size) { position.x = 4.0; position.y = y_pos; }
+	float u = 1871.0 / 4096.0;
+	float v = 1369.0 / 2048.0;
+	float width = 1027.0 / 4096.0;
+	float height = 590.0 / 2048.0;
+	float size = 1.0;
+};
+
+//curiser
+struct Enemy4 : public Enemy
+{
+	Enemy4(float y_pos) : Enemy(spriteSheet, 3, u, v, width, height, size) { position.x = 6.0; position.y = y_pos; }
+	float u = 0.0 / 4096.0;
+	float v = 890.0 / 2048.0;
+	float width = 1869.0 / 4096.0;
+	float height = 1010.0 / 2048.0;
+	float size = 1.0;
+};
 
 void ProcessEvents()
 {
@@ -364,6 +519,7 @@ void Update(float& elapsed)
 	{
 		enemyBullets[i]->Update(elapsed);
 	}
+	drawScore(&textured);
 	//move stuff and check for collisions
 }
 

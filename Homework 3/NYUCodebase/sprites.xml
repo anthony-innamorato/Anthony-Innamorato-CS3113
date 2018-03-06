@@ -1,0 +1,19 @@
+<TextureAtlas imagePath="sprites.png">
+	<SubTexture name="0.png" x="1225" y="1902" width="89" height="101"/>
+	<SubTexture name="1.png" x="1668" y="1902" width="69" height="101"/>
+	<SubTexture name="2.png" x="1497" y="1902" width="87" height="102"/>
+	<SubTexture name="3.png" x="1042" y="1902" width="90" height="102"/>
+	<SubTexture name="4.png" x="1586" y="1902" width="80" height="99"/>
+	<SubTexture name="5.png" x="948" y="1902" width="92" height="101"/>
+	<SubTexture name="6.png" x="1134" y="1902" width="89" height="116"/>
+	<SubTexture name="7.png" x="848" y="1902" width="98" height="101"/>
+	<SubTexture name="8.png" x="1316" y="1902" width="89" height="101"/>
+	<SubTexture name="9.png" x="1407" y="1902" width="88" height="102"/>
+	<SubTexture name="cruiser.jpg" x="0" y="890" width="1869" height="1010"/>
+	<SubTexture name="destroyer.png" x="1871" y="1369" width="1027" height="590"/>
+	<SubTexture name="enemy_round.png" x="0" y="1902" width="422" height="90"/>
+	<SubTexture name="phantom.png" x="2900" y="1369" width="932" height="531"/>
+	<SubTexture name="player_round.png" x="424" y="1902" width="422" height="90"/>
+	<SubTexture name="seraph.png" x="1871" y="890" width="1240" height="477"/>
+	<SubTexture name="ship.png" x="0" y="0" width="3288" height="888"/>
+</TextureAtlas>
