@@ -26,6 +26,7 @@ struct Number;
 
 SDL_Window* displayWindow;
 ShaderProgram textured;
+ShaderProgram untextured;
 Matrix projectionMatrix;
 Matrix viewMatrix;
 bool done = false;
@@ -479,6 +480,9 @@ void Setup()
 	textured.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
 	textured.SetProjectionMatrix(projectionMatrix);
 	textured.SetViewMatrix(viewMatrix);
+	untextured.Load(RESOURCE_FOLDER"vertex.glsl", RESOURCE_FOLDER"fragment.glsl");
+	untextured.SetProjectionMatrix(projectionMatrix);
+	untextured.SetViewMatrix(viewMatrix);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -486,10 +490,7 @@ void Setup()
 
 	std::vector<std::vector<float>> coordVec;
 
-	for (int i = 0; i < 10; i++)
-	{
-		//push back each num to int vector with index at 
-	}
+
 }
 
 //phantom
@@ -572,6 +573,23 @@ void drawScore(ShaderProgram* program)
 	}
 }
 
+void drawBound(ShaderProgram* program)
+{
+	Matrix modelMatrix;
+	modelMatrix.Translate(-3.55 * 2 + 4.6, 0.0, 0.0f);
+
+	untextured.SetProjectionMatrix(projectionMatrix);
+	untextured.SetViewMatrix(viewMatrix);
+	untextured.SetModelMatrix(modelMatrix);
+
+	float vertices[] = { 0.0, -1000.0, 0.0f, 1000.0, -.1, 1000.0 };
+	glVertexAttribPointer(untextured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+	glEnableVertexAttribArray(untextured.positionAttribute);
+
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glDisableVertexAttribArray(untextured.positionAttribute);
+}
+
 void Update(float& elapsed)
 {
 	int alive = 0;
@@ -607,8 +625,7 @@ void Render()
 		enemyBullets[i]->Draw(&textured);
 	}
 	drawScore(&textured);
-	//for all game elements
-	//setup transdorms, render sprites
+	drawBound(&untextured);
 }
 
 void runTitleScreen(TitleScreen* t)
