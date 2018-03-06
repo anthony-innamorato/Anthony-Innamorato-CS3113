@@ -35,10 +35,8 @@ std::vector<Entity*> entities;
 std::vector<Entity*> enemyBullets;
 std::vector<Entity*> playerBullets;
 std::vector<Number*> numPtrs;
-int intScore;
-bool first;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
+bool startedGame = false;
 GLuint spriteSheet;
 
 GLuint LoadTexture(const char *filePath) {
@@ -135,9 +133,9 @@ struct EnemyBullet : public Entity
 		return true;
 	}
 	float u = 0.0;
-	float v = 1902.0 / 2048;
+	float v = 3617.0 / 4096;
 	float width = 422.0 / 4096.0;
-	float height = 90.0 / 2048;
+	float height = 90.0 / 4096.0;
 	float size = 1.0;
 };
 
@@ -199,8 +197,6 @@ struct PlayerBullet : public Entity
 					entities[i]->alive = false;
 					alive = false;
 					position.x = -5;
-					if (first) { intScore = 2; first = false; }
-					else { intScore *= 2; }
 				}
 			}
 		}
@@ -210,10 +206,10 @@ struct PlayerBullet : public Entity
 		return true;
 	}
 
-	float u = 424.0 / 4096;
-	float v = 1902.0 / 2048;
+	float u = 0.0;
+	float v = 3709.0 / 4096;
 	float width = 422.0 / 4096;
-	float height = 90.0 / 2048;
+	float height = 90.0 / 4096;
 	float size = .5;
 };
 
@@ -228,7 +224,7 @@ struct Player : public Entity
 
 		glBindTexture(GL_TEXTURE_2D, textureImage);
 
-		float aspect = (width*4096) / (height*2048);
+		float aspect = width / height;
 		float vertices[] = {
 			-0.5f * size * aspect, -0.5f * size,
 			0.5f * size * aspect, 0.5f * size,
@@ -290,7 +286,7 @@ struct Player : public Entity
 	float u = 0.0;
 	float v = 0.0;
 	float width = 3288.0 / 4096;
-	float height = 888.0 / 2048;
+	float height = 888.0 / 4096;
 	float size = .7;
 };
 
@@ -348,7 +344,7 @@ struct Enemy : public Entity
 		{
 			return false;
 		}
-		if (x >= position.x - 1 && y <= position.y + .3 && y >= position.y - .3)
+		if (x >= position.x - 1.8 && y <= position.y + .25 && y >= position.y - .25)
 		{
 			return true;
 		}
@@ -381,7 +377,7 @@ struct Number
 			u, v + height,
 			u + width, v + height
 		};
-		float aspect = (width*4096) / (height*2048);
+		float aspect = width/height;
 		float vertices[] = {
 			-0.5f * size * aspect, -0.5f * size,
 			0.5f * size * aspect, 0.5f * size,
@@ -414,6 +410,49 @@ struct Number
 	float size;
 };
 
+struct TitleScreen
+{
+	TitleScreen() : texture(spriteSheet){}
+	void Draw(ShaderProgram* program)
+	{
+		GLfloat texCoords[] = {
+			u, v + height,
+			u + width, v,
+			u, v,
+			u + width, v,
+			u, v + height,
+			u + width, v + height
+		};
+		float aspect = width / height;
+		float vertices[] = {
+			-0.5f * size * aspect, -0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, 0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, -0.5f * size ,
+			0.5f * size * aspect, -0.5f * size };
+
+		glUseProgram(textured.programID);
+		textured.SetModelMatrix(modelMatrix);
+
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		glEnableVertexAttribArray(textured.positionAttribute);
+
+		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+		glEnableVertexAttribArray(textured.texCoordAttribute);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDisableVertexAttribArray(textured.positionAttribute);
+		glDisableVertexAttribArray(textured.texCoordAttribute);
+	}
+	GLuint texture;
+	Matrix modelMatrix;
+	float u = 0.0;
+	float v = 890.0 / 4096;
+	float width = 1870.0 / 4096;
+	float height = 109.0/4096;
+	float size = .5;
+};
 
 
 
@@ -447,25 +486,25 @@ void Setup()
 //phantom
 struct Enemy1 : public Enemy
 {
-	Enemy1(float y_pos) : Enemy(spriteSheet, 0, 2900.0 / 4096.0, 1369.0 / 2048, 932.0 / 4096.0, 531.0 / 2048, .7) { position.x = 0.0; position.y = y_pos; }
+	Enemy1(float y_pos) : Enemy(spriteSheet, 0, 0.0 / 4096.0, 3084.0 / 4096, 932.0 / 4096.0, 531.0 / 4096, .5) { position.x = 0.0; position.y = y_pos; }
 };
 
 //seraph
 struct Enemy2 : public Enemy
 {
-	Enemy2(float y_pos) : Enemy(spriteSheet, 1, 1871.0 / 4096.0, 890.0 / 2048, 1240.0 / 4096.0, 477.0 / 2048, .7) { position.x = 2.0; position.y = y_pos; }
+	Enemy2(float y_pos) : Enemy(spriteSheet, 1, 0.0, 2013.0 / 4096, 1240.0 / 4096.0, 477.0 / 4096, .3) { position.x = 2.0; position.y = y_pos; }
 };
 
 //destroyer
 struct Enemy3 : public Enemy
 {
-	Enemy3(float y_pos) : Enemy(spriteSheet, 2, 1871.0 / 4096.0, 1369.0 / 2048, 1027.0 / 4096.0, 590.0 / 2048, .7) { position.x = 4.0; position.y = y_pos; }
+	Enemy3(float y_pos) : Enemy(spriteSheet, 2, 0.0, 2492.0 / 4096, 1027.0 / 4096.0, 590.0 / 4096, .5) { position.x = 4.0; position.y = y_pos; }
 };
 
 //curiser
 struct Enemy4 : public Enemy
 {
-	Enemy4(float y_pos) : Enemy(spriteSheet, 3, 0.0 / 4096.0, 890.0 / 2048, 1869.0 / 4096.0, 1010.0 / 2048, .7) { position.x = 6.0; position.y = y_pos; }
+	Enemy4(float y_pos) : Enemy(spriteSheet, 3, 0.0, 1001.0 / 4096, 1869.0 / 4096.0, 1010.0 / 4096, .5) { position.x = 6.0; position.y = y_pos; }
 };
 
 void ProcessEvents()
@@ -474,6 +513,14 @@ void ProcessEvents()
 
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 			done = true;
+		}
+
+		else if (event.type == SDL_KEYDOWN)
+		{
+			if (event.key.keysym.scancode == SDL_SCANCODE_RETURN)
+			{
+				startedGame = true;
+			}
 		}
 	}
 	//our SDL event loop
@@ -484,8 +531,30 @@ void drawScore(ShaderProgram* program)
 {
 	float offsetX = 0.0;
 	float offsetY = -3.8;
-	std::string strScore = std::to_string(intScore);
-	for (char c : strScore)
+	
+	//i tried making this simpler with globals but i was using them wrong, so ended up using this approach instead :(((
+	int sum = 0;
+	bool first = false;
+	for (Entity* ptr : entities)
+	{
+		if (!ptr->alive && first)
+		{
+			if (sum == 0)
+			{
+				sum = 2;
+			}
+			else
+			{
+				sum *= 2;
+			}
+		}
+		else
+		{
+			first = true;
+		}
+	}
+	std::string sumStr = std::to_string(sum);
+	for (char c : sumStr)
 	{
 		int res = c - '0';
 		numPtrs[res]->Draw(program, offsetX, offsetY);
@@ -530,6 +599,11 @@ void Render()
 	drawScore(&textured);
 	//for all game elements
 	//setup transdorms, render sprites
+}
+
+void runTitleScreen(TitleScreen* t)
+{
+	t->Draw(&textured);
 }
 
 
@@ -587,66 +661,79 @@ int main(int argc, char *argv[])
 		//int index, float u, float v, float width, float height, float size
 		if (i == 0)
 		{
-			Number* num = new Number(0, 1225.0 / 4096, 1902.0 / 2048, 89.0 / 4098, 101.0 / 2048, .5);
+			Number* num = new Number(0, 186.0 / 4096, 3919.0 / 4096, 89.0 / 4096, 101.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 		else if (i == 1)
 		{
-			Number* num = new Number(1, 1668.0 / 4096, 1902.0 / 2048, 69.0 / 4098, 101.0 / 2048, .5);
+			Number* num = new Number(1, 368.0 / 4096, 3801.0 / 4096, 69.0 / 4098, 101.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 		else if (i == 2)
 		{
-			Number* num = new Number(2, 1497.0 / 4096, 1902.0 / 2048, 87.0 / 4098, 102.0 / 2048, .5);
+			Number* num = new Number(2, 367.0 / 4096, 3904.0 / 4096, 87.0 / 4096, 102.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 		else if (i == 3)
 		{
-			Number* num = new Number(3, 1042.0 / 4096, 1902.0 / 2048, 90.0 / 4098, 102.0 / 2048, .5);
+			Number* num = new Number(3, 94.0 / 4096, 3904.0 / 4096, 90.0 / 4098, 102.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 		else if (i == 4)
 		{
-			Number* num = new Number(4, 1586.0 / 4096, 1902.0 / 2048, 80.0 / 4098, 99.0 / 2048, .5);
+			Number* num = new Number(4, 100.0 / 4096, 3801.0 / 4096, 80.0 / 4098, 99.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 		else if (i == 5)
 		{
-			Number* num = new Number(5, 948.0 / 4096, 1902.0 / 2048, 92.0 / 4098, 101.0 / 2048, .5);
+			Number* num = new Number(5, 0.0, 3904.0 / 4096, 92.0 / 4098, 101.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 		else if (i == 6)
 		{
-			Number* num = new Number(6, 1134.0 / 4096, 1902.0 / 2048, 89.0 / 4098, 116.0 / 2048, .5);
+			Number* num = new Number(6, 186.0 / 4096, 3801.0 / 4096, 89.0 / 4098, 116.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 		else if (i == 7)
 		{
-			Number* num = new Number(7, 848.0 / 4096, 1902.0 / 2048, 98.0 / 4098, 101.0 / 2048, .5);
+			Number* num = new Number(7, 0.0, 3801.0 / 4096, 98.0 / 4098, 101.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 		else if (i == 8)
 		{
-			Number* num = new Number(8, 1316.0 / 4096, 1902.0 / 2048, 89.0 / 4098, 101.0 / 2048, .5);
+			Number* num = new Number(8, 277.0 / 4096, 3801.0 / 4096, 89.0 / 4098, 101.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 		else
 		{
-			Number* num = new Number(9, 1407.0 / 4096, 1902.0 / 2048, 88.0 / 4098, 102.0 / 2048, .5);
+			Number* num = new Number(9, 277.0 / 4096, 3904.0 / 4096, 88.0 / 4098, 102.0 / 4096, .5);
 			numPtrs.push_back(num);
 		}
 	}
+
+	TitleScreen* t = new TitleScreen();
+
 
 	while (!done) {
 		float ticks = (float)SDL_GetTicks() / 1000.0f;
 		float elapsed = ticks - lastFrameTicks;
 		lastFrameTicks = ticks;
 
+		while (!startedGame)
+		{
+			glClear(GL_COLOR_BUFFER_BIT);
+			runTitleScreen(t);
+			ProcessEvents();
+			SDL_GL_SwapWindow(displayWindow);
+		}
+
 		glClear(GL_COLOR_BUFFER_BIT);
+
 
 		ProcessEvents();
 		Update(elapsed);
 		Render();
+
 
 		SDL_GL_SwapWindow(displayWindow);
 	}
