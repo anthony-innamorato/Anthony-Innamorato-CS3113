@@ -40,6 +40,7 @@ bool startedGame = false;
 bool endCase = false;
 GLuint spriteSheet;
 float speed = 4.0;
+bool justShot = false;
 
 GLuint LoadTexture(const char *filePath) {
 	int w, h, comp;
@@ -198,6 +199,8 @@ struct PlayerBullet : public Entity
 					entities[i]->alive = false;
 					alive = false;
 					position.x = -3.55 * 2 + 3.5;
+					justShot = true;
+					return;
 				}
 			}
 		}
@@ -254,29 +257,33 @@ struct Player : public Entity
 
 	void Update(float elapsed)
 	{
-		if (keys[SDL_SCANCODE_UP])
+		if (!endCase)
 		{
-			//move player right * elapsed
-			if (position.y <= 1.8 * 2)
+			if (keys[SDL_SCANCODE_UP])
 			{
-				position.y += elapsed * speed;
+				//move player right * elapsed
+				if (position.y <= 1.8 * 2)
+				{
+					position.y += elapsed * speed;
+				}
 			}
-		}
-		if (keys[SDL_SCANCODE_DOWN])
-		{
-			if (position.y >= -1.8 * 2)
+			if (keys[SDL_SCANCODE_DOWN])
 			{
-				position.y -= elapsed * speed;
+				if (position.y >= -1.8 * 2)
+				{
+					position.y -= elapsed * speed;
+				}
+				//move player left * elapsed
 			}
-			//move player left * elapsed
-		}
-		if (keys[SDL_SCANCODE_SPACE])
-		{
-			if (playerBullets[0]->alive == false)
+			if (keys[SDL_SCANCODE_SPACE])
 			{
-				playerBullets[0]->position.y = position.y;
-				playerBullets[0]->alive = true;
+				if (playerBullets[0]->alive == false && !justShot)
+				{
+					playerBullets[0]->position.y = position.y;
+					playerBullets[0]->alive = true;
+				}
 			}
+			else { justShot = false; }
 		}
 	}
 	bool isColliding(float x, float y) const
@@ -334,7 +341,7 @@ struct Enemy : public Entity
 	void Update(float elapsed)
 	{
 		position.x -= elapsed * speed/30;
-		if (position.x <= -3.55 * 2 + 3.25 && alive)
+		if (position.x <= -3.55 * 2 + 5.25 && alive)
 		{
 			speed = 0.0;
 			endCase = true;
