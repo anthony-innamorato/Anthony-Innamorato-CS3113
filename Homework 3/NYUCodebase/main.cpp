@@ -37,6 +37,7 @@ std::vector<Entity*> playerBullets;
 std::vector<Number*> numPtrs;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 bool startedGame = false;
+bool won = false;
 GLuint spriteSheet;
 
 GLuint LoadTexture(const char *filePath) {
@@ -141,7 +142,7 @@ struct EnemyBullet : public Entity
 
 struct PlayerBullet : public Entity
 {
-	PlayerBullet() : Entity(spriteSheet, false) { position.x = -4.2; }
+	PlayerBullet() : Entity(spriteSheet, false) { position.x = -3.55 * 2 + 3.5; }
 	void Draw(ShaderProgram* program)
 	{
 		if (alive)
@@ -186,7 +187,7 @@ struct PlayerBullet : public Entity
 			if (position.x >= 7.1)
 			{
 				alive = false;
-				position.x = -4.2;
+				position.x = -3.55 * 2 + 3.5;
 				return;
 			}
 			for (size_t i = 1; i < entities.size(); i++)
@@ -196,7 +197,7 @@ struct PlayerBullet : public Entity
 				{
 					entities[i]->alive = false;
 					alive = false;
-					position.x = -5;
+					position.x = -3.55 * 2 + 3.5;
 				}
 			}
 		}
@@ -332,8 +333,8 @@ struct Enemy : public Entity
 	}
 	void Update(float elapsed)
 	{
-		position.x -= elapsed * speed/50;
-		if (position.x <= -3.55 * 2 + 2.5)
+		position.x -= elapsed * speed/30;
+		if (position.x <= -3.55 * 2 + 3.25)
 		{
 			done = true;
 		}
@@ -531,6 +532,7 @@ void drawScore(ShaderProgram* program)
 {
 	float offsetX = 0.0;
 	float offsetY = -3.8;
+	if (won) { offsetY = 0.0; }
 	
 	//i tried making this simpler with globals but i was using them wrong, so ended up using this approach instead :(((
 	int sum = 0;
@@ -570,7 +572,7 @@ void Update(float& elapsed)
 		entities[i]->Update(elapsed);
 		if (entities[i]->alive) { alive++; }
 	}
-	if (alive == 1) { done = true; }
+	if (alive == 1) { won = true; }
 	for (size_t i = 0; i < playerBullets.size(); i++)
 	{
 		playerBullets[i]->Update(elapsed);
