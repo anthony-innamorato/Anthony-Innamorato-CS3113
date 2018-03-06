@@ -32,7 +32,8 @@ float lastFrameTicks = 0.0f;
 std::vector<Entity*> entities;
 std::vector<Entity*> enemyBullets;
 std::vector<Entity*> playerBullets;
-int score = 0;
+int score;
+bool first;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 GLuint spriteSheet;
@@ -131,15 +132,15 @@ struct EnemyBullet : public Entity
 		return true;
 	}
 	float u = 0.0;
-	float v = 1902.0 / 2048.0;
+	float v = 1902.0 / 2048;
 	float width = 422.0 / 4096.0;
-	float height = 90.0 / 2048.0;
+	float height = 90.0 / 2048;
 	float size = 1.0;
 };
 
 struct PlayerBullet : public Entity
 {
-	PlayerBullet() : Entity(spriteSheet, false) { position.x = -5; }
+	PlayerBullet() : Entity(spriteSheet, false) { position.x = -4.2; }
 	void Draw(ShaderProgram* program)
 	{
 		if (alive)
@@ -184,7 +185,7 @@ struct PlayerBullet : public Entity
 			if (position.x >= 7.1)
 			{
 				alive = false;
-				position.x = -5;
+				position.x = -4.2;
 				return;
 			}
 			for (size_t i = 1; i < entities.size(); i++)
@@ -195,7 +196,7 @@ struct PlayerBullet : public Entity
 					entities[i]->alive = false;
 					alive = false;
 					position.x = -5;
-					if (score == 0) { score += 2; }
+					if (first) { score = 2; first = false; }
 					else { score *= 2; }
 				}
 			}
@@ -206,10 +207,10 @@ struct PlayerBullet : public Entity
 		return true;
 	}
 
-	float u = 424.0 / 4096.0;
-	float v = 1902.0 / 2048.0;
-	float width = 422.0 / 4096.0;
-	float height = 90.0 / 2048.0;
+	float u = 424.0 / 4096;
+	float v = 1902.0 / 2048;
+	float width = 422.0 / 4096;
+	float height = 90.0 / 2048;
 	float size = .5;
 };
 
@@ -223,7 +224,8 @@ struct Player : public Entity
 		textured.SetModelMatrix(modelMatrix);
 
 		glBindTexture(GL_TEXTURE_2D, textureImage);
-		float aspect = 1.7 * width / height;
+
+		float aspect = (width*4096) / (height*2048);
 		float vertices[] = {
 			-0.5f * size * aspect, -0.5f * size,
 			0.5f * size * aspect, 0.5f * size,
@@ -284,8 +286,8 @@ struct Player : public Entity
 
 	float u = 0.0;
 	float v = 0.0;
-	float width = 3288.0 / 4096.0;
-	float height = 888.0 / 2048.0;
+	float width = 3288.0 / 4096;
+	float height = 888.0 / 2048;
 	float size = .7;
 };
 
@@ -302,7 +304,7 @@ struct Enemy : public Entity
 			textured.SetModelMatrix(modelMatrix);
 
 			glBindTexture(GL_TEXTURE_2D, textureImage);
-			float aspect = width / height;
+			float aspect = (width * 4096) / (height * 2048);
 			float vertices[] = {
 				-0.5f * size * aspect, -0.5f * size,
 				0.5f * size * aspect, 0.5f * size,
@@ -343,7 +345,7 @@ struct Enemy : public Entity
 		{
 			return false;
 		}
-		if (x >= position.x - 1.3 && y <= position.y + .3 && y >= position.y -.3)
+		if (x >= position.x - 1 && y <= position.y + .3 && y >= position.y - .3)
 		{
 			return true;
 		}
@@ -449,45 +451,25 @@ void Setup()
 //phantom
 struct Enemy1 : public Enemy
 {
-	Enemy1(float y_pos) : Enemy(spriteSheet, 0, u, v, width, height, size) { position.x = 0.0; position.y = y_pos; }
-	float u = 2900.0/4096.0;
-	float v = 1369.0/2048.0;
-	float width = 932.0/4096.0;
-	float height = 531.0/2048.0;
-	float size = 1.0;
+	Enemy1(float y_pos) : Enemy(spriteSheet, 0, 2900.0 / 4096.0, 1369.0 / 2048, 932.0 / 4096.0, 531.0 / 2048, .7) { position.x = 0.0; position.y = y_pos; }
 };
 
 //seraph
 struct Enemy2 : public Enemy
 {
-	Enemy2(float y_pos) : Enemy(spriteSheet, 1, u, v, width, height, size) { position.x = 2.0; position.y = y_pos; }
-	float u = 1871.0 / 4096.0;
-	float v = 1240.0 / 2048.0;
-	float width = 1240.0 / 4096.0;
-	float height = 477.0 / 2048.0;
-	float size = 1.0;
+	Enemy2(float y_pos) : Enemy(spriteSheet, 1, 1871.0 / 4096.0, 890.0 / 2048, 1240.0 / 4096.0, 477.0 / 2048, .7) { position.x = 2.0; position.y = y_pos; }
 };
 
 //destroyer
 struct Enemy3 : public Enemy
 {
-	Enemy3(float y_pos) : Enemy(spriteSheet, 2, u, v, width, height, size) { position.x = 4.0; position.y = y_pos; }
-	float u = 1871.0 / 4096.0;
-	float v = 1369.0 / 2048.0;
-	float width = 1027.0 / 4096.0;
-	float height = 590.0 / 2048.0;
-	float size = 1.0;
+	Enemy3(float y_pos) : Enemy(spriteSheet, 2, 1871.0 / 4096.0, 1369.0 / 2048, 1027.0 / 4096.0, 590.0 / 2048, .7) { position.x = 4.0; position.y = y_pos; }
 };
 
 //curiser
 struct Enemy4 : public Enemy
 {
-	Enemy4(float y_pos) : Enemy(spriteSheet, 3, u, v, width, height, size) { position.x = 6.0; position.y = y_pos; }
-	float u = 0.0 / 4096.0;
-	float v = 890.0 / 2048.0;
-	float width = 1869.0 / 4096.0;
-	float height = 1010.0 / 2048.0;
-	float size = 1.0;
+	Enemy4(float y_pos) : Enemy(spriteSheet, 3, 0.0 / 4096.0, 890.0 / 2048, 1869.0 / 4096.0, 1010.0 / 2048, .7) { position.x = 6.0; position.y = y_pos; }
 };
 
 void ProcessEvents()
