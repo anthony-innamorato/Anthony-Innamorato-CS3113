@@ -158,7 +158,8 @@ struct EnemyBullet : public Entity
 	}
 	bool isColliding(float x, float y) const
 	{
-		return true;
+
+		return false;
 	}
 
 	float u = 0.0;
@@ -316,6 +317,7 @@ struct Player : public Entity
 	}
 	bool isColliding(float x, float y) const
 	{
+		if (x <= position.x + 2.3 && y <= position.y + .3 && y >= position.y - .3){ return true;}
 		return false;
 	}
 
@@ -368,11 +370,14 @@ struct Enemy : public Entity
 	}
 	void Update(float elapsed)
 	{
-		position.x -= elapsed * speed/20;
-		if (position.x <= -3.55 * 2 + 5.5 && alive)
+		if (!endCase)
 		{
-			speed = 0.0;
-			endCase = true;
+			position.x -= elapsed * speed / 20;
+			if (position.x <= -3.55 * 2 + 5.5 && alive)
+			{
+				speed = 0.0;
+				endCase = true;
+			}
 		}
 	}
 	bool isColliding(float x, float y) const
