@@ -83,14 +83,13 @@ struct Entity
 	bool alive;
 	Matrix modelMatrix;
 	Vector position;
-	Vector size;
 	float rotation;
 	GLuint textureImage;
 };
 
 struct EnemyBullet : public Entity
 {
-	EnemyBullet() : Entity(spriteSheet, false) {}
+	EnemyBullet(int index) : Entity(spriteSheet, false), index(index) {}
 	void Draw(ShaderProgram* program)
 	{
 		if (alive)
@@ -129,17 +128,45 @@ struct EnemyBullet : public Entity
 	}
 	void Update(float elapsed)
 	{
-
+		if (!endCase) {
+			if (alive)
+			{
+				position.x -= elapsed * speed / 2;
+				if (position.x <= -3.55 * 2)
+				{
+					alive = false;
+					return;
+				}
+				bool collision = entities[0]->isColliding(position.x, position.y);
+				if (collision)
+				{
+					endCase = true;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					if (entities[index + i]->alive)
+					{
+						position = entities[index + i]->position;
+						alive = true;
+					}
+				}
+			}
+		}
 	}
 	bool isColliding(float x, float y) const
 	{
 		return true;
 	}
+
 	float u = 0.0;
 	float v = 3617.0 / 4096;
 	float width = 422.0 / 4096.0;
 	float height = 90.0 / 4096.0;
-	float size = 1.0;
+	float size = .5;
+	int index;
 };
 
 struct PlayerBullet : public Entity
@@ -289,7 +316,7 @@ struct Player : public Entity
 	}
 	bool isColliding(float x, float y) const
 	{
-		return true;
+		return false;
 	}
 
 	float u = 0.0;
@@ -496,25 +523,25 @@ void Setup()
 //phantom
 struct Enemy1 : public Enemy
 {
-	Enemy1(float y_pos) : Enemy(spriteSheet, 0, 0.0 / 4096.0, 3084.0 / 4096, 932.0 / 4096.0, 531.0 / 4096, .5) { position.x = 0.0; position.y = y_pos; }
+	Enemy1(float y_pos) : Enemy(spriteSheet, 0, 0.0 / 4096.0, 3084.0 / 4096, 932.0 / 4096.0, 531.0 / 4096, .5) { position.x = 2.0; position.y = y_pos; }
 };
 
 //seraph
 struct Enemy2 : public Enemy
 {
-	Enemy2(float y_pos) : Enemy(spriteSheet, 1, 0.0, 2013.0 / 4096, 1240.0 / 4096.0, 477.0 / 4096, .3) { position.x = 2.0; position.y = y_pos; }
+	Enemy2(float y_pos) : Enemy(spriteSheet, 1, 0.0, 2013.0 / 4096, 1240.0 / 4096.0, 477.0 / 4096, .3) { position.x = 4.0; position.y = y_pos; }
 };
 
 //destroyer
 struct Enemy3 : public Enemy
 {
-	Enemy3(float y_pos) : Enemy(spriteSheet, 2, 0.0, 2492.0 / 4096, 1027.0 / 4096.0, 590.0 / 4096, .5) { position.x = 4.0; position.y = y_pos; }
+	Enemy3(float y_pos) : Enemy(spriteSheet, 2, 0.0, 2492.0 / 4096, 1027.0 / 4096.0, 590.0 / 4096, .5) { position.x = 6.0; position.y = y_pos; }
 };
 
 //curiser
 struct Enemy4 : public Enemy
 {
-	Enemy4(float y_pos) : Enemy(spriteSheet, 3, 0.0, 1001.0 / 4096, 1869.0 / 4096.0, 1010.0 / 4096, .5) { position.x = 6.0; position.y = y_pos; }
+	Enemy4(float y_pos) : Enemy(spriteSheet, 3, 0.0, 1001.0 / 4096, 1869.0 / 4096.0, 1010.0 / 4096, .5) { position.x = 8.0; position.y = y_pos; }
 };
 
 void ProcessEvents()
@@ -640,9 +667,9 @@ int main(int argc, char *argv[])
 	Player* p1 = new Player();
 	entities.push_back(p1);
 
-	for (size_t i = 0; i < 4; i++)
+	for (size_t i = 0; i < 5; i++)
 	{
-		EnemyBullet* eb = new EnemyBullet();
+		EnemyBullet* eb = new EnemyBullet(i*4 + 1);
 		PlayerBullet* pb = new PlayerBullet();
 		enemyBullets.push_back(eb);
 		playerBullets.push_back(pb);
