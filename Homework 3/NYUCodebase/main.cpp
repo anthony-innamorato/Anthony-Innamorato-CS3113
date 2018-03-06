@@ -37,8 +37,9 @@ std::vector<Entity*> playerBullets;
 std::vector<Number*> numPtrs;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 bool startedGame = false;
-bool won = false;
+bool endCase = false;
 GLuint spriteSheet;
+float speed = 4.0;
 
 GLuint LoadTexture(const char *filePath) {
 	int w, h, comp;
@@ -80,7 +81,6 @@ struct Entity
 	bool alive;
 	Matrix modelMatrix;
 	Vector position;
-	float speed = 4.0;
 	Vector size;
 	float rotation;
 	GLuint textureImage;
@@ -336,7 +336,8 @@ struct Enemy : public Entity
 		position.x -= elapsed * speed/30;
 		if (position.x <= -3.55 * 2 + 3.25)
 		{
-			done = true;
+			speed = 0.0;
+			endCase = true;
 		}
 	}
 	bool isColliding(float x, float y) const
@@ -532,7 +533,7 @@ void drawScore(ShaderProgram* program)
 {
 	float offsetX = 0.0;
 	float offsetY = -3.8;
-	if (won) { offsetY = 0.0; }
+	if (endCase) { offsetY = -.7; }
 	
 	//i tried making this simpler with globals but i was using them wrong, so ended up using this approach instead :(((
 	int sum = 0;
@@ -572,7 +573,7 @@ void Update(float& elapsed)
 		entities[i]->Update(elapsed);
 		if (entities[i]->alive) { alive++; }
 	}
-	if (alive == 1) { won = true; }
+	if (alive == 1) { endCase = true; }
 	for (size_t i = 0; i < playerBullets.size(); i++)
 	{
 		playerBullets[i]->Update(elapsed);
