@@ -17,10 +17,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <vector>
+#include <string>
 #define MAX_BULLETS 5
 
 struct Entity;
 struct Bullet;
+struct Number;
 
 SDL_Window* displayWindow;
 ShaderProgram textured;
@@ -32,7 +34,9 @@ float lastFrameTicks = 0.0f;
 std::vector<Entity*> entities;
 std::vector<Entity*> enemyBullets;
 std::vector<Entity*> playerBullets;
-int score;
+std::vector<Number*> numPtrs;
+int intScore;
+std::string strScore;
 bool first;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
@@ -196,8 +200,8 @@ struct PlayerBullet : public Entity
 					entities[i]->alive = false;
 					alive = false;
 					position.x = -5;
-					if (first) { score = 2; first = false; }
-					else { score *= 2; }
+					if (first) { intScore = 2; first = false; }
+					else { intScore *= 2; }
 				}
 			}
 		}
@@ -367,8 +371,9 @@ struct Enemy : public Entity
 struct Number
 {
 	Number(int index, float u, float v, float width, float height, float size) : texture(spriteSheet), index(index), u(u), v(v), width(width), height(height), size(size){}
-	void Draw(ShaderProgram* program)
+	void Draw(ShaderProgram* program, float offsetX, float offsetY)
 	{
+		modelMatrix.Translate(offsetX, offsetY, 0);
 		GLfloat texCoords[] = {
 			u, v + height,
 			u + width, v,
@@ -411,20 +416,6 @@ struct Number
 	float size;
 };
 
-void drawNum(int num, ShaderProgram* program)
-{
-	//Number instance = Number(num);
-	//instance.Draw(program);
-}
-
-void drawScore(ShaderProgram* program)
-{
-	int curr = 0;
-	while (score << curr)
-	{
-		drawNum(curr, program);
-	}
-}
 
 
 
@@ -446,6 +437,13 @@ void Setup()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	spriteSheet = LoadTexture(RESOURCE_FOLDER"sprites.png");
+
+	std::vector<std::vector<float>> coordVec;
+
+	for (int i = 0; i < 10; i++)
+	{
+		//push back each num to int vector with index at 
+	}
 }
 
 //phantom
@@ -484,6 +482,22 @@ void ProcessEvents()
 	//check input events
 }
 
+void drawCurr(int res, ShaderProgram* program, float offsetX, float offsetY)
+{
+	numPtrs[res]->Draw(program, offsetX, offsetY);
+}
+void drawScore(ShaderProgram* program)
+{
+	float offsetX = 0.0;
+	float offsetY = -4.0;
+	for (char c : strScore)
+	{
+		int res = c - '0';
+		drawCurr(c, program, offsetX, offsetY);
+		offsetX += .5;
+	}
+}
+
 void Update(float& elapsed)
 {
 	int alive = 0;
@@ -501,6 +515,7 @@ void Update(float& elapsed)
 	{
 		enemyBullets[i]->Update(elapsed);
 	}
+	strScore = std::to_string(intScore);
 	drawScore(&textured);
 	//move stuff and check for collisions
 }
