@@ -340,8 +340,8 @@ struct Enemy : public Entity
 	}
 	void Update(float elapsed)
 	{
-		position.x -= elapsed * speed/30;
-		if (position.x <= -3.55 * 2 + 5.25 && alive)
+		position.x -= elapsed * speed/20;
+		if (position.x <= -3.55 * 2 + 5.5 && alive)
 		{
 			speed = 0.0;
 			endCase = true;
