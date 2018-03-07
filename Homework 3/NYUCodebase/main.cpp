@@ -131,7 +131,7 @@ struct EnemyBullet : public Entity
 		if (!endCase) {
 			if (alive)
 			{
-				position.x -= elapsed * speed / 2;
+				position.x -= elapsed * speed * speedMult;
 				if (position.x <= -3.55 * 2)
 				{
 					alive = false;
@@ -145,13 +145,21 @@ struct EnemyBullet : public Entity
 			}
 			else
 			{
+				int temp = index;
 				for (int i = 0; i < 4; i++)
 				{
-					if (entities[index + i]->alive)
+					if (entities[temp]->alive)
 					{
-						position = entities[index + i]->position;
+						position = entities[temp]->position;
+						position.x -= 2;
 						alive = true;
+						if (i == 0) { speedMult = .3; }
+						else if (i == 1) { speedMult = .8; }
+						else if (i == 2) { speedMult = 1.5; }
+						else { speedMult = 2.5; }
+						return;
 					}
+					else { temp++; }
 				}
 			}
 		}
@@ -162,6 +170,7 @@ struct EnemyBullet : public Entity
 		return false;
 	}
 
+	float speedMult;
 	float u = 0.0;
 	float v = 3617.0 / 4096;
 	float width = 422.0 / 4096.0;
@@ -213,23 +222,26 @@ struct PlayerBullet : public Entity
 	{
 		if (alive) 
 		{
-			position.x += elapsed * speed * 2;
-			if (position.x >= 7.1)
+			if (!endCase)
 			{
-				alive = false;
-				position.x = -3.55 * 2 + 3.5;
-				return;
-			}
-			for (size_t i = 1; i < entities.size(); i++)
-			{
-				bool collision = entities[i]->isColliding(position.x, position.y);
-				if (collision)
+				position.x += elapsed * speed * 2;
+				if (position.x >= 7.1)
 				{
-					entities[i]->alive = false;
 					alive = false;
 					position.x = -3.55 * 2 + 3.5;
-					justShot = true;
 					return;
+				}
+				for (size_t i = 1; i < entities.size(); i++)
+				{
+					bool collision = entities[i]->isColliding(position.x, position.y);
+					if (collision)
+					{
+						entities[i]->alive = false;
+						alive = false;
+						position.x = -3.55 * 2 + 3.5;
+						justShot = true;
+						return;
+					}
 				}
 			}
 		}
@@ -317,7 +329,7 @@ struct Player : public Entity
 	}
 	bool isColliding(float x, float y) const
 	{
-		if (x <= position.x + 2.3 && y <= position.y + .3 && y >= position.y - .3){ return true;}
+		if (x <= position.x + 2.3 && y <= position.y + .4 && y >= position.y - .35){ return true;}
 		return false;
 	}
 
@@ -528,25 +540,25 @@ void Setup()
 //phantom
 struct Enemy1 : public Enemy
 {
-	Enemy1(float y_pos) : Enemy(spriteSheet, 0, 0.0 / 4096.0, 3084.0 / 4096, 932.0 / 4096.0, 531.0 / 4096, .5) { position.x = 2.0; position.y = y_pos; }
+	Enemy1(float y_pos) : Enemy(spriteSheet, 0, 0.0 / 4096.0, 3084.0 / 4096, 932.0 / 4096.0, 531.0 / 4096, .5) { position.x = 6.0; position.y = y_pos; }
 };
 
 //seraph
 struct Enemy2 : public Enemy
 {
-	Enemy2(float y_pos) : Enemy(spriteSheet, 1, 0.0, 2013.0 / 4096, 1240.0 / 4096.0, 477.0 / 4096, .3) { position.x = 4.0; position.y = y_pos; }
+	Enemy2(float y_pos) : Enemy(spriteSheet, 1, 0.0, 2013.0 / 4096, 1240.0 / 4096.0, 477.0 / 4096, .3) { position.x = 8.0; position.y = y_pos; }
 };
 
 //destroyer
 struct Enemy3 : public Enemy
 {
-	Enemy3(float y_pos) : Enemy(spriteSheet, 2, 0.0, 2492.0 / 4096, 1027.0 / 4096.0, 590.0 / 4096, .5) { position.x = 6.0; position.y = y_pos; }
+	Enemy3(float y_pos) : Enemy(spriteSheet, 2, 0.0, 2492.0 / 4096, 1027.0 / 4096.0, 590.0 / 4096, .5) { position.x = 10.0; position.y = y_pos; }
 };
 
 //curiser
 struct Enemy4 : public Enemy
 {
-	Enemy4(float y_pos) : Enemy(spriteSheet, 3, 0.0, 1001.0 / 4096, 1869.0 / 4096.0, 1010.0 / 4096, .5) { position.x = 8.0; position.y = y_pos; }
+	Enemy4(float y_pos) : Enemy(spriteSheet, 3, 0.0, 1001.0 / 4096, 1869.0 / 4096.0, 1010.0 / 4096, .5) { position.x = 12.0; position.y = y_pos; }
 };
 
 void ProcessEvents()
@@ -672,9 +684,9 @@ int main(int argc, char *argv[])
 	Player* p1 = new Player();
 	entities.push_back(p1);
 
-	for (size_t i = 0; i < 5; i++)
+	for (size_t i = 1; i < 20; i+=4)
 	{
-		EnemyBullet* eb = new EnemyBullet(i*4 + 1);
+		EnemyBullet* eb = new EnemyBullet(i);
 		PlayerBullet* pb = new PlayerBullet();
 		enemyBullets.push_back(eb);
 		playerBullets.push_back(pb);
@@ -695,23 +707,12 @@ int main(int argc, char *argv[])
 		en2Vec.push_back(ser);
 		en3Vec.push_back(dest);
 		en4Vec.push_back(cruis);
+
+		entities.push_back(phant);
+		entities.push_back(ser);
+		entities.push_back(dest);
+		entities.push_back(cruis);
 		init_y -= 1.5;
-	}
-	for (Enemy1* e1: en1Vec)
-	{
-		entities.push_back(e1);
-	}
-	for (Enemy2* e2 : en2Vec)
-	{
-		entities.push_back(e2);
-	}
-	for (Enemy3* e3 : en3Vec)
-	{
-		entities.push_back(e3);
-	}
-	for (Enemy4* e4 : en4Vec)
-	{
-		entities.push_back(e4);
 	}
 
 	//
