@@ -41,7 +41,8 @@ bool startedGame = false;
 bool endCase = false;
 GLuint spriteSheet;
 float speed = 4.0;
-bool justShot = false;
+enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL};
+GameMode mode;
 
 GLuint LoadTexture(const char *filePath) {
 	int w, h, comp;
@@ -239,7 +240,6 @@ struct PlayerBullet : public Entity
 						entities[i]->alive = false;
 						alive = false;
 						position.x = -3.55 * 2 + 3.5;
-						justShot = true;
 						return;
 					}
 				}
@@ -302,7 +302,6 @@ struct Player : public Entity
 		{
 			if (keys[SDL_SCANCODE_UP])
 			{
-				//move player right * elapsed
 				if (position.y <= 1.8 * 2)
 				{
 					position.y += elapsed * speed;
@@ -314,17 +313,15 @@ struct Player : public Entity
 				{
 					position.y -= elapsed * speed;
 				}
-				//move player left * elapsed
 			}
 			if (keys[SDL_SCANCODE_SPACE])
 			{
-				if (playerBullets[0]->alive == false && !justShot)
+				if (playerBullets[0]->alive == false)
 				{
 					playerBullets[0]->position.y = position.y;
 					playerBullets[0]->alive = true;
 				}
 			}
-			else { justShot = false; }
 		}
 	}
 	bool isColliding(float x, float y) const
@@ -569,16 +566,17 @@ void ProcessEvents()
 			done = true;
 		}
 
-		else if (event.type == SDL_KEYDOWN)
+		if (mode == STATE_MAIN_MENU)
 		{
-			if (event.key.keysym.scancode == SDL_SCANCODE_RETURN)
+			if (event.type == SDL_KEYDOWN)
 			{
-				startedGame = true;
+				if (event.key.keysym.scancode == SDL_SCANCODE_RETURN)
+				{
+					mode = STATE_GAME_LEVEL;
+				}
 			}
 		}
 	}
-	//our SDL event loop
-	//check input events
 }
 
 void drawScore(ShaderProgram* program)
@@ -651,7 +649,6 @@ void Update(float& elapsed)
 	{
 		enemyBullets[i]->Update(elapsed);
 	}
-	//move stuff and check for collisions
 }
 
 void Render()
@@ -772,20 +769,21 @@ int main(int argc, char *argv[])
 	}
 
 	TitleScreen* t = new TitleScreen();
+	mode = STATE_MAIN_MENU;
 
 
+
+	while (mode == STATE_MAIN_MENU && !done)
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+		runTitleScreen(t);
+		ProcessEvents();
+		SDL_GL_SwapWindow(displayWindow);
+	}
 	while (!done) {
 		float ticks = (float)SDL_GetTicks() / 1000.0f;
 		float elapsed = ticks - lastFrameTicks;
 		lastFrameTicks = ticks;
-
-		while (!startedGame && !done)
-		{
-			glClear(GL_COLOR_BUFFER_BIT);
-			runTitleScreen(t);
-			ProcessEvents();
-			SDL_GL_SwapWindow(displayWindow);
-		}
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
