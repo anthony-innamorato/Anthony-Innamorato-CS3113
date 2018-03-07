@@ -224,7 +224,7 @@ struct PlayerBullet : public Entity
 		{
 			if (!endCase)
 			{
-				position.x += elapsed * speed * 2;
+				position.x += elapsed * speed * 4;
 				if (position.x >= 7.1)
 				{
 					alive = false;
@@ -779,7 +779,7 @@ int main(int argc, char *argv[])
 		float elapsed = ticks - lastFrameTicks;
 		lastFrameTicks = ticks;
 
-		while (!startedGame)
+		while (!startedGame && !done)
 		{
 			glClear(GL_COLOR_BUFFER_BIT);
 			runTitleScreen(t);
