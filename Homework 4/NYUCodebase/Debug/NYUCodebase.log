@@ -1,1 +1,3 @@
-﻿  NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 3\Debug\NYUCodebase.exe
+﻿  main.cpp
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(341): warning C4305: 'argument': truncation from 'double' to 'float'
+  NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 4\Debug\NYUCodebase.exe
