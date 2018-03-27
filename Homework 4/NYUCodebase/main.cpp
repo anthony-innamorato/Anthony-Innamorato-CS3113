@@ -91,31 +91,30 @@ void Setup()
 	spriteSheet = LoadTexture(RESOURCE_FOLDER"arne_sprites.png");
 }
 
-void ProcessEvents()
+
+void ProcessEvents(float elapsed)
 {
 	while (SDL_PollEvent(&event)) {
-
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 			done = true;
 		}
 	}
+	/*
+	if (keys[SDL_SCANCODE_UP]) { viewMatrix.Translate(0, elapsed, 0); }
+	if (keys[SDL_SCANCODE_DOWN]){ viewMatrix.Translate(0, -elapsed, 0);}
+	if (keys[SDL_SCANCODE_RIGHT]) { viewMatrix.Translate(elapsed, 0, 0); }
+	if (keys[SDL_SCANCODE_LEFT]) { viewMatrix.Translate(-elapsed, 0, 0); }
+	*/
 }
 
 
 void Update(float& elapsed)
 {
-	for (size_t i = 0; i < entities.size(); i++)
-	{
-		//entities[i]->Update(elapsed);
-	}
+
 }
 
 void Render()
 {
-	for (size_t i = 0; i < entities.size(); i++)
-	{
-		//entities[i]->Draw(&textured);
-	}
 	std::vector<float> vertexData;
 	std::vector<float> texCoordData;
 	for (int y = 0; y < LEVEL_HEIGHT; y++) {
@@ -153,6 +152,8 @@ void Render()
 	glDrawArrays(GL_TRIANGLES, 0, (int)vertexData.size() / 2);
 	glDisableVertexAttribArray(textured.positionAttribute);
 	glDisableVertexAttribArray(textured.texCoordAttribute);
+
+	viewMatrix.Translate(1/flare.entities[0].x, 1/flare.entities[0].y, 0);
 }
 
 
@@ -167,7 +168,7 @@ int main(int argc, char *argv[])
 		glClearColor(.529, .808, 1.222, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		ProcessEvents();
+		ProcessEvents(elapsed);
 		Update(elapsed);
 		Render();
 

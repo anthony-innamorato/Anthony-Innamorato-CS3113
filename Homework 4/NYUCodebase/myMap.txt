@@ -30,12 +30,12 @@ data=
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 [Object Layer 1]
-# Enemy1
-type=Enemy
-location=14,5,1,1
-
-[Object Layer 1]
 # P1
 type=Player
 location=4,5,1,1
+
+[Object Layer 1]
+# Enemy1
+type=Enemy
+location=14,5,1,1
 
