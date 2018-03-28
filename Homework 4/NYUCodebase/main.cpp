@@ -80,7 +80,8 @@ void Setup()
 	glewInit();
 #endif
 	glViewport(0, 0, 1280, 720);
-	projectionMatrix.SetOrthoProjection(-3.55 * 2, 3.55 * 2, -2.0f * 2, 2.0f * 2, -1.0f * 2, 1.0f * 2);
+	//projectionMatrix.SetOrthoProjection(-3.55 * 2, 3.55 * 2, -2.0f * 2, 2.0f * 2, -1.0f * 2, 1.0f * 2);
+	projectionMatrix.SetOrthoProjection(-3.55 * 100, 3.55 * 100, -2.0f * 100, 2.0f * 100, -1.0f * 100, 1.0f * 100);
 	textured.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
 	textured.SetProjectionMatrix(projectionMatrix);
 	textured.SetViewMatrix(viewMatrix);
@@ -89,22 +90,21 @@ void Setup()
 
 	flare.Load("myMap.txt");
 	spriteSheet = LoadTexture(RESOURCE_FOLDER"arne_sprites.png");
+	viewMatrix.Translate(-flare.entities[0].x * 5, -flare.entities[0].y * 5, 0);
 }
 
 
 void ProcessEvents(float elapsed)
 {
+	if (keys[SDL_SCANCODE_UP]) { viewMatrix.Translate(0, -elapsed * 100, 0); }
+	if (keys[SDL_SCANCODE_DOWN]) { viewMatrix.Translate(0, elapsed * 100, 0); }
+	if (keys[SDL_SCANCODE_RIGHT]) { viewMatrix.Translate(-elapsed * 100, 0, 0); }
+	if (keys[SDL_SCANCODE_LEFT]) { viewMatrix.Translate(elapsed * 100, 0, 0); }
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 			done = true;
 		}
 	}
-	/*
-	if (keys[SDL_SCANCODE_UP]) { viewMatrix.Translate(0, elapsed, 0); }
-	if (keys[SDL_SCANCODE_DOWN]){ viewMatrix.Translate(0, -elapsed, 0);}
-	if (keys[SDL_SCANCODE_RIGHT]) { viewMatrix.Translate(elapsed, 0, 0); }
-	if (keys[SDL_SCANCODE_LEFT]) { viewMatrix.Translate(-elapsed, 0, 0); }
-	*/
 }
 
 
@@ -119,30 +119,34 @@ void Render()
 	std::vector<float> texCoordData;
 	for (int y = 0; y < LEVEL_HEIGHT; y++) {
 		for (int x = 0; x < LEVEL_WIDTH; x++) {
-			float u = (float)(((int)flare.mapData[y][x]) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
-			float v = (float)(((int)flare.mapData[y][x]) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
-			float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
-			float spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
-			vertexData.insert(vertexData.end(), {
-				TILE_SIZE * x, -TILE_SIZE * y,
-				TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
-				(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
-				TILE_SIZE * x, -TILE_SIZE * y,
-				(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
-				(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y
-				});
-			texCoordData.insert(texCoordData.end(), {
-				u, v,
-				u, v + (spriteHeight),
-				u + spriteWidth, v + (spriteHeight),
-				u, v,
-				u + spriteWidth, v + (spriteHeight),
-				u + spriteWidth, v
-				});
+			if (flare.mapData[y][x] != 0) {
+				float u = (float)(((int)flare.mapData[y][x]) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
+				float v = (float)(((int)flare.mapData[y][x]) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
+				float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
+				float spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
+				vertexData.insert(vertexData.end(), {
+					TILE_SIZE * x, -TILE_SIZE * y,
+					TILE_SIZE * x, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+					TILE_SIZE * x, -TILE_SIZE * y,
+					(TILE_SIZE * x) + TILE_SIZE, (-TILE_SIZE * y) - TILE_SIZE,
+					(TILE_SIZE * x) + TILE_SIZE, -TILE_SIZE * y
+					});
+				texCoordData.insert(texCoordData.end(), {
+					u, v,
+					u, v + (spriteHeight),
+					u + spriteWidth, v + (spriteHeight),
+					u, v,
+					u + spriteWidth, v + (spriteHeight),
+					u + spriteWidth, v
+					});
 
-
+			}
 		}
 	}
+	Matrix modelMatrix;
+	textured.SetModelMatrix(modelMatrix);
+	textured.SetViewMatrix(viewMatrix);
 	glUseProgram(textured.programID);
 	glBindTexture(GL_TEXTURE_2D, spriteSheet);
 	glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertexData.data());
@@ -152,8 +156,6 @@ void Render()
 	glDrawArrays(GL_TRIANGLES, 0, (int)vertexData.size() / 2);
 	glDisableVertexAttribArray(textured.positionAttribute);
 	glDisableVertexAttribArray(textured.texCoordAttribute);
-
-	viewMatrix.Translate(1/flare.entities[0].x, 1/flare.entities[0].y, 0);
 }
 
 
