@@ -14,6 +14,7 @@
 
 #include "ShaderProgram.h"
 #include "Matrix.h"
+#include "FlareMap.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <vector>
@@ -54,6 +55,16 @@ struct Vector
 	float z;
 };
 
+struct TextCoords 
+{
+	TextCoords(float left = 0, float right = 1, float top = 0, float bot = 1)
+		: left(left), right(right), top(top), bot(bot) {}
+	float left;
+	float right;
+	float bot;
+	float top;
+};
+
 struct Entity
 {
 	Entity() {}
@@ -69,6 +80,7 @@ struct Entity
 	Vector acceleration;
 	Vector velocity;
 	Vector halfLengths;
+	TextCoords textCoords = (0.0, 1.0, 0.0, 1.0);
 	Vector friction;
 };
 
@@ -77,39 +89,38 @@ struct Player : public Entity
 	Player() : Entity(spriteSheet, true) {}
 	void Draw(ShaderProgram* program)
 	{
-		/*
+		if (!alive) { return; }
+		modelMatrix.Identity();
 		modelMatrix.Translate(position.x, position.y, 0);
 		glUseProgram(textured.programID);
 		textured.SetModelMatrix(modelMatrix);
 
 		glBindTexture(GL_TEXTURE_2D, textureImage);
 
-		float aspect = width / height;
-		float vertices[] = {
-			-0.5f * size * aspect, -0.5f * size,
-			0.5f * size * aspect, 0.5f * size,
-			-0.5f * size * aspect, 0.5f * size,
-			0.5f * size * aspect, 0.5f * size,
-			-0.5f * size * aspect, -0.5f * size ,
-			0.5f * size * aspect, -0.5f * size };
+		float vertices[] =
+		{
+			-halfLengths.x, -halfLengths.y, halfLengths.x, -halfLengths.y, halfLengths.x, halfLengths.y,
+			-halfLengths.x, -halfLengths.y, halfLengths.x, halfLengths.y, -halfLengths.x, halfLengths.y
+		};
+
 		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
 		glEnableVertexAttribArray(textured.positionAttribute);
 
-		GLfloat texCoords[] = {
-			u, v + height,
-			u + width, v,
-			u, v,
-			u + width, v,
-			u, v + height,
-			u + width, v + height
+		GLfloat texCoords[] =
+		{
+			textCoords.left, textCoords.bot,
+			textCoords.right, textCoords.bot,
+			textCoords.right, textCoords.top,
+			textCoords.left, textCoords.bot,
+			textCoords.right, textCoords.top,
+			textCoords.left, textCoords.top 
 		};
+
 		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
 		glEnableVertexAttribArray(textured.texCoordAttribute);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableVertexAttribArray(textured.positionAttribute);
 		glDisableVertexAttribArray(textured.texCoordAttribute);
-		modelMatrix.Identity();
-		*/
 	}
 
 	void Update(float elapsed)
@@ -164,41 +175,38 @@ struct Enemy : public Entity
 	Enemy() {}
 	void Draw(ShaderProgram* program)
 	{
-		/*
-		if (alive)
+		if (!alive) { return; }
+		modelMatrix.Identity();
+		modelMatrix.Translate(position.x, position.y, 0);
+		glUseProgram(textured.programID);
+		textured.SetModelMatrix(modelMatrix);
+
+		glBindTexture(GL_TEXTURE_2D, textureImage);
+
+		float vertices[] =
 		{
-			modelMatrix.Translate(position.x, position.y, 0);
-			glUseProgram(textured.programID);
-			textured.SetModelMatrix(modelMatrix);
+			-halfLengths.x, -halfLengths.y, halfLengths.x, -halfLengths.y, halfLengths.x, halfLengths.y,
+			-halfLengths.x, -halfLengths.y, halfLengths.x, halfLengths.y, -halfLengths.x, halfLengths.y
+		};
 
-			glBindTexture(GL_TEXTURE_2D, textureImage);
-			float aspect = (width * 4096) / (height * 2048);
-			float vertices[] = {
-				-0.5f * size * aspect, -0.5f * size,
-				0.5f * size * aspect, 0.5f * size,
-				-0.5f * size * aspect, 0.5f * size,
-				0.5f * size * aspect, 0.5f * size,
-				-0.5f * size * aspect, -0.5f * size ,
-				0.5f * size * aspect, -0.5f * size };
-			glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
-			glEnableVertexAttribArray(textured.positionAttribute);
+		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		glEnableVertexAttribArray(textured.positionAttribute);
 
-			GLfloat texCoords[] = {
-				u, v + height,
-				u + width, v,
-				u, v,
-				u + width, v,
-				u, v + height,
-				u + width, v + height
-			};
-			glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
-			glEnableVertexAttribArray(textured.texCoordAttribute);
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-			glDisableVertexAttribArray(textured.positionAttribute);
-			glDisableVertexAttribArray(textured.texCoordAttribute);
-			modelMatrix.Identity();
-		}
-		*/
+		GLfloat texCoords[] =
+		{
+			textCoords.left, textCoords.bot,
+			textCoords.right, textCoords.bot,
+			textCoords.right, textCoords.top,
+			textCoords.left, textCoords.bot,
+			textCoords.right, textCoords.top,
+			textCoords.left, textCoords.top
+		};
+
+		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+		glEnableVertexAttribArray(textured.texCoordAttribute);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDisableVertexAttribArray(textured.positionAttribute);
+		glDisableVertexAttribArray(textured.texCoordAttribute);
 	}
 	void Update(float elapsed)
 	{
@@ -246,7 +254,8 @@ struct Enemy : public Entity
 Player p1;
 Enemy enemy;
 
-void placeEntity(const string& type, float x, float y) {
+void placeEntity(const string& type, float x, float y) 
+{
 	if (type == "Player")
 	{
 		p1.position = Vector(x, y, 0);
@@ -259,152 +268,11 @@ void placeEntity(const string& type, float x, float y) {
 	{
 		enemy.position = Vector(x, y, 0);
 		enemy.halfLengths = Vector(TILE_SIZE / 2, TILE_SIZE / 2, 0);
-		entities.push_back(&enemy);
+		enemy.acceleration = Vector(0, -1, 0);
+		enemy.friction = Vector(1, 0, 0);
 		entities.push_back(&enemy);
 	}
 }
-
-
-
-struct FlareMapEntity {
-	std::string type;
-	float x;
-	float y;
-};
-
-class FlareMap {
-public:
-	FlareMap() {
-		mapData = nullptr;
-		mapWidth = -1;
-		mapHeight = -1;
-	}
-	~FlareMap() {
-		for (int i = 0; i < mapHeight; i++) {
-			delete mapData[i];
-		}
-		delete mapData;
-	}
-
-	void Load(const std::string fileName)
-	{
-		std::ifstream infile(fileName);
-		if (infile.fail()) {
-			assert(false); // unable to open file
-		}
-		std::string line;
-		while (std::getline(infile, line)) {
-			if (line == "[header]") {
-				if (!ReadHeader(infile)) {
-					assert(false); // invalid file data
-				}
-			}
-			else if (line == "[layer]") {
-				ReadLayerData(infile);
-			}
-			else if (line == "[ObjectsLayer]") {
-				ReadEntityData(infile);
-			}
-		}
-	}
-
-	int mapWidth;
-	int mapHeight;
-	unsigned int **mapData;
-	std::vector<FlareMapEntity> entities;
-
-private:
-
-	bool ReadHeader(std::ifstream &stream)
-	{
-		std::string line;
-		mapWidth = -1;
-		mapHeight = -1;
-		while (std::getline(stream, line)) {
-			if (line == "") { break; }
-			std::istringstream sStream(line);
-			std::string key, value;
-			std::getline(sStream, key, '=');
-			std::getline(sStream, value);
-			if (key == "width") {
-				mapWidth = std::atoi(value.c_str());
-			}
-			else if (key == "height") {
-				mapHeight = std::atoi(value.c_str());
-			}
-		}
-		if (mapWidth == -1 || mapHeight == -1) {
-			return false;
-		}
-		else {
-			mapData = new unsigned int*[mapHeight];
-			for (int i = 0; i < mapHeight; ++i) {
-				mapData[i] = new unsigned int[mapWidth];
-			}
-			return true;
-		}
-	}
-	bool ReadLayerData(std::ifstream &stream)
-	{
-		std::string line;
-		while (getline(stream, line)) {
-			if (line == "") { break; }
-			std::istringstream sStream(line);
-			std::string key, value;
-			std::getline(sStream, key, '=');
-			std::getline(sStream, value);
-			if (key == "data") {
-				for (int y = 0; y < mapHeight; y++) {
-					getline(stream, line);
-					std::istringstream lineStream(line);
-					std::string tile;
-					for (int x = 0; x < mapWidth; x++) {
-						std::getline(lineStream, tile, ',');
-						unsigned int val = atoi(tile.c_str());
-						if (val > 0) {
-							mapData[y][x] = val - 1;
-						}
-						else {
-							mapData[y][x] = 0;
-						}
-					}
-				}
-			}
-		}
-		return true;
-	}
-	bool ReadEntityData(std::ifstream &stream)
-	{
-		std::string line;
-		std::string type;
-		while (getline(stream, line)) {
-			if (line == "") { break; }
-			std::istringstream sStream(line);
-			std::string key, value;
-			getline(sStream, key, '=');
-			getline(sStream, value);
-			if (key == "type") {
-				type = value;
-			}
-			else if (key == "location") {
-				std::istringstream lineStream(value);
-				std::string xPosition, yPosition;
-				getline(lineStream, xPosition, ',');
-				getline(lineStream, yPosition, ',');
-
-				FlareMapEntity newEntity;
-				newEntity.type = type;
-				newEntity.x = std::atoi(xPosition.c_str());
-				newEntity.y = std::atoi(yPosition.c_str());
-				entities.push_back(newEntity);
-				placeEntity(type, newEntity.x, newEntity.y);
-			}
-		}
-		return true;
-	}
-
-};
-
 
 GLuint LoadTexture(const char *filePath) {
 	int w, h, comp;
@@ -449,6 +317,12 @@ void Setup()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	flare.Load("myMap.txt");
+	if (flare.flareEntities.size() == 0) { done = true; }
+	for (size_t i = 0; i < flare.flareEntities.size(); i++)
+	{
+		FlareMapEntity curr = flare.flareEntities[i];
+		placeEntity(curr.type, curr.x, curr.y);
+	}
 	spriteSheet = LoadTexture(RESOURCE_FOLDER"arne_sprites.png");
 	//viewMatrix.Translate(-flare.entities[0].y * 20, -flare.entities[0].x * 20, 0);
 }
@@ -516,6 +390,11 @@ void Render()
 	glDrawArrays(GL_TRIANGLES, 0, (int)vertexData.size() / 2);
 	glDisableVertexAttribArray(textured.positionAttribute);
 	glDisableVertexAttribArray(textured.texCoordAttribute);
+
+	for (size_t i = 0; i < entities.size(); i++)
+	{
+		entities[i]->Draw(&textured);
+	}
 }
 
 
