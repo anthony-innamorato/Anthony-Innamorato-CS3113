@@ -68,11 +68,11 @@ struct TextCoords
 struct Entity
 {
 	Entity() {}
-	Entity(const GLuint& texture, bool alive) : textureImage(texture), position(-3.55 * 2 + 1.2, 0, 0), alive(alive) {}
+	Entity(const GLuint& texture, bool alive) : textureImage(texture), alive(alive) {}
 	virtual void Draw(ShaderProgram* program) = 0;
 	virtual void Update(float elapsed) = 0;
 	virtual bool isColliding(float x, float y) const = 0;
-	bool alive;
+	bool alive = true;
 	Matrix modelMatrix;
 	Vector position;
 	float rotation;
@@ -240,14 +240,6 @@ struct Enemy : public Entity
 		*/
 		return true;
 	}
-	/*
-	Entity* bullet;
-	float u;
-	float v;
-	float width;
-	float height;
-	float size;
-	*/
 };
 
 
@@ -258,7 +250,7 @@ void placeEntity(const string& type, float x, float y)
 {
 	if (type == "Player")
 	{
-		p1.position = Vector(x, y, 0);
+		p1.position = Vector(x * TILE_SIZE, -2.5 * 2 * TILE_SIZE, 0);
 		p1.halfLengths = Vector(TILE_SIZE / 2, TILE_SIZE / 2, 0);
 		p1.acceleration = Vector(0, -1, 0);
 		p1.friction = Vector(1, 0, 0);
@@ -266,7 +258,7 @@ void placeEntity(const string& type, float x, float y)
 	}
 	if (type == "Enemy")
 	{
-		enemy.position = Vector(x, y, 0);
+		enemy.position = Vector(x * TILE_SIZE, -2.5 * 2 * TILE_SIZE, 0);
 		enemy.halfLengths = Vector(TILE_SIZE / 2, TILE_SIZE / 2, 0);
 		enemy.acceleration = Vector(0, -1, 0);
 		enemy.friction = Vector(1, 0, 0);

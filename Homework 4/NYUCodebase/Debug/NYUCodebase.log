@@ -1,4 +1,12 @@
-﻿  FlareMap.cpp
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\attempting to fix hw4\nyucodebase\flaremap.cpp(97): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\attempting to fix hw4\nyucodebase\flaremap.cpp(98): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-  NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Attempting to fix HW4\Debug\NYUCodebase.exe
+﻿  main.cpp
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(69): warning C4099: 'Entity': type name first seen using 'class' now seen using 'struct'
+  c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(68): note: see declaration of 'Entity'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(83): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(87): warning C4099: 'Player': type name first seen using 'class' now seen using 'struct'
+  c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(87): note: see declaration of 'Player'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(173): warning C4099: 'Enemy': type name first seen using 'class' now seen using 'struct'
+  c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(173): note: see declaration of 'Enemy'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(253): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(261): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(401): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+  NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 4\Debug\NYUCodebase.exe
