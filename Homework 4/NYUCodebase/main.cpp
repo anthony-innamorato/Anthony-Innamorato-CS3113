@@ -134,7 +134,14 @@ struct Player : public Entity
 	void Update(float elapsed)
 	{
 		tileMapCollision(*this);
-		isColliding();
+		if (isColliding())
+		{
+			moveAway(true);
+			if (isColliding())
+			{
+				moveAway(false);
+			}
+		}
 		if (velocity.x >= .05) { velocity.x -= friction.x * elapsed; }
 		else if (velocity.x <= -.05) { velocity.x += friction.x * elapsed; }
 		velocity.y += gravity.y * elapsed;
@@ -155,6 +162,24 @@ struct Player : public Entity
 			return true;
 		}
 		return false;
+	}
+	void moveAway(bool onX)
+	{
+		Vector penetration;
+		penetration.x = fabs(fabs(position.x - entities[1]->position.x) - halfLengths.x - entities[1]->halfLengths.x);
+		penetration.y = fabs(fabs(position.y - entities[1]->position.y) - halfLengths.y - entities[1]->halfLengths.y);
+		if (onX) {
+			if (entities[1]->position.x < position.x)
+				position.x += penetration.x + 1;
+			else
+				position.x -= penetration.x + 1;
+		}
+		else {
+			if (entities[1]->position.y < position.y)
+				position.y += penetration.y + 1;
+			else
+				position.y -= penetration.y + 1;
+		}
 	}
 };
 
