@@ -45,7 +45,7 @@ int SPRITE_COUNT_Y = 8;
 GLuint spriteSheet;
 vector<Entity*> entities;
 
-bool tileMapCollision(Entity& entity);
+void tileMapCollision(Entity& entity);
 struct Vector
 {
 	Vector() {}
@@ -229,7 +229,7 @@ void placeEntity(const string& type, float x, float y)
 	{
 		p1.position = Vector(x * TILE_SIZE, -2.5 * 2 * TILE_SIZE, 0);
 		p1.halfLengths = Vector(TILE_SIZE / 2, TILE_SIZE / 2, 0);
-		p1.acceleration = Vector(0, -1, 0);
+		p1.acceleration = Vector(0, -100, 0);
 		p1.friction = Vector(1, 0, 0);
 		entities.push_back(&p1);
 	}
@@ -237,7 +237,7 @@ void placeEntity(const string& type, float x, float y)
 	{
 		enemy.position = Vector(x * TILE_SIZE, -2.5 * 2 * TILE_SIZE, 0);
 		enemy.halfLengths = Vector(TILE_SIZE / 2, TILE_SIZE / 2, 0);
-		enemy.acceleration = Vector(0, -1, 0);
+		enemy.acceleration = Vector(0, -100, 0);
 		enemy.friction = Vector(1, 0, 0);
 		entities.push_back(&enemy);
 	}
@@ -301,8 +301,9 @@ void ProcessEvents(float elapsed)
 {
 	if (keys[SDL_SCANCODE_UP]) { viewMatrix.Translate(0, -elapsed * 100, 0); }
 	if (keys[SDL_SCANCODE_DOWN]) { viewMatrix.Translate(0, elapsed * 100, 0); }
-	if (keys[SDL_SCANCODE_RIGHT]) { viewMatrix.Translate(-elapsed * 100, 0, 0); }
-	if (keys[SDL_SCANCODE_LEFT]) { viewMatrix.Translate(elapsed * 100, 0, 0); }
+	if (keys[SDL_SCANCODE_RIGHT]) { p1.velocity.x += 5; }
+	if (keys[SDL_SCANCODE_LEFT]) { p1.velocity.x -= 5; }
+	if (keys[SDL_SCANCODE_SPACE] && p1.collidedBottom) { p1.velocity.y += 75; p1.collidedBottom = false; }
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 			done = true;
@@ -369,7 +370,7 @@ void Render()
 	}
 }
 
-bool tileMapCollision(Entity& entity)
+void tileMapCollision(Entity& entity)
 {
 	int top, bottom, left, right, x, y, garb;
 	worldToTileCoordinates(entity.position.x + entity.halfLengths.x, entity.position.y, &right, &garb);
@@ -421,8 +422,6 @@ bool tileMapCollision(Entity& entity)
 		entity.velocity.x = 0;
 		entity.collidedRight = true;
 	}
-
-	return true;
 }
 
 int main(int argc, char *argv[])

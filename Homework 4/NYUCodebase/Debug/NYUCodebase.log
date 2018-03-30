@@ -8,11 +8,11 @@ c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\n
   c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(155): note: see declaration of 'Enemy'
 c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(230): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(238): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(386): warning C4305: '-=': truncation from 'double' to 'float'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(392): warning C4305: '-=': truncation from 'double' to 'float'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(398): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(406): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(413): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(420): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(436): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(387): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(393): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(399): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(407): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(414): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(421): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(435): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
   NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 4\Debug\NYUCodebase.exe
