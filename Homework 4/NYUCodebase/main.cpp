@@ -76,7 +76,6 @@ struct Entity
 	Entity(const GLuint& texture, bool alive) : textureImage(texture), alive(alive) {}
 	virtual void Draw(ShaderProgram* program) = 0;
 	virtual void Update(float elapsed) = 0;
-	virtual bool isColliding(float x, float y) const = 0;
 	bool alive = true;
 	Matrix modelMatrix;
 	Vector position;
@@ -135,6 +134,7 @@ struct Player : public Entity
 	void Update(float elapsed)
 	{
 		tileMapCollision(*this);
+		isColliding();
 		if (velocity.x >= .05) { velocity.x -= friction.x * elapsed; }
 		else if (velocity.x <= -.05) { velocity.x += friction.x * elapsed; }
 		velocity.y += gravity.y * elapsed;
@@ -143,13 +143,18 @@ struct Player : public Entity
 		position.y += velocity.y *  elapsed;
 
 	}
-	bool isColliding(float x, float y) const
+	bool isColliding()
 	{
-		/*
-		if (x <= position.x + 2.3 && y <= position.y + .4 && y >= position.y - .35) { return true; }
+		if (!entities[1]->alive) { return false; }
+		if (!(position.x + halfLengths.x <= entities[1]->position.x - entities[1]->halfLengths.x ||
+			position.x - halfLengths.x >= entities[1]->position.x + entities[1]->halfLengths.x ||
+			position.y + halfLengths.y <= entities[1]->position.y - entities[1]->halfLengths.y ||
+			position.y - halfLengths.y >= entities[1]->position.y + entities[1]->halfLengths.y))
+		{
+			entities[1]->alive = false;
+			return true;
+		}
 		return false;
-		*/
-		return true;
 	}
 };
 
@@ -198,24 +203,6 @@ struct Enemy : public Entity
 
 		position.x += velocity.x *  elapsed;
 		position.y += velocity.y *  elapsed;
-	}
-	bool isColliding(float x, float y) const
-	{
-		/*
-		if (!alive)
-		{
-			return false;
-		}
-		if (x >= position.x - 1.8 && y <= position.y + .25 && y >= position.y - .25)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-		*/
-		return true;
 	}
 };
 

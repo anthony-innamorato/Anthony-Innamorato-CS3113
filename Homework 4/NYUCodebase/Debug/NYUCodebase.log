@@ -1,18 +1,18 @@
 ﻿  main.cpp
 c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(74): warning C4099: 'Entity': type name first seen using 'class' now seen using 'struct'
   c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(73): note: see declaration of 'Entity'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(88): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(96): warning C4099: 'Player': type name first seen using 'class' now seen using 'struct'
-  c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(96): note: see declaration of 'Player'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(156): warning C4099: 'Enemy': type name first seen using 'class' now seen using 'struct'
-  c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(156): note: see declaration of 'Enemy'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(230): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(238): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(388): warning C4305: '-=': truncation from 'double' to 'float'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(394): warning C4305: '-=': truncation from 'double' to 'float'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(400): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(408): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(415): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(422): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(436): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(87): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(95): warning C4099: 'Player': type name first seen using 'class' now seen using 'struct'
+  c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(95): note: see declaration of 'Player'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(161): warning C4099: 'Enemy': type name first seen using 'class' now seen using 'struct'
+  c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(161): note: see declaration of 'Enemy'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(217): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(225): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(375): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(381): warning C4305: '-=': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(387): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(395): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(402): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(409): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 4\nyucodebase\main.cpp(423): warning C4305: 'argument': truncation from 'double' to 'GLclampf'
   NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 4\Debug\NYUCodebase.exe
