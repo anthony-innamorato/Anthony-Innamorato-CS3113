@@ -161,13 +161,6 @@ struct Player : public Entity
 		*/
 		return true;
 	}
-	/*
-	float u = 0.0;
-	float v = 0.0;
-	float width = 3288.0 / 4096;
-	float height = 888.0 / 4096;
-	float size = .7;
-	*/
 };
 
 struct Enemy : public Entity
