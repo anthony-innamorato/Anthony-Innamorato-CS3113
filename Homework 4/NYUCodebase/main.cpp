@@ -135,7 +135,6 @@ struct Player : public Entity
 	void Update(float elapsed)
 	{
 		tileMapCollision(*this);
-		//if (velocity.x >= .5 || velocity.x <= -.5) { velocity.x -= friction.x * elapsed; }
 		if (velocity.x >= .05) { velocity.x -= friction.x * elapsed; }
 		else if (velocity.x <= -.05) { velocity.x += friction.x * elapsed; }
 		velocity.y += gravity.y * elapsed;
@@ -195,7 +194,6 @@ struct Enemy : public Entity
 	void Update(float elapsed)
 	{
 		tileMapCollision(*this);
-		if (velocity.x != 0) { velocity.x -= friction.x * elapsed; }
 		velocity.y += gravity.y * elapsed;
 
 		position.x += velocity.x *  elapsed;
@@ -280,7 +278,7 @@ void Setup()
 #endif
 	glViewport(0, 0, 1280, 720);
 	//projectionMatrix.SetOrthoProjection(-3.55 * 2, 3.55 * 2, -2.0f * 2, 2.0f * 2, -1.0f * 2, 1.0f * 2);
-	projectionMatrix.SetOrthoProjection(-3.55 * 100, 3.55 * 100, -2.0f * 100, 2.0f * 100, -1.0f * 100, 1.0f * 100);
+	projectionMatrix.SetOrthoProjection(-3.55 * 50, 3.55 * 50, -2.0f * 50, 2.0f * 50, -1.0f * 50, 1.0f * 50);
 	textured.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
 	textured.SetProjectionMatrix(projectionMatrix);
 	textured.SetViewMatrix(viewMatrix);
@@ -301,8 +299,6 @@ void Setup()
 
 void ProcessEvents(float elapsed)
 {
-	if (keys[SDL_SCANCODE_UP]) { viewMatrix.Translate(0, -elapsed * 100, 0); }
-	if (keys[SDL_SCANCODE_DOWN]) { viewMatrix.Translate(0, elapsed * 100, 0); }
 	if (keys[SDL_SCANCODE_RIGHT]) { p1.velocity.x += .5; }
 	if (keys[SDL_SCANCODE_LEFT]) { p1.velocity.x -= .5; }
 	if (keys[SDL_SCANCODE_SPACE] && p1.collidedBottom) { p1.velocity.y += 75; p1.collidedBottom = false; }
@@ -320,6 +316,9 @@ void Update(float elapsed)
 	{
 		entities[i]->Update(elapsed);
 	}
+	viewMatrix.Identity();
+	viewMatrix.Translate(-p1.position.x, -p1.position.y, 0);
+	textured.SetViewMatrix(viewMatrix);
 }
 
 void Render()
