@@ -95,42 +95,6 @@ struct Entity
 struct Player : public Entity
 {
 	Player() : Entity(spriteSheet, true) {}
-	/*
-	void Draw(ShaderProgram* program)
-	{
-		if (!alive) { return; }
-		modelMatrix.Identity();
-		modelMatrix.Translate(position.x, position.y, 0);
-		glUseProgram(textured.programID);
-		textured.SetModelMatrix(modelMatrix);
-
-		glBindTexture(GL_TEXTURE_2D, textureImage);
-
-		float vertices[] =
-		{
-			-halfLengths.x, -halfLengths.y, halfLengths.x, -halfLengths.y, halfLengths.x, halfLengths.y,
-			-halfLengths.x, -halfLengths.y, halfLengths.x, halfLengths.y, -halfLengths.x, halfLengths.y
-		};
-
-		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
-		glEnableVertexAttribArray(textured.positionAttribute);
-
-		GLfloat texCoords[] =
-		{
-			textCoords.left, textCoords.bot,
-			textCoords.right, textCoords.bot,
-			textCoords.right, textCoords.top,
-			textCoords.left, textCoords.bot,
-			textCoords.right, textCoords.top,
-			textCoords.left, textCoords.top 
-		};
-
-		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
-		glEnableVertexAttribArray(textured.texCoordAttribute);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glDisableVertexAttribArray(textured.positionAttribute);
-		glDisableVertexAttribArray(textured.texCoordAttribute);
-	}*/
 	void Draw(ShaderProgram& program, int spriteIndex)
 	{
 		if (!alive) return;
@@ -163,7 +127,7 @@ struct Player : public Entity
 
 		Matrix modelMatrix;
 		modelMatrix.Identity();
-		modelMatrix.Translate(position.x, position.y, position.z);
+		modelMatrix.Translate(position.x, position.y + 25, 0.0);
 
 		textured.SetModelMatrix(modelMatrix);
 
@@ -231,42 +195,6 @@ struct Player : public Entity
 struct Enemy : public Entity
 {
 	Enemy() {}
-	/*
-	void Draw(ShaderProgram* program)
-	{
-		if (!alive) { return; }
-		modelMatrix.Identity();
-		modelMatrix.Translate(position.x, position.y, 0);
-		glUseProgram(textured.programID);
-		textured.SetModelMatrix(modelMatrix);
-
-		glBindTexture(GL_TEXTURE_2D, textureImage);
-
-		float vertices[] =
-		{
-			-halfLengths.x, -halfLengths.y, halfLengths.x, -halfLengths.y, halfLengths.x, halfLengths.y,
-			-halfLengths.x, -halfLengths.y, halfLengths.x, halfLengths.y, -halfLengths.x, halfLengths.y
-		};
-
-		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
-		glEnableVertexAttribArray(textured.positionAttribute);
-
-		GLfloat texCoords[] =
-		{
-			textCoords.left, textCoords.bot,
-			textCoords.right, textCoords.bot,
-			textCoords.right, textCoords.top,
-			textCoords.left, textCoords.bot,
-			textCoords.right, textCoords.top,
-			textCoords.left, textCoords.top
-		};
-
-		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
-		glEnableVertexAttribArray(textured.texCoordAttribute);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glDisableVertexAttribArray(textured.positionAttribute);
-		glDisableVertexAttribArray(textured.texCoordAttribute);
-	}*/
 	void Draw(ShaderProgram& program, int spriteIndex)
 	{
 		if (!alive) return;
@@ -299,7 +227,7 @@ struct Enemy : public Entity
 
 		Matrix modelMatrix;
 		modelMatrix.Identity();
-		modelMatrix.Translate(position.x, position.y, position.z);
+		modelMatrix.Translate(position.x, position.y + 25, 0.0);
 
 		textured.SetModelMatrix(modelMatrix);
 
