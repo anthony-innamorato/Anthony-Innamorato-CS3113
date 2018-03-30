@@ -74,7 +74,7 @@ struct Entity
 {
 	Entity() {}
 	Entity(const GLuint& texture, bool alive) : textureImage(texture), alive(alive) {}
-	virtual void Draw(ShaderProgram* program) = 0;
+	virtual void Draw(ShaderProgram& program, int spriteIndex) = 0;
 	virtual void Update(float elapsed) = 0;
 	bool alive = true;
 	Matrix modelMatrix;
@@ -95,6 +95,7 @@ struct Entity
 struct Player : public Entity
 {
 	Player() : Entity(spriteSheet, true) {}
+	/*
 	void Draw(ShaderProgram* program)
 	{
 		if (!alive) { return; }
@@ -129,6 +130,50 @@ struct Player : public Entity
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableVertexAttribArray(textured.positionAttribute);
 		glDisableVertexAttribArray(textured.texCoordAttribute);
+	}*/
+	void Draw(ShaderProgram& program, int spriteIndex)
+	{
+		if (!alive) return;
+		float u = (float)(((int)spriteIndex) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
+		float v = (float)(((int)spriteIndex) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
+
+		float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
+		float spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
+
+		float vertices[] = {
+
+			TILE_SIZE , -TILE_SIZE ,
+			TILE_SIZE , (-TILE_SIZE) - TILE_SIZE,
+			(TILE_SIZE)+TILE_SIZE, (-TILE_SIZE) - TILE_SIZE,
+
+			TILE_SIZE , -TILE_SIZE ,
+			(TILE_SIZE)+TILE_SIZE, (-TILE_SIZE) - TILE_SIZE,
+			(TILE_SIZE)+TILE_SIZE, -TILE_SIZE
+		};
+
+		float texCoords[] = {
+			u, v,
+			u, v + (spriteHeight),
+			u + spriteWidth, v + (spriteHeight),
+
+			u, v,
+			u + spriteWidth, v + (spriteHeight),
+			u + spriteWidth, v
+		};
+
+		Matrix modelMatrix;
+		modelMatrix.Identity();
+		modelMatrix.Translate(position.x, position.y, position.z);
+
+		textured.SetModelMatrix(modelMatrix);
+
+
+		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		glEnableVertexAttribArray(textured.positionAttribute);
+		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+		glEnableVertexAttribArray(textured.texCoordAttribute);
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 
 	void Update(float elapsed)
@@ -186,6 +231,7 @@ struct Player : public Entity
 struct Enemy : public Entity
 {
 	Enemy() {}
+	/*
 	void Draw(ShaderProgram* program)
 	{
 		if (!alive) { return; }
@@ -220,6 +266,50 @@ struct Enemy : public Entity
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableVertexAttribArray(textured.positionAttribute);
 		glDisableVertexAttribArray(textured.texCoordAttribute);
+	}*/
+	void Draw(ShaderProgram& program, int spriteIndex)
+	{
+		if (!alive) return;
+		float u = (float)(((int)spriteIndex) % SPRITE_COUNT_X) / (float)SPRITE_COUNT_X;
+		float v = (float)(((int)spriteIndex) / SPRITE_COUNT_X) / (float)SPRITE_COUNT_Y;
+
+		float spriteWidth = 1.0f / (float)SPRITE_COUNT_X;
+		float spriteHeight = 1.0f / (float)SPRITE_COUNT_Y;
+
+		float vertices[] = {
+
+			TILE_SIZE , -TILE_SIZE ,
+			TILE_SIZE , (-TILE_SIZE) - TILE_SIZE,
+			(TILE_SIZE)+TILE_SIZE, (-TILE_SIZE) - TILE_SIZE,
+
+			TILE_SIZE , -TILE_SIZE ,
+			(TILE_SIZE)+TILE_SIZE, (-TILE_SIZE) - TILE_SIZE,
+			(TILE_SIZE)+TILE_SIZE, -TILE_SIZE
+		};
+
+		float texCoords[] = {
+			u, v,
+			u, v + (spriteHeight),
+			u + spriteWidth, v + (spriteHeight),
+
+			u, v,
+			u + spriteWidth, v + (spriteHeight),
+			u + spriteWidth, v
+		};
+
+		Matrix modelMatrix;
+		modelMatrix.Identity();
+		modelMatrix.Translate(position.x, position.y, position.z);
+
+		textured.SetModelMatrix(modelMatrix);
+
+
+		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		glEnableVertexAttribArray(textured.positionAttribute);
+		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+		glEnableVertexAttribArray(textured.texCoordAttribute);
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 	void Update(float elapsed)
 	{
@@ -377,10 +467,8 @@ void Render()
 	glDisableVertexAttribArray(textured.positionAttribute);
 	glDisableVertexAttribArray(textured.texCoordAttribute);
 
-	for (size_t i = 0; i < entities.size(); i++)
-	{
-		entities[i]->Draw(&textured);
-	}
+	entities[0]->Draw(textured, 98);
+	entities[1]->Draw(textured, 81);
 }
 
 void tileMapCollision(Entity& entity)
