@@ -82,7 +82,7 @@ struct Entity
 	Vector position;
 	float rotation;
 	GLuint textureImage;
-	Vector acceleration;
+	Vector gravity;
 	Vector velocity;
 	Vector halfLengths;
 	TextCoords textCoords = (0.0, 1.0, 0.0, 1.0);
@@ -135,8 +135,10 @@ struct Player : public Entity
 	void Update(float elapsed)
 	{
 		tileMapCollision(*this);
-		velocity.x += acceleration.x * elapsed;
-		velocity.y += acceleration.y * elapsed;
+		//if (velocity.x >= .5 || velocity.x <= -.5) { velocity.x -= friction.x * elapsed; }
+		if (velocity.x >= .05) { velocity.x -= friction.x * elapsed; }
+		else if (velocity.x <= -.05) { velocity.x += friction.x * elapsed; }
+		velocity.y += gravity.y * elapsed;
 
 		position.x += velocity.x *  elapsed;
 		position.y += velocity.y *  elapsed;
@@ -193,8 +195,8 @@ struct Enemy : public Entity
 	void Update(float elapsed)
 	{
 		tileMapCollision(*this);
-		velocity.x += acceleration.x * elapsed;
-		velocity.y += acceleration.y * elapsed;
+		if (velocity.x != 0) { velocity.x -= friction.x * elapsed; }
+		velocity.y += gravity.y * elapsed;
 
 		position.x += velocity.x *  elapsed;
 		position.y += velocity.y *  elapsed;
@@ -229,16 +231,16 @@ void placeEntity(const string& type, float x, float y)
 	{
 		p1.position = Vector(x * TILE_SIZE, -2.5 * 2 * TILE_SIZE, 0);
 		p1.halfLengths = Vector(TILE_SIZE / 2, TILE_SIZE / 2, 0);
-		p1.acceleration = Vector(0, -100, 0);
-		p1.friction = Vector(1, 0, 0);
+		p1.gravity = Vector(0, -100, 0);
+		p1.friction = Vector(100, 0, 0);
 		entities.push_back(&p1);
 	}
 	if (type == "Enemy")
 	{
 		enemy.position = Vector(x * TILE_SIZE, -2.5 * 2 * TILE_SIZE, 0);
 		enemy.halfLengths = Vector(TILE_SIZE / 2, TILE_SIZE / 2, 0);
-		enemy.acceleration = Vector(0, -100, 0);
-		enemy.friction = Vector(1, 0, 0);
+		enemy.gravity = Vector(0, -100, 0);
+		enemy.friction = Vector(100, 0, 0);
 		entities.push_back(&enemy);
 	}
 }
@@ -301,8 +303,8 @@ void ProcessEvents(float elapsed)
 {
 	if (keys[SDL_SCANCODE_UP]) { viewMatrix.Translate(0, -elapsed * 100, 0); }
 	if (keys[SDL_SCANCODE_DOWN]) { viewMatrix.Translate(0, elapsed * 100, 0); }
-	if (keys[SDL_SCANCODE_RIGHT]) { p1.velocity.x += 5; }
-	if (keys[SDL_SCANCODE_LEFT]) { p1.velocity.x -= 5; }
+	if (keys[SDL_SCANCODE_RIGHT]) { p1.velocity.x += .5; }
+	if (keys[SDL_SCANCODE_LEFT]) { p1.velocity.x -= .5; }
 	if (keys[SDL_SCANCODE_SPACE] && p1.collidedBottom) { p1.velocity.y += 75; p1.collidedBottom = false; }
 	while (SDL_PollEvent(&event)) {
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
