@@ -45,7 +45,7 @@ int SPRITE_COUNT_Y = 8;
 GLuint spriteSheet;
 vector<Entity*> entities;
 
-
+bool tileMapCollision(Entity& entity);
 struct Vector
 {
 	Vector() {}
@@ -65,6 +65,11 @@ struct TextCoords
 	float top;
 };
 
+void worldToTileCoordinates(float worldX, float worldY, int* gridX, int* gridY) {
+	*gridX = (int)(worldX / TILE_SIZE);
+	*gridY = (int)(-worldY / TILE_SIZE);
+}
+
 struct Entity
 {
 	Entity() {}
@@ -82,6 +87,10 @@ struct Entity
 	Vector halfLengths;
 	TextCoords textCoords = (0.0, 1.0, 0.0, 1.0);
 	Vector friction;
+	bool collidedTop = false;
+	bool collidedBottom = false;
+	bool collidedLeft = false;
+	bool collidedRight = false;
 };
 
 struct Player : public Entity
@@ -125,33 +134,13 @@ struct Player : public Entity
 
 	void Update(float elapsed)
 	{
-		/*
-		if (!endCase)
-		{
-			if (keys[SDL_SCANCODE_UP])
-			{
-				if (position.y <= 1.8 * 2)
-				{
-					position.y += elapsed * speed;
-				}
-			}
-			if (keys[SDL_SCANCODE_DOWN])
-			{
-				if (position.y >= -1.8 * 2)
-				{
-					position.y -= elapsed * speed;
-				}
-			}
-			if (keys[SDL_SCANCODE_SPACE])
-			{
-				if (playerBullets[0]->alive == false)
-				{
-					playerBullets[0]->position.y = position.y;
-					playerBullets[0]->alive = true;
-				}
-			}
-		}
-		*/
+		tileMapCollision(*this);
+		velocity.x += acceleration.x * elapsed;
+		velocity.y += acceleration.y * elapsed;
+
+		position.x += velocity.x *  elapsed;
+		position.y += velocity.y *  elapsed;
+
 	}
 	bool isColliding(float x, float y) const
 	{
@@ -203,17 +192,12 @@ struct Enemy : public Entity
 	}
 	void Update(float elapsed)
 	{
-		/*
-		if (!endCase)
-		{
-			position.x -= elapsed * speed / 20;
-			if (position.x <= -3.55 * 2 + 5.5 && alive)
-			{
-				speed = 0.0;
-				endCase = true;
-			}
-		}
-		*/
+		tileMapCollision(*this);
+		velocity.x += acceleration.x * elapsed;
+		velocity.y += acceleration.y * elapsed;
+
+		position.x += velocity.x *  elapsed;
+		position.y += velocity.y *  elapsed;
 	}
 	bool isColliding(float x, float y) const
 	{
@@ -327,9 +311,12 @@ void ProcessEvents(float elapsed)
 }
 
 
-void Update(float& elapsed)
+void Update(float elapsed)
 {
-
+	for (size_t i = 0; i < entities.size(); i++)
+	{
+		entities[i]->Update(elapsed);
+	}
 }
 
 void Render()
@@ -382,6 +369,61 @@ void Render()
 	}
 }
 
+bool tileMapCollision(Entity& entity)
+{
+	int top, bottom, left, right, x, y, garb;
+	worldToTileCoordinates(entity.position.x + entity.halfLengths.x, entity.position.y, &right, &garb);
+	worldToTileCoordinates(entity.position.x - entity.halfLengths.x, entity.position.y, &left, &garb);
+	worldToTileCoordinates(entity.position.x, entity.position.y + entity.halfLengths.y, &garb, &top);
+	worldToTileCoordinates(entity.position.x, entity.position.y - entity.halfLengths.y, &garb, &bottom);
+	worldToTileCoordinates(entity.position.x, entity.position.y, &x, &y);
+
+	float penetration;
+
+	if (bottom <= 1 || top <= 1 || top >= LEVEL_HEIGHT - 1 || bottom >= LEVEL_HEIGHT - 1)
+	{
+		entity.velocity.y = 0;
+		entity.position.y -= .001;
+	}
+
+	if (left <= 1 || right <= 1 || left >= LEVEL_WIDTH - 1 || right >= LEVEL_WIDTH - 1)
+	{
+		entity.velocity.x = 0;
+		entity.position.x -= .001;
+	}
+
+	if (flare.mapData[bottom][x] != 0)
+	{
+		penetration = fabs(fabs(-TILE_SIZE * bottom) - fabs(entity.position.y - entity.halfLengths.y));
+		entity.position.y += penetration + .001;
+		entity.velocity.y = 0;
+		entity.collidedBottom = true;
+	}
+
+	if (flare.mapData[top][x] != 0)
+	{
+		penetration = fabs(fabs(entity.position.y + entity.halfLengths.y) - fabs(((-TILE_SIZE * top) - TILE_SIZE)));
+		entity.position.y -= penetration + .001;
+		entity.velocity.y = 0;
+		entity.collidedTop = true;
+	}
+	if (flare.mapData[y][left] != 0)
+	{
+		penetration = fabs(fabs(entity.position.x - entity.halfLengths.x) - fabs(((TILE_SIZE*left) + TILE_SIZE)));
+		entity.position.x += penetration + .001;
+		entity.velocity.x = 0;
+		entity.collidedLeft = true;
+	}
+	if (flare.mapData[y][right] != 0)
+	{
+		penetration = fabs(fabs(TILE_SIZE * right) - fabs(entity.position.x + entity.halfLengths.x));
+		entity.position.x -= penetration + .001;
+		entity.velocity.x = 0;
+		entity.collidedRight = true;
+	}
+
+	return true;
+}
 
 int main(int argc, char *argv[])
 {
