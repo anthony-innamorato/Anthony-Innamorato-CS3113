@@ -32,6 +32,7 @@ const Uint8 *keys = SDL_GetKeyboardState(NULL);
 struct Entity;
 std::vector<Entity*> entities;
 GLuint spriteSheet;
+bool prevCollision = false;
 
 GLuint LoadTexture(const char *filePath) {
 	int w, h, comp;
@@ -147,6 +148,8 @@ struct Entity
 	float angle;
 	std::vector<Vector> points;
 	Vector halfLengths;
+	float xSpeed = 4.0;
+	float ySpeed = 2.0;
 };
 
 struct Player : public Entity
@@ -162,10 +165,10 @@ struct Enemy : public Entity
 
 	void update(float elapsed)
 	{
-		if (moveLeft) { position.x -= elapsed * 1.0; }
-		else { position.x += elapsed * 2.0; }
-		if (moveUp) { position.y += elapsed * 2.0; }
-		else { position.y -= elapsed * 1.0; }
+		if (moveLeft) { position.x -= elapsed * xSpeed; }
+		else { position.x += elapsed * xSpeed * 2; }
+		if (moveUp) { position.y += elapsed * ySpeed; }
+		else { position.y -= elapsed * ySpeed; }
 		if (position.x >= 3.55 * 2 + 1.0) { position.x *= -1.0; }
 		else if (position.x <= -3.55 * 2 - 1.0) { position.x *= -1.0; }
 		if (position.y <= -2.0 * 2 - 1.0 ) { position.y *= -1.0; }
@@ -200,7 +203,20 @@ void collisions(Entity* entity1, Entity* entity2)
 
 		entity2->position.x -= (penetration.first * 0.5f);
 		entity2->position.y -= (penetration.second * 0.5f);
+		/*
+		if (entity1 != entities[0] && entity2 != entities[0] && !prevCollision)
+		{
+			entity1->xSpeed *= -1.0;
+			entity2->xSpeed *= -1.0;
+			prevCollision = true;
+		}
+		*/
+		if (entity1 == entities[0] || entity2 == entities[0])
+		{
+			done = true;
+		}
 	}
+	//prevCollision = false;
 
 }
 
