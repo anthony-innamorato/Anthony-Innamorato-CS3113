@@ -1,5 +1,6 @@
 #include "SatCollision.h"
 #include <math.h>
+#include <algorithm>
 
 bool TestSATSeparationForEdge(float edgeX, float edgeY, const std::vector<std::pair<float,float>> &points1, const std::vector<std::pair<float,float>> &points2, std::pair<float,float> &penetration) {
 	float normalX = -edgeY;

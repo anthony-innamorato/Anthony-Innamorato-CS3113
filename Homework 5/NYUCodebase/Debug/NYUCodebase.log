@@ -1,16 +1,11 @@
-﻿  main.cpp
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(70): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(75): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(84): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(146): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(147): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(148): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(149): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(200): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(229): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(233): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(237): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(241): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(245): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(249): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+﻿  SatCollision.cpp
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\satcollision.cpp(15): warning C4018: '<': signed/unsigned mismatch
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\satcollision.cpp(18): warning C4018: '<': signed/unsigned mismatch
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\satcollision.cpp(32): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\satcollision.cpp(33): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\satcollision.cpp(35): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\satcollision.cpp(61): warning C4018: '<': signed/unsigned mismatch
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\satcollision.cpp(78): warning C4018: '<': signed/unsigned mismatch
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\satcollision.cpp(101): warning C4018: '<': signed/unsigned mismatch
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\satcollision.cpp(109): warning C4018: '<': signed/unsigned mismatch
   NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 5\Debug\NYUCodebase.exe

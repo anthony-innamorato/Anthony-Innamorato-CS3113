@@ -58,6 +58,11 @@ struct Vector
 {
 	Vector() {}
 	Vector(float x, float y, float z) : x(x), y(y), z(z) {}
+	Vector operator*(Matrix& matrix) {
+		return Vector(matrix.m[0][0] * x + matrix.m[1][0] * y + matrix.m[2][0] * z + matrix.m[3][0],
+			matrix.m[0][1] * x + matrix.m[1][1] * y + matrix.m[2][1] * z + matrix.m[3][1],
+			matrix.m[0][2] * x + matrix.m[1][2] * y + matrix.m[2][2] * z + matrix.m[3][2]);
+	}
 	float x;
 	float y;
 	float z;
@@ -87,6 +92,14 @@ struct Entity
 
 			glBindTexture(GL_TEXTURE_2D, textureImage);
 			float aspect = width / height;
+
+			halfLengths = Vector(size * (width / height) * .5, size * .5, 0);
+			points.clear();
+			points.push_back(Vector(-halfLengths.x, -halfLengths.y, 0) * modelMatrix);
+			points.push_back(Vector(halfLengths.x, -halfLengths.y, 0) * modelMatrix);
+			points.push_back(Vector(halfLengths.x, halfLengths.y, 0) * modelMatrix);
+			points.push_back(Vector(-halfLengths.x, halfLengths.y, 0) * modelMatrix);
+
 			float vertices[] = {
 				-0.5f * size * aspect, -0.5f * size,
 				0.5f * size * aspect, 0.5f * size,
@@ -127,7 +140,8 @@ struct Entity
 	float xScale;
 	float yScale;
 	float angle;
-	std::vector<std::pair<float, float>> points;
+	std::vector<Vector> points;
+	Vector halfLengths;
 };
 
 struct Player : public Entity
@@ -157,19 +171,19 @@ struct Enemy : public Entity
 };
 
 void collisions(Entity* entity1, Entity* entity2)
-{/*
+{
 	std::pair<float, float> penetration;
 
 	std::vector<std::pair<float, float>> e1Points;
 	std::vector<std::pair<float, float>> e2Points;
 
 	for (int i = 0; i < entity1->points.size(); i++) {
-		Vector point = entity1->modelMatrix * entity1->points[i];
+		Vector point = entity1->points[i] * entity1->modelMatrix;
 		e1Points.push_back(std::make_pair(point.x, point.y));
 	}
 
 	for (int i = 0; i < entity2->points.size(); i++) {
-		Vector point = entity2->modelMatrix * entity2->points[i];
+		Vector point = entity2->points[i] * entity2->modelMatrix;
 		e2Points.push_back(std::make_pair(point.x, point.y));
 	}
 
@@ -182,7 +196,7 @@ void collisions(Entity* entity1, Entity* entity2)
 		entity2->position.x -= (penetration.first * 0.5f);
 		entity2->position.y -= (penetration.second * 0.5f);
 	}
-*/
+
 }
 
 
