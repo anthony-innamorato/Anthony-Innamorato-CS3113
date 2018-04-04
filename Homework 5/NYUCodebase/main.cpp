@@ -14,6 +14,7 @@
 
 #include "ShaderProgram.h"
 #include "Matrix.h"
+#include "SatCollision.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include <vector>
@@ -154,6 +155,34 @@ struct Enemy : public Entity
 	bool moveUp;
 };
 
+void collisions(Entity* entity1, Entity* entity2)
+{
+	std::pair<float, float> penetration;
+
+	std::vector<std::pair<float, float>> e1Points;
+	std::vector<std::pair<float, float>> e2Points;
+
+	for (int i = 0; i < entity1->shape.points.size(); i++) {
+		Vector point = entity1->modelMatrix * entity1->shape.points[i];
+		e1Points.push_back(std::make_pair(point.x, point.y));
+	}
+
+	for (int i = 0; i < entity2->shape.points.size(); i++) {
+		Vector point = entity2->modelMatrix * entity2->shape.points[i];
+		e2Points.push_back(std::make_pair(point.x, point.y));
+	}
+
+	bool collided = CheckSATCollision(e1Points, e2Points, penetration);
+	if (collided)
+	{
+		entity1->position.x += (penetration.first * 0.5f);
+		entity1->position.y += (penetration.second * 0.5f);
+
+		entity2->position.x -= (penetration.first * 0.5f);
+		entity2->position.y -= (penetration.second * 0.5f);
+	}
+}
+
 
 
 void Setup()
@@ -224,6 +253,13 @@ void Update(float elapsed)
 	for (Entity* curr : entities)
 	{
 		curr->update(elapsed);
+		for (Entity* curr2 : entities)
+		{
+			if (curr != curr2)
+			{
+				collisions(curr, curr2);
+			}
+		}
 	}
 }
 
