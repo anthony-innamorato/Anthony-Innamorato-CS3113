@@ -78,6 +78,11 @@ struct Entity
 		modelMatrix.Translate(position.x, position.y, position.z);
 		modelMatrix.Scale(xScale, yScale, 1.0);
 		modelMatrix.Rotate(angle * (3.14159265 / 180.0));
+		halfLengths = Vector(size * (width / height) * .5, size * .5, 0);
+		points.push_back(Vector(-halfLengths.x, -halfLengths.y, 0) * modelMatrix);
+		points.push_back(Vector(halfLengths.x, -halfLengths.y, 0) * modelMatrix);
+		points.push_back(Vector(halfLengths.x, halfLengths.y, 0) * modelMatrix);
+		points.push_back(Vector(-halfLengths.x, halfLengths.y, 0) * modelMatrix);
 	}
 
 	void draw()
