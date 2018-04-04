@@ -1,0 +1,4 @@
+﻿  main.cpp
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(69): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(140): warning C4305: 'argument': truncation from 'double' to 'float'
+  NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 5\Debug\NYUCodebase.exe
