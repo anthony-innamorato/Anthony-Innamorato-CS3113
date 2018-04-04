@@ -65,16 +65,22 @@ struct Vector
 struct Entity
 {
 	Entity() {}
-	Entity(const GLuint& texture, float u, float v, float width, float height, float size, Vector position) 
-		: textureImage(texture), u(u / 256.0), v(v / 256.0), width(width / 256.0), height(height / 256.0), size(size), position(position) 
+	Entity(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle) 
+		: textureImage(texture), u(u / 256.0), v(v / 256.0), width(width / 256.0), height(height / 256.0), size(size), position(position), 
+			xScale(xScale), yScale(yScale), angle(angle)
 	{
 		modelMatrix.Translate(position.x, position.y, position.z);
+		modelMatrix.Scale(xScale, yScale, 1.0);
+		modelMatrix.Rotate(angle * (3.14159265 / 180.0));
 	}
 
 	void draw()
 	{
 		if (alive)
 		{
+			modelMatrix.Translate(position.x, position.y, position.z);
+			modelMatrix.Scale(xScale, yScale, 1.0);
+			modelMatrix.Rotate(angle * (3.14159265 / 180.0));
 			glUseProgram(textured.programID);
 			textured.SetModelMatrix(modelMatrix);
 
@@ -103,6 +109,7 @@ struct Entity
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			glDisableVertexAttribArray(textured.positionAttribute);
 			glDisableVertexAttribArray(textured.texCoordAttribute);
+			modelMatrix.Identity();
 		}
 	}
 
@@ -116,16 +123,21 @@ struct Entity
 	float width;
 	float height;
 	float size;
+	float xScale;
+	float yScale;
+	float angle;
 };
 
 struct Player : public Entity
 {
-	Player(const GLuint& texture, float u, float v, float width, float height, float size, Vector position) : Entity(texture, u, v, width, height, size, position) {}
+	Player(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle) 
+		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {}
 };
 
 struct Enemy : public Entity
 {
-	Enemy(const GLuint& texture, float u, float v, float width, float height, float size, Vector position) : Entity(texture, u, v, width, height, size, position) {}
+	Enemy(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
+		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {}
 };
 
 
@@ -151,21 +163,45 @@ void Setup()
 	Vector p1Vec = Vector(0.0, 0.0, 0.0);
 	Vector e1Vec = Vector(-2.0, 2.0, 0.0);
 	Vector e2Vec = Vector(2.0, 2.0, 0.0);
-	Player* p1 = new Player(spriteSheet, 0.0, 0.0, 159.0, 168.0, 1.0, p1Vec);
+	Player* p1 = new Player(spriteSheet, 0.0, 0.0, 159.0, 168.0, 1.0, p1Vec, .75, .75, 0.0);
 	entities.push_back(p1);
-	Enemy* e1 = new Enemy(spriteSheet, 0.0, 170.0, 47.0, 48.0, 1.0, e1Vec);
+	Enemy* e1 = new Enemy(spriteSheet, 0.0, 170.0, 47.0, 48.0, 1.0, e1Vec, 1.5, 1.5, 45.0);
 	entities.push_back(e1);
-	Enemy* e2 = new Enemy(spriteSheet, 49.0, 170.0, 44.0, 44.0, 1.0, e2Vec);
+	Enemy* e2 = new Enemy(spriteSheet, 49.0, 170.0, 44.0, 44.0, 1.0, e2Vec, 2.0, 2.0, 95.0);
 	entities.push_back(e2);
 }
 
-void ProcessEvents()
+void ProcessEvents(float elapsed)
 {
 	while (SDL_PollEvent(&event)) {
 
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 			done = true;
 		}
+	}
+	if (keys[SDL_SCANCODE_W])
+	{
+		entities[0]->position.y += elapsed * 5.0;
+	}
+	if (keys[SDL_SCANCODE_A])
+	{
+		entities[0]->position.x -= elapsed * 5.0;
+	}
+	if (keys[SDL_SCANCODE_S])
+	{
+		entities[0]->position.y -= elapsed * 5.0;
+	}
+	if (keys[SDL_SCANCODE_D])
+	{
+		entities[0]->position.x += elapsed * 5.0;
+	}
+	if (keys[SDL_SCANCODE_LEFT])
+	{
+		entities[0]->angle += elapsed * 50.0;
+	}
+	if (keys[SDL_SCANCODE_RIGHT])
+	{
+		entities[0]->angle -= elapsed * 50.0;
 	}
 }
 
@@ -196,7 +232,7 @@ int main(int argc, char *argv[])
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
-		ProcessEvents();
+		ProcessEvents(elapsed);
 		Update(elapsed);
 		Render();
 		SDL_GL_SwapWindow(displayWindow);
