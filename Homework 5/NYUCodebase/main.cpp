@@ -127,6 +127,7 @@ struct Entity
 	float xScale;
 	float yScale;
 	float angle;
+	std::vector<std::pair<float, float>> points;
 };
 
 struct Player : public Entity
@@ -146,29 +147,29 @@ struct Enemy : public Entity
 		else { position.x += elapsed * 2.0; }
 		if (moveUp) { position.y += elapsed * 2.0; }
 		else { position.y -= elapsed * 1.0; }
-		if (position.x >= 3.55 * 2 + 2.0) { position.x *= -1.0; }
-		else if (position.x <= -3.55 * 2 - 2.0) { position.x *= -1.0; }
-		if (position.y <= -2.0 * 2 -2.0 ) { position.y *= -1.0; }
-		else if (position.y >= 2.0 * 2 + 2.0) { position.y *= -1.0; }
+		if (position.x >= 3.55 * 2 + 1.0) { position.x *= -1.0; }
+		else if (position.x <= -3.55 * 2 - 1.0) { position.x *= -1.0; }
+		if (position.y <= -2.0 * 2 - 1.0 ) { position.y *= -1.0; }
+		else if (position.y >= 2.0 * 2 + 1.0) { position.y *= -1.0; }
 	}
 	bool moveLeft;
 	bool moveUp;
 };
 
 void collisions(Entity* entity1, Entity* entity2)
-{
+{/*
 	std::pair<float, float> penetration;
 
 	std::vector<std::pair<float, float>> e1Points;
 	std::vector<std::pair<float, float>> e2Points;
 
-	for (int i = 0; i < entity1->shape.points.size(); i++) {
-		Vector point = entity1->modelMatrix * entity1->shape.points[i];
+	for (int i = 0; i < entity1->points.size(); i++) {
+		Vector point = entity1->modelMatrix * entity1->points[i];
 		e1Points.push_back(std::make_pair(point.x, point.y));
 	}
 
-	for (int i = 0; i < entity2->shape.points.size(); i++) {
-		Vector point = entity2->modelMatrix * entity2->shape.points[i];
+	for (int i = 0; i < entity2->points.size(); i++) {
+		Vector point = entity2->modelMatrix * entity2->points[i];
 		e2Points.push_back(std::make_pair(point.x, point.y));
 	}
 
@@ -181,6 +182,7 @@ void collisions(Entity* entity1, Entity* entity2)
 		entity2->position.x -= (penetration.first * 0.5f);
 		entity2->position.y -= (penetration.second * 0.5f);
 	}
+*/
 }
 
 
