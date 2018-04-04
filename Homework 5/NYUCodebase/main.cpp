@@ -203,20 +203,18 @@ void collisions(Entity* entity1, Entity* entity2)
 
 		entity2->position.x -= (penetration.first * 0.5f);
 		entity2->position.y -= (penetration.second * 0.5f);
-		/*
 		if (entity1 != entities[0] && entity2 != entities[0] && !prevCollision)
 		{
 			entity1->xSpeed *= -1.0;
-			entity2->xSpeed *= -1.0;
 			prevCollision = true;
 		}
-		*/
+		
 		if (entity1 == entities[0] || entity2 == entities[0])
 		{
 			done = true;
 		}
 	}
-	//prevCollision = false;
+	else { prevCollision = false; }
 
 }
 

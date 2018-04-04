@@ -6,11 +6,11 @@ c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\n
 c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(102): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(188): warning C4018: '<': signed/unsigned mismatch
 c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(193): warning C4018: '<': signed/unsigned mismatch
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(235): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(264): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(268): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(272): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(276): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(280): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(284): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(234): warning C4305: 'argument': truncation from 'double' to 'float'
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(263): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(267): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(271): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(275): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(279): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\tony innamorato\documents\github\anthony-innamorato-cs3113\homework 5\nyucodebase\main.cpp(283): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
   NYUCodebase.vcxproj -> C:\Users\Tony Innamorato\Documents\GitHub\Anthony-Innamorato-CS3113\Homework 5\Debug\NYUCodebase.exe
