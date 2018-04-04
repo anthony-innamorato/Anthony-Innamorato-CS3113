@@ -113,7 +113,7 @@ struct Entity
 		}
 	}
 
-	void update(float elapsed) {}
+	virtual void update(float elapsed) {}
 	bool alive = true;
 	Matrix modelMatrix;
 	Vector position;
@@ -136,8 +136,22 @@ struct Player : public Entity
 
 struct Enemy : public Entity
 {
-	Enemy(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
-		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {}
+	Enemy(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle, bool moveLeft, bool moveUp)
+		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle), moveLeft(moveLeft), moveUp(moveUp) {}
+
+	void update(float elapsed)
+	{
+		if (moveLeft) { position.x -= elapsed * 1.0; }
+		else { position.x += elapsed * 2.0; }
+		if (moveUp) { position.y += elapsed * 2.0; }
+		else { position.y -= elapsed * 1.0; }
+		if (position.x >= 3.55 * 2 + 2.0) { position.x *= -1.0; }
+		else if (position.x <= -3.55 * 2 - 2.0) { position.x *= -1.0; }
+		if (position.y <= -2.0 * 2 -2.0 ) { position.y *= -1.0; }
+		else if (position.y >= 2.0 * 2 + 2.0) { position.y *= -1.0; }
+	}
+	bool moveLeft;
+	bool moveUp;
 };
 
 
@@ -165,9 +179,9 @@ void Setup()
 	Vector e2Vec = Vector(2.0, 2.0, 0.0);
 	Player* p1 = new Player(spriteSheet, 0.0, 0.0, 159.0, 168.0, 1.0, p1Vec, .75, .75, 0.0);
 	entities.push_back(p1);
-	Enemy* e1 = new Enemy(spriteSheet, 0.0, 170.0, 47.0, 48.0, 1.0, e1Vec, 1.5, 1.5, 45.0);
+	Enemy* e1 = new Enemy(spriteSheet, 0.0, 170.0, 47.0, 48.0, 1.0, e1Vec, 1.5, 1.5, 45.0, true, true);
 	entities.push_back(e1);
-	Enemy* e2 = new Enemy(spriteSheet, 49.0, 170.0, 44.0, 44.0, 1.0, e2Vec, 2.0, 2.0, 95.0);
+	Enemy* e2 = new Enemy(spriteSheet, 49.0, 170.0, 44.0, 44.0, 1.0, e2Vec, 2.0, 2.0, 95.0, false, false);
 	entities.push_back(e2);
 }
 
@@ -197,11 +211,11 @@ void ProcessEvents(float elapsed)
 	}
 	if (keys[SDL_SCANCODE_LEFT])
 	{
-		entities[0]->angle += elapsed * 50.0;
+		entities[0]->angle += elapsed * 100.0;
 	}
 	if (keys[SDL_SCANCODE_RIGHT])
 	{
-		entities[0]->angle -= elapsed * 50.0;
+		entities[0]->angle -= elapsed * 100.0;
 	}
 }
 
