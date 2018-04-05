@@ -148,8 +148,8 @@ struct Entity
 	float angle;
 	std::vector<Vector> points;
 	Vector halfLengths;
-	float xSpeed = 4.0;
-	float ySpeed = 2.0;
+	float xSpeed = 2.0;
+	float ySpeed = 4.0;
 };
 
 struct Player : public Entity
@@ -205,7 +205,10 @@ void collisions(Entity* entity1, Entity* entity2)
 		entity2->position.y -= (penetration.second * 0.5f);
 		if (entity1 != entities[0] && entity2 != entities[0] && !prevCollision)
 		{
-			entity1->xSpeed *= -1.0;
+			entity1->xSpeed *= -1.1;
+			entity1->ySpeed *= -1.1;
+			entity2->xSpeed *= -1.1;
+			entity2->ySpeed *= -1.1;
 			prevCollision = true;
 		}
 		
@@ -214,7 +217,7 @@ void collisions(Entity* entity1, Entity* entity2)
 			done = true;
 		}
 	}
-	else { prevCollision = false; }
+	else { if (entity1 != entities[0] && entity2 != entities[0]) { prevCollision = false; } }
 
 }
 
@@ -243,9 +246,9 @@ void Setup()
 	Vector e2Vec = Vector(2.0, 2.0, 0.0);
 	Player* p1 = new Player(spriteSheet, 0.0, 0.0, 159.0, 168.0, 1.0, p1Vec, .75, .75, 0.0);
 	entities.push_back(p1);
-	Enemy* e1 = new Enemy(spriteSheet, 0.0, 170.0, 47.0, 48.0, 1.0, e1Vec, 1.5, 1.5, 45.0, true, true);
+	Enemy* e1 = new Enemy(spriteSheet, 0.0, 170.0, 47.0, 48.0, 1.0, e1Vec, 1.5, 1.5, 45.0, false, false);
 	entities.push_back(e1);
-	Enemy* e2 = new Enemy(spriteSheet, 49.0, 170.0, 44.0, 44.0, 1.0, e2Vec, 2.0, 2.0, 95.0, false, false);
+	Enemy* e2 = new Enemy(spriteSheet, 49.0, 170.0, 44.0, 44.0, 1.0, e2Vec, 2.0, 2.0, 95.0, true, true);
 	entities.push_back(e2);
 }
 
