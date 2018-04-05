@@ -260,19 +260,19 @@ void ProcessEvents(float elapsed)
 			done = true;
 		}
 	}
-	if (keys[SDL_SCANCODE_W])
+	if (keys[SDL_SCANCODE_W] && entities[0]->position.y + entities[0]->halfLengths.y <= 2.0 * 2)
 	{
 		entities[0]->position.y += elapsed * 5.0;
 	}
-	if (keys[SDL_SCANCODE_A])
+	if (keys[SDL_SCANCODE_A] && entities[0]->position.x - entities[0]->halfLengths.x >= -3.55 * 2)
 	{
 		entities[0]->position.x -= elapsed * 5.0;
 	}
-	if (keys[SDL_SCANCODE_S])
+	if (keys[SDL_SCANCODE_S] && entities[0]->position.y - entities[0]->halfLengths.y >= -2.0 * 2)
 	{
 		entities[0]->position.y -= elapsed * 5.0;
 	}
-	if (keys[SDL_SCANCODE_D])
+	if (keys[SDL_SCANCODE_D] && entities[0]->position.x + entities[0]->halfLengths.y <= 3.55 * 2)
 	{
 		entities[0]->position.x += elapsed * 5.0;
 	}
