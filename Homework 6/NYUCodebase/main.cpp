@@ -18,6 +18,7 @@
 #include "stb_image.h"
 #include <vector>
 #include <string>
+#include <SDL_mixer.h>
 #define MAX_BULLETS 5
 
 struct Entity;
@@ -43,6 +44,9 @@ GLuint spriteSheet;
 float speed = 4.0;
 enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL};
 GameMode mode;
+Mix_Chunk *playerBulletSound;
+Mix_Chunk *enemyBulletSound;
+Mix_Music *music;
 
 GLuint LoadTexture(const char *filePath) {
 	int w, h, comp;
@@ -158,6 +162,7 @@ struct EnemyBullet : public Entity
 						else if (i == 1) { speedMult = .8; }
 						else if (i == 2) { speedMult = 1.5; }
 						else { speedMult = 2.5; }
+						Mix_PlayChannel(-1, enemyBulletSound, 0);
 						return;
 					}
 					else { temp++; }
@@ -318,6 +323,7 @@ struct Player : public Entity
 			{
 				if (playerBullets[0]->alive == false)
 				{
+					if (Mix_PlayChannel(-1, playerBulletSound, 0) == -1) { Mix_GetError(); }
 					playerBullets[0]->position.y = position.y;
 					playerBullets[0]->alive = true;
 				}
@@ -530,8 +536,11 @@ void Setup()
 	spriteSheet = LoadTexture(RESOURCE_FOLDER"sprites.png");
 
 	std::vector<std::vector<float>> coordVec;
-
-
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+	playerBulletSound = Mix_LoadWAV("playerSound.wav");
+	enemyBulletSound = Mix_LoadWAV("enemySound.wav");
+	music = Mix_LoadMUS("music.mp3");
+	Mix_PlayMusic(music, -1);
 }
 
 //phantom
