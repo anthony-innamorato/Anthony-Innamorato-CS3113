@@ -146,6 +146,7 @@ struct EnemyBullet : public Entity
 				if (collision)
 				{
 					endCase = true;
+					Mix_HaltMusic();
 				}
 			}
 			else
