@@ -213,15 +213,62 @@ struct Bullet : public Entity
 	{
 		if (alive)
 		{
-			position.x += elapsed * -sin(angle * (3.14159265 / 180.0)) * 10;
-			position.y += elapsed * cos(angle * (3.14159265 / 180.0)) * 10;
+			position.x += elapsed * -sin(angle * (3.14159265 / 180.0)) * 20;
+			position.y += elapsed * cos(angle * (3.14159265 / 180.0)) * 20;
 			timeAlive += elapsed;
 			//distance to player and run collisions on enemies
-			if (timeAlive > .5)
+			if (timeAlive > .25)
 			{
 				alive = false;
 				timeAlive = 0;
 			}
+		}
+	}
+	void draw()
+	{
+		if (alive)
+		{
+			modelMatrix.Identity();
+			modelMatrix.Translate(position.x, position.y, position.z);
+			modelMatrix.Scale(xScale, yScale, 1.0);
+			modelMatrix.Rotate((angle - 240.0) * (3.14159265 / 180.0));
+			glUseProgram(textured.programID);
+			textured.SetModelMatrix(modelMatrix);
+
+			glBindTexture(GL_TEXTURE_2D, textureImage);
+			float aspect = width / height;
+
+			halfLengths = Vector(size * (width / height) * .5, size * .5, 0);
+			points.clear();
+			points.push_back(Vector(-halfLengths.x, -halfLengths.y, 0) * modelMatrix);
+			points.push_back(Vector(halfLengths.x, -halfLengths.y, 0) * modelMatrix);
+			points.push_back(Vector(halfLengths.x, halfLengths.y, 0) * modelMatrix);
+			points.push_back(Vector(-halfLengths.x, halfLengths.y, 0) * modelMatrix);
+
+			float vertices[] = {
+				-0.5f * size * aspect, -0.5f * size,
+				0.5f * size * aspect, 0.5f * size,
+				-0.5f * size * aspect, 0.5f * size,
+				0.5f * size * aspect, 0.5f * size,
+				-0.5f * size * aspect, -0.5f * size ,
+				0.5f * size * aspect, -0.5f * size };
+			glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+			glEnableVertexAttribArray(textured.positionAttribute);
+
+			GLfloat texCoords[] = {
+				u, v + height,
+				u + width, v,
+				u, v,
+				u + width, v,
+				u, v + height,
+				u + width, v + height
+			};
+			glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+			glEnableVertexAttribArray(textured.texCoordAttribute);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glDisableVertexAttribArray(textured.positionAttribute);
+			glDisableVertexAttribArray(textured.texCoordAttribute);
+			modelMatrix.Identity();
 		}
 	}
 	float timeAlive = 0.0;
@@ -355,11 +402,11 @@ void ProcessEvents(float elapsed)
 	}
 	if (keys[SDL_SCANCODE_LEFT])
 	{
-		entities[0]->angle += elapsed * 100.0;
+		entities[0]->angle += elapsed * 250;
 	}
 	if (keys[SDL_SCANCODE_RIGHT])
 	{
-		entities[0]->angle -= elapsed * 100.0;
+		entities[0]->angle -= elapsed * 250;
 	}
 	if (keys[SDL_SCANCODE_SPACE])
 	{
@@ -403,14 +450,14 @@ void Render()
 	{
 		curr->draw();
 	}
-	for (Entity* curr : entities)
-	{
-		curr->draw();
-	}
 	if (playerBullet->alive) { playerBullet->draw(); }
 	for (Entity* bullet : enemyBullets)
 	{
 		bullet->draw();
+	}
+	for (Entity* curr : entities)
+	{
+		curr->draw();
 	}
 }
 
