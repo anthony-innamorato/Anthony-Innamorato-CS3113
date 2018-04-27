@@ -19,6 +19,8 @@
 #include "stb_image.h"
 #include <vector>
 #include <string>
+#include <math.h>
+#include <cmath>
 using namespace std;
 
 SDL_Window* displayWindow;
@@ -80,9 +82,7 @@ struct Entity
 		: textureImage(texture), u(u / 4096.0), v(v / 4096.0), width(width / 4096.0), height(height / 4096.0), size(size), position(position), 
 			xScale(xScale), yScale(yScale), angle(angle)
 	{
-		/*modelMatrix.Translate(position.x, position.y, position.z);
-		modelMatrix.Scale(xScale, yScale, 1.0);
-		modelMatrix.Rotate(angle * (3.14159265 / 180.0));*/
+
 		halfLengths = Vector(size * (width / height) * .5, size * .5, 0);
 		points.push_back(Vector(-halfLengths.x, -halfLengths.y, 0) * modelMatrix);
 		points.push_back(Vector(halfLengths.x, -halfLengths.y, 0) * modelMatrix);
@@ -139,6 +139,7 @@ struct Entity
 	}
 
 	virtual void update(float elapsed) {}
+	virtual void shoot(Entity* owner) {}
 	bool alive = false;
 	Matrix modelMatrix;
 	Vector position;
@@ -156,6 +157,45 @@ struct Entity
 	bool isEnemy = false;
 };
 
+float distance(Entity* e1, Entity* e2)
+{
+	return abs(sqrt(pow(e2->position.x - e1->position.x, 2) + pow(e2->position.y - e1->position.y, 2)));
+}
+
+bool collisions(Entity* entity1, Entity* entity2)
+{
+	std::pair<float, float> penetration;
+
+	std::vector<std::pair<float, float>> e1Points;
+	std::vector<std::pair<float, float>> e2Points;
+
+	for (int i = 0; i < entity1->points.size(); i++) {
+		Vector point = entity1->points[i] * entity1->modelMatrix;
+		e1Points.push_back(std::make_pair(point.x, point.y));
+	}
+
+	for (int i = 0; i < entity2->points.size(); i++) {
+		Vector point = entity2->points[i] * entity2->modelMatrix;
+		e2Points.push_back(std::make_pair(point.x, point.y));
+	}
+
+	bool collided = CheckSATCollision(e1Points, e2Points, penetration);
+	if (collided)
+	{
+		if (entity1 == entities[0])
+		{
+			entity1->position.x += (penetration.first * 0.5f);
+			entity1->position.y += (penetration.second * 0.5f);
+		}
+		else if (entity2 == entities[0])
+		{
+			entity2->position.x -= (penetration.first * 0.5f);
+			entity2->position.y -= (penetration.second * 0.5f);
+		}
+	}
+	return collided;
+}
+
 struct Bullet : public Entity
 {
 	Bullet(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
@@ -163,30 +203,28 @@ struct Bullet : public Entity
 		alive = false;
 	}
 
-	void collisions(Entity* player)
+	void shoot(Entity* owner)
 	{
-		std::pair<float, float> penetration;
-
-		std::vector<std::pair<float, float>> playerPoints;
-		std::vector<std::pair<float, float>> bulletPoints;
-
-		for (int i = 0; i < player->points.size(); i++) {
-			Vector point = player->points[i] * player->modelMatrix;
-			playerPoints.push_back(std::make_pair(point.x, point.y));
-		}
-
-		for (int i = 0; i < points.size(); i++) {
-			Vector point = points[i] * modelMatrix;
-			bulletPoints.push_back(std::make_pair(point.x, point.y));
-		}
-
-		bool collided = CheckSATCollision(playerPoints, bulletPoints, penetration);
-		if (collided)
+		position = entities[0]->position;
+		alive = true;
+		angle = owner->angle;
+	}
+	void update(float elapsed)
+	{
+		if (alive)
 		{
-			//player loses
-			return;
+			position.x += elapsed * -sin(angle * (3.14159265 / 180.0)) * 10;
+			position.y += elapsed * cos(angle * (3.14159265 / 180.0)) * 10;
+			timeAlive += elapsed;
+			//distance to player and run collisions on enemies
+			if (timeAlive > .5)
+			{
+				alive = false;
+				timeAlive = 0;
+			}
 		}
 	}
+	float timeAlive = 0.0;
 };
 
 struct Star : public Entity
@@ -239,38 +277,6 @@ struct Enemy : public Entity
 	std::vector<Entity*> AIvec;
 };
 
-void collisions(Entity* entity1, Entity* entity2)
-{
-	std::pair<float, float> penetration;
-
-	std::vector<std::pair<float, float>> e1Points;
-	std::vector<std::pair<float, float>> e2Points;
-
-	for (int i = 0; i < entity1->points.size(); i++) {
-		Vector point = entity1->points[i] * entity1->modelMatrix;
-		e1Points.push_back(std::make_pair(point.x, point.y));
-	}
-
-	for (int i = 0; i < entity2->points.size(); i++) {
-		Vector point = entity2->points[i] * entity2->modelMatrix;
-		e2Points.push_back(std::make_pair(point.x, point.y));
-	}
-
-	bool collided = CheckSATCollision(e1Points, e2Points, penetration);
-	if (collided)
-	{
-		if (entity1 == entities[0])
-		{
-			entity1->position.x += (penetration.first * 0.5f);
-			entity1->position.y += (penetration.second * 0.5f);
-		}
-		else if (entity2 == entities[0])
-		{
-			entity2->position.x -= (penetration.first * 0.5f);
-			entity2->position.y -= (penetration.second * 0.5f);
-		}
-	}
-}
 
 
 
@@ -284,7 +290,7 @@ void Setup()
 	glewInit();
 #endif
 	glViewport(0, 0, 1280, 720);
-	projectionMatrix.SetOrthoProjection(-3.55 * 2, 3.55 * 2, -2.0f * 2, 2.0f * 2, -1.0f * 2, 1.0f * 2);
+	projectionMatrix.SetOrthoProjection(-3.55 * 3, 3.55 * 3, -2.0f * 3, 2.0f * 3, -1.0f * 3, 1.0f * 3);
 	textured.Load(RESOURCE_FOLDER"vertex_textured.glsl", RESOURCE_FOLDER"fragment_textured.glsl");
 	textured.SetProjectionMatrix(projectionMatrix);
 	textured.SetViewMatrix(viewMatrix);
@@ -305,7 +311,7 @@ void Setup()
 	entities.push_back(e1);
 	//create one player bullet
 	//height = "855" width = "1403" y = "2398" x = "0"
-	playerBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, 1.0, p1Vec, 10.0, 10.0, 0.0);
+	playerBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, p1Vec, 10.0, 10.0, 0.0);
 	float y = 12.0;
 	float x = -14.0;
 	for (int i = 0; i < 9; i++)
@@ -354,6 +360,13 @@ void ProcessEvents(float elapsed)
 	if (keys[SDL_SCANCODE_RIGHT])
 	{
 		entities[0]->angle -= elapsed * 100.0;
+	}
+	if (keys[SDL_SCANCODE_SPACE])
+	{
+		if (!playerBullet->alive)
+		{
+			playerBullet->shoot(entities[0]);
+		}
 	}
 }
 
