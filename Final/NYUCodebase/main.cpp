@@ -21,6 +21,7 @@
 #include <string>
 #include <math.h>
 #include <cmath>
+#include <SDL_mixer.h>
 using namespace std;
 
 SDL_Window* displayWindow;
@@ -32,13 +33,20 @@ int counter = 0;
 SDL_Event event;
 float lastFrameTicks = 0.0f;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
 struct Entity;
 std::vector<Entity*> entities;
 vector<Entity*> starsVec;
 Entity* playerBullet;
 vector<Entity*> enemyBullets;
+vector<Entity*> cpVec;
 GLuint spriteSheet;
+Mix_Chunk *playerBulletSound;
+Mix_Chunk *enemyBulletSound;
+Mix_Chunk *explosion;
+Mix_Music *levelMusic;
+Mix_Music *wonMusic;
+Mix_Music *lossMusic;
+
 
 GLuint LoadTexture(const char *filePath) {
 	int w, h, comp;
@@ -82,8 +90,7 @@ struct Entity
 		: textureImage(texture), u(u / 4096.0), v(v / 4096.0), width(width / 4096.0), height(height / 4096.0), size(size), position(position), 
 			xScale(xScale), yScale(yScale), angle(angle)
 	{
-
-		halfLengths = Vector(size * (width / height) * .5, size * .5, 0);
+		halfLengths = Vector(size * (width / height) * .5 * xScale, size * .5 * yScale, 0);
 		points.push_back(Vector(-halfLengths.x, -halfLengths.y, 0) * modelMatrix);
 		points.push_back(Vector(halfLengths.x, -halfLengths.y, 0) * modelMatrix);
 		points.push_back(Vector(halfLengths.x, halfLengths.y, 0) * modelMatrix);
@@ -144,6 +151,7 @@ struct Entity
 	Matrix modelMatrix;
 	Vector position;
 	GLuint textureImage;
+	int health = 100;
 	float u;
 	float v;
 	float width;
@@ -208,6 +216,8 @@ struct Bullet : public Entity
 		position = entities[0]->position;
 		alive = true;
 		angle = owner->angle;
+		if (owner == entities[0]) { Mix_PlayChannel(-1, playerBulletSound, 0); }
+		else { Mix_PlayChannel(-1, enemyBulletSound, 0); }
 	}
 	void update(float elapsed)
 	{
@@ -217,6 +227,7 @@ struct Bullet : public Entity
 			position.y += elapsed * cos(angle * (3.14159265 / 180.0)) * 20;
 			timeAlive += elapsed;
 			//distance to player and run collisions on enemies
+			//if (timeAlive > .25 || collisions(this, entities[1]))
 			if (timeAlive > .25)
 			{
 				alive = false;
@@ -324,6 +335,23 @@ struct Enemy : public Entity
 	std::vector<Entity*> AIvec;
 };
 
+struct CriticalPoint : public Entity
+{
+	CriticalPoint(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
+		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {	}
+	void update(float elapsed)
+	{
+		if (alive && playerBullet->alive)
+		{
+			if (collisions(playerBullet, this))
+			{
+				alive = false;
+			}
+		}
+	}
+
+};
+
 
 
 
@@ -345,19 +373,21 @@ void Setup()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	spriteSheet = LoadTexture(RESOURCE_FOLDER"sprites.png");
-
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+	playerBulletSound = Mix_LoadWAV("player.wav");
+	enemyBulletSound = Mix_LoadWAV("enemy.wav");
+	explosion = Mix_LoadWAV("explosion.wav");
+	levelMusic = Mix_LoadMUS("levelMusic.mp3");
+	Mix_PlayMusic(levelMusic, -1);
 
 	Vector p1Vec = Vector(-10.0, 0.0, 0.0);
 	Vector e1Vec = Vector(0.0, 0.0, 0.0);
 	Player* p1 = new Player(spriteSheet, 887.0, 3734.0, 241.0, 159.0, 1.0, p1Vec, .75, .75, 0.0);
 	p1->alive = true;
 	entities.push_back(p1);
-	//Enemy(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
-	Enemy* e1 = new Enemy(spriteSheet, 887.0, 3570.0, 162.0, 173.0, 1.0, e1Vec, 10.0, 10.0, 0.0);
+	Enemy* e1 = new Enemy(spriteSheet, 887.0, 3570.0, 173.0, 162.0, 1.0, e1Vec, 10.0, 10.0, 0.0);
 	e1->alive = true;
 	entities.push_back(e1);
-	//create one player bullet
-	//height = "855" width = "1403" y = "2398" x = "0"
 	playerBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, p1Vec, 10.0, 10.0, 0.0);
 	float y = 12.0;
 	float x = -14.0;
@@ -365,7 +395,6 @@ void Setup()
 	{
 		for (int j = 0; j < 10; j++)
 		{
-			//height = "92" width = "90" y = "3992" x = "465" name = "star.png" / >
 			Vector starVec = Vector(x, y, 0.0);
 			Star* star = new Star(spriteSheet, 465.0, 3992.0, 90.0, 92.0, 1.0, starVec, .1, .1, 0.0);
 			x += 3;
@@ -373,6 +402,16 @@ void Setup()
 		}
 		y -= 3;
 		x = -14.0;
+	}
+	for (int i = 0; i < 3; i++)
+	{
+		Vector cpVector = e1Vec;
+		if (i == 0) { cpVector.y += (entities[1]->halfLengths.y / 1.5); cpVector.x += .1; }
+		else if (i == 1) { cpVector.y -= (entities[1]->halfLengths.y/2 + .3); cpVector.x -= (entities[1]->halfLengths.x/3 + .05); }
+		else { cpVector.y -= (entities[1]->halfLengths.y / 2 + .3); cpVector.x += (entities[1]->halfLengths.x / 2.8 + .15); }
+		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cpVector, 1.0, 1.0, 0.0);
+		cp->alive = true;
+		cpVec.push_back(cp);
 	}
 }
 
@@ -424,7 +463,7 @@ void Update(float elapsed)
 		entities[i]->update(elapsed);
 		for (size_t j = i; j < entities.size(); j++)
 		{
-			if (i != j)
+			if (i != j && entities[i]->alive && entities[j]->alive)
 			{
 				collisions(entities[i], entities[j]);
 			}
@@ -437,10 +476,20 @@ void Update(float elapsed)
 	{
 		star->update(elapsed);
 	}
-	playerBullet->update(elapsed);
+	if (playerBullet->alive) { playerBullet->update(elapsed); }
 	for (Entity* bullet : enemyBullets)
 	{
 		bullet->update(elapsed);
+	}
+	bool someAlive = false;
+	for (Entity* cp : cpVec)
+	{
+		cp->update(elapsed);
+		if (cp->alive) { someAlive = true; }
+	}
+	if (!someAlive)
+	{
+		entities[1]->alive = false;
 	}
 }
 
@@ -458,6 +507,10 @@ void Render()
 	for (Entity* curr : entities)
 	{
 		curr->draw();
+	}
+	for (Entity* cp : cpVec)
+	{
+		cp->draw();
 	}
 }
 
