@@ -49,7 +49,7 @@ Mix_Chunk *explosion;
 Mix_Music *levelMusic;
 Mix_Music *wonMusic;
 Mix_Music *lossMusic;
-enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL };
+enum GameMode { TITLE, LEVEL };
 GameMode mode;
 bool first = true;
 
@@ -453,22 +453,18 @@ void Setup()
 	}
 }
 
-void ProcessEvents()
+void titleProcessEvents()
 {
 	while (SDL_PollEvent(&event)) {
 
 		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
 			done = true;
 		}
-
-		if (mode == STATE_MAIN_MENU)
+		if (event.type == SDL_KEYDOWN)
 		{
-			if (event.type == SDL_KEYDOWN)
+			if (event.key.keysym.scancode == SDL_SCANCODE_RETURN)
 			{
-				if (event.key.keysym.scancode == SDL_SCANCODE_RETURN)
-				{
-					mode = STATE_GAME_LEVEL;
-				}
+				mode = LEVEL;
 			}
 		}
 	}
@@ -625,8 +621,21 @@ struct Text : public Entity
 	}
 };
 
-void runTitleScreen()
+void titleUpdate(float elapsed)
 {
+	for (Entity* star : starsVec)
+	{
+		star->update(elapsed);
+	}
+}
+
+
+void titleRender()
+{
+	for (Entity* star : starsVec)
+	{
+		star->draw();
+	}
 	for (Text* text : titleScreen)
 	{
 		text->draw(&textured);
@@ -639,15 +648,10 @@ int main(int argc, char *argv[])
 	Setup();
 	Text* title = new Text(spriteSheet, 0.0, 522.0, 2139.0, 257.0, 2.0, Vector(0,3.5,0), 1.0, 1.0, 0.0);
 	titleScreen.push_back(title);
-	mode = STATE_MAIN_MENU;
+	Text* contToPlay = new Text(spriteSheet, 0.0, 781.0, 1876.0, 116.0, 1.0, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
+	titleScreen.push_back(contToPlay);
+	mode = TITLE;
 
-	while (mode == STATE_MAIN_MENU && !done)
-	{
-		glClear(GL_COLOR_BUFFER_BIT);
-		runTitleScreen();
-		ProcessEvents();
-		SDL_GL_SwapWindow(displayWindow);
-	}
 	while (!done) {
 		float ticks = (float)SDL_GetTicks() / 1000.0f;
 		float elapsed = ticks - lastFrameTicks;
@@ -655,10 +659,17 @@ int main(int argc, char *argv[])
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-
-		ProcessEvents(elapsed);
-		Update(elapsed);
-		Render();
+		if (mode == TITLE) 
+		{
+			titleProcessEvents();
+			titleUpdate(elapsed);
+			titleRender();
+		}
+		else {
+			ProcessEvents(elapsed);
+			Update(elapsed);
+			Render();
+		}
 		SDL_GL_SwapWindow(displayWindow);
 	}
 
