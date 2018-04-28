@@ -34,11 +34,14 @@ SDL_Event event;
 float lastFrameTicks = 0.0f;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 struct Entity;
+struct Text;
+
 std::vector<Entity*> entities;
 vector<Entity*> starsVec;
 Entity* playerBullet;
 vector<Entity*> enemyBullets;
 vector<Entity*> cpVec;
+vector<Text*> titleScreen;
 GLuint spriteSheet;
 Mix_Chunk *playerBulletSound;
 Mix_Chunk *enemyBulletSound;
@@ -46,6 +49,8 @@ Mix_Chunk *explosion;
 Mix_Music *levelMusic;
 Mix_Music *wonMusic;
 Mix_Music *lossMusic;
+enum GameMode { STATE_MAIN_MENU, STATE_GAME_LEVEL };
+GameMode mode;
 bool first = true;
 
 
@@ -370,8 +375,6 @@ struct CriticalPoint : public Entity
 };
 
 
-
-
 void Setup()
 {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -446,6 +449,27 @@ void Setup()
 			enemyBullet->invertY = invY;
 			enemyBullet->timeAlive = j / 20.0;
 			enemyBullets.push_back(enemyBullet);
+		}
+	}
+}
+
+void ProcessEvents()
+{
+	while (SDL_PollEvent(&event)) {
+
+		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+			done = true;
+		}
+
+		if (mode == STATE_MAIN_MENU)
+		{
+			if (event.type == SDL_KEYDOWN)
+			{
+				if (event.key.keysym.scancode == SDL_SCANCODE_RETURN)
+				{
+					mode = STATE_GAME_LEVEL;
+				}
+			}
 		}
 	}
 }
@@ -561,9 +585,69 @@ void Render()
 	}
 }
 
+struct Text : public Entity
+{
+	Text(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
+		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {}
+	void draw(ShaderProgram* program)
+	{
+		modelMatrix.Identity();
+		modelMatrix.Translate(position.x, position.y, position.z);
+		GLfloat texCoords[] = {
+			u, v + height,
+			u + width, v,
+			u, v,
+			u + width, v,
+			u, v + height,
+			u + width, v + height
+		};
+		float aspect = width / height;
+		float vertices[] = {
+			-0.5f * size * aspect, -0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, 0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, -0.5f * size ,
+			0.5f * size * aspect, -0.5f * size };
+
+		glUseProgram(textured.programID);
+		textured.SetModelMatrix(modelMatrix);
+
+		glBindTexture(GL_TEXTURE_2D, textureImage);
+		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		glEnableVertexAttribArray(textured.positionAttribute);
+
+		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+		glEnableVertexAttribArray(textured.texCoordAttribute);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDisableVertexAttribArray(textured.positionAttribute);
+		glDisableVertexAttribArray(textured.texCoordAttribute);
+	}
+};
+
+void runTitleScreen()
+{
+	for (Text* text : titleScreen)
+	{
+		text->draw(&textured);
+	}
+}
+
+
 int main(int argc, char *argv[])
 {
 	Setup();
+	Text* title = new Text(spriteSheet, 0.0, 522.0, 2139.0, 257.0, 2.0, Vector(0,3.5,0), 1.0, 1.0, 0.0);
+	titleScreen.push_back(title);
+	mode = STATE_MAIN_MENU;
+
+	while (mode == STATE_MAIN_MENU && !done)
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+		runTitleScreen();
+		ProcessEvents();
+		SDL_GL_SwapWindow(displayWindow);
+	}
 	while (!done) {
 		float ticks = (float)SDL_GetTicks() / 1000.0f;
 		float elapsed = ticks - lastFrameTicks;
