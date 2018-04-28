@@ -237,7 +237,7 @@ struct Bullet : public Entity
 		alive = true;
 		if (!first) { timeAlive = 0.0; }
 		if (owner == entities[0]) { Mix_PlayChannel(-1, playerBulletSound, 0); }
-		else { Mix_VolumeChunk(enemyBulletSound, 20); Mix_PlayChannel(-1, enemyBulletSound, 0); maxLife = .4; }
+		else { Mix_VolumeChunk(enemyBulletSound, 15); Mix_PlayChannel(-1, enemyBulletSound, 0); maxLife = .4; }
 	}
 	void update(float elapsed)
 	{
@@ -263,8 +263,15 @@ struct Bullet : public Entity
 			modelMatrix.Translate(position.x, position.y, position.z);
 			modelMatrix.Scale(xScale, yScale, 1.0);
 			if (owner == entities[0] || angle == 0.0) { modelMatrix.Rotate((angle - 240.0) * (3.14159265 / 180.0)); }
-			else if (angle == 45.0) { modelMatrix.Rotate((angle + 210) * (3.14159265 / 180.0)); }
-			else { modelMatrix.Rotate((angle + 210) * (3.14159265 / 180.0)); } //-45
+			else //angle equal -45 or 45
+			{
+				if (!invertY)
+				{
+					modelMatrix.Rotate((angle + 120) * (3.14159265 / 180.0));
+				}
+				else { modelMatrix.Rotate((angle + 210) * (3.14159265 / 180.0)); }
+			}
+
 			glUseProgram(textured.programID);
 			textured.SetModelMatrix(modelMatrix);
 
@@ -423,19 +430,20 @@ void Setup()
 		cp->alive = true;
 		cpVec.push_back(cp);
 	}
-	for (int i = 0; i < 2[; i++)
+	bool invY = true;
+	for (int i = 0; i < 4; i++)
 	{
 		Vector eBullVec = e1Vec;
 		if (i == 0) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x -= entities[1]->halfLengths.x/1.5; }
 		else if (i ==1) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x/1.5; }
-		//else if (i == 2) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x / 1.5; }
-		//else { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x / 1.5; }
+		else if (i == 2) { eBullVec.y += entities[1]->halfLengths.y; eBullVec.x -= (entities[1]->halfLengths.x / 2 - .9); invY = false; }
+		else { eBullVec.y += entities[1]->halfLengths.y; eBullVec.x += (entities[1]->halfLengths.x / 2 -.9); }
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
 			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, eBullVec, 10.0, 10.0, 0.0);
 			enemyBullet->originalVec = eBullVec;
-			enemyBullet->invertY = true;
+			enemyBullet->invertY = invY;
 			enemyBullet->timeAlive = j / 20.0;
 			enemyBullets.push_back(enemyBullet);
 		}
