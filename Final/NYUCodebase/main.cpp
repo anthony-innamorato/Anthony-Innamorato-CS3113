@@ -42,6 +42,8 @@ Entity* playerBullet;
 vector<Entity*> enemyBullets;
 vector<Entity*> cpVec;
 vector<Text*> titleScreen;
+vector<Text*> wonScreen;
+vector<Text*> lossScreen;
 GLuint spriteSheet;
 Mix_Chunk *playerBulletSound;
 Mix_Chunk *enemyBulletSound;
@@ -49,7 +51,7 @@ Mix_Chunk *explosion;
 Mix_Music *levelMusic;
 Mix_Music *wonMusic;
 Mix_Music *lossMusic;
-enum GameMode { TITLE, LEVEL };
+enum GameMode { TITLE, LEVEL, WON, LOSS};
 GameMode mode;
 bool first = true;
 
@@ -375,6 +377,47 @@ struct CriticalPoint : public Entity
 };
 
 
+struct Text : public Entity
+{
+	Text(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
+		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {}
+	void draw(ShaderProgram* program)
+	{
+		modelMatrix.Identity();
+		modelMatrix.Translate(position.x, position.y, position.z);
+		GLfloat texCoords[] = {
+			u, v + height,
+			u + width, v,
+			u, v,
+			u + width, v,
+			u, v + height,
+			u + width, v + height
+		};
+		float aspect = width / height;
+		float vertices[] = {
+			-0.5f * size * aspect, -0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, 0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, -0.5f * size ,
+			0.5f * size * aspect, -0.5f * size };
+
+		glUseProgram(textured.programID);
+		textured.SetModelMatrix(modelMatrix);
+
+		glBindTexture(GL_TEXTURE_2D, textureImage);
+		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		glEnableVertexAttribArray(textured.positionAttribute);
+
+		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+		glEnableVertexAttribArray(textured.texCoordAttribute);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDisableVertexAttribArray(textured.positionAttribute);
+		glDisableVertexAttribArray(textured.texCoordAttribute);
+	}
+};
+
+
 void Setup()
 {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -451,23 +494,24 @@ void Setup()
 			enemyBullets.push_back(enemyBullet);
 		}
 	}
-}
 
-void titleProcessEvents()
-{
-	while (SDL_PollEvent(&event)) {
-
-		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
-			done = true;
-		}
-		if (event.type == SDL_KEYDOWN)
-		{
-			if (event.key.keysym.scancode == SDL_SCANCODE_RETURN)
-			{
-				mode = LEVEL;
-			}
-		}
-	}
+	Text* title = new Text(spriteSheet, 0.0, 522.0, 2139.0, 257.0, 2.0, Vector(0, 3.5, 0), 1.0, 1.0, 0.0);
+	titleScreen.push_back(title);
+	Text* contToPlay = new Text(spriteSheet, 0.0, 781.0, 1876.0, 116.0, 1.0, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
+	titleScreen.push_back(contToPlay);
+	//height = "152" width = "2673" y = "184" x = "0"
+	Text* winString = new Text(spriteSheet, 0.0, 184.0, 2673.0, 152.0, 1.15, Vector(0, 3.5, 0), 1.0, 1.0, 0.0);
+	wonScreen.push_back(winString);
+	//height = "182" width = "2166" y = "338" x = "0"
+	Text* escToQuit = new Text(spriteSheet, 0.0, 338.0, 2166.0, 182.0, .8, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
+	wonScreen.push_back(escToQuit);
+	//height = "313" width = "1150" y = "3255" x = "0"
+	Text* lose = new Text(spriteSheet, 0.0, 3255.0, 1150.0, 313.0, 4.0, Vector(0, 2.5, 0), 1.0, 1.0, 0.0);
+	lossScreen.push_back(lose);
+	//height = "182" width = "2835" y = "0" x = "0"
+	Text* escToTryAgain = new Text(spriteSheet, 0.0, 0.0, 2835.0, 182.0, 1.0, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
+	lossScreen.push_back(escToTryAgain);
+	mode = TITLE;
 }
 
 void ProcessEvents(float elapsed)
@@ -508,6 +552,14 @@ void ProcessEvents(float elapsed)
 		{
 			playerBullet->shoot(entities[0]);
 		}
+	}
+	if (keys[SDL_SCANCODE_1] && keys[SDL_SCANCODE_2])
+	{
+		mode = WON;
+	}
+	if (keys[SDL_SCANCODE_3] && keys[SDL_SCANCODE_4])
+	{
+		mode = LOSS;
 	}
 }
 
@@ -581,77 +633,81 @@ void Render()
 	}
 }
 
-struct Text : public Entity
+void titleProcessEvents()
 {
-	Text(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
-		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {}
-	void draw(ShaderProgram* program)
-	{
-		modelMatrix.Identity();
-		modelMatrix.Translate(position.x, position.y, position.z);
-		GLfloat texCoords[] = {
-			u, v + height,
-			u + width, v,
-			u, v,
-			u + width, v,
-			u, v + height,
-			u + width, v + height
-		};
-		float aspect = width / height;
-		float vertices[] = {
-			-0.5f * size * aspect, -0.5f * size,
-			0.5f * size * aspect, 0.5f * size,
-			-0.5f * size * aspect, 0.5f * size,
-			0.5f * size * aspect, 0.5f * size,
-			-0.5f * size * aspect, -0.5f * size ,
-			0.5f * size * aspect, -0.5f * size };
+	while (SDL_PollEvent(&event)) {
 
-		glUseProgram(textured.programID);
-		textured.SetModelMatrix(modelMatrix);
-
-		glBindTexture(GL_TEXTURE_2D, textureImage);
-		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
-		glEnableVertexAttribArray(textured.positionAttribute);
-
-		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
-		glEnableVertexAttribArray(textured.texCoordAttribute);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glDisableVertexAttribArray(textured.positionAttribute);
-		glDisableVertexAttribArray(textured.texCoordAttribute);
+		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+			done = true;
+		}
+		if (event.type == SDL_KEYDOWN)
+		{
+			if (event.key.keysym.scancode == SDL_SCANCODE_RETURN) { mode = LEVEL;}
+		}
 	}
-};
-
+}
 void titleUpdate(float elapsed)
 {
-	for (Entity* star : starsVec)
-	{
-		star->update(elapsed);
-	}
+	for (Entity* star : starsVec) { star->update(elapsed); }
+}
+void titleRender()
+{
+	for (Entity* star : starsVec) { star->draw(); }
+	for (Text* text : titleScreen) { text->draw(&textured); }
 }
 
 
-void titleRender()
+void wonProcessEvents()
 {
-	for (Entity* star : starsVec)
-	{
-		star->draw();
+	while (SDL_PollEvent(&event)) {
+
+		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+			done = true;
+		}
+		if (event.type == SDL_KEYDOWN)
+		{
+			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) { done = true; }
+		}
 	}
-	for (Text* text : titleScreen)
-	{
-		text->draw(&textured);
+}
+void wonUpdate(float elapsed)
+{
+	for (Entity* star : starsVec) { star->update(elapsed); }
+}
+void wonRender()
+{
+	for (Entity* star : starsVec) { star->draw(); }
+	for (Text* text : wonScreen) { text->draw(&textured); }
+}
+
+
+void lossProcessEvents()
+{
+	while (SDL_PollEvent(&event)) {
+
+		if (event.type == SDL_QUIT || event.type == SDL_WINDOWEVENT_CLOSE) {
+			done = true;
+		}
+		if (event.type == SDL_KEYDOWN)
+		{
+			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) { mode = TITLE; }
+		}
 	}
+}
+void lossUpdate(float elapsed)
+{
+	for (Entity* star : starsVec) { star->update(elapsed); }
+}
+void lossRender()
+{
+	for (Entity* star : starsVec) { star->draw(); }
+	for (Text* text : lossScreen) { text->draw(&textured); }
 }
 
 
 int main(int argc, char *argv[])
 {
 	Setup();
-	Text* title = new Text(spriteSheet, 0.0, 522.0, 2139.0, 257.0, 2.0, Vector(0,3.5,0), 1.0, 1.0, 0.0);
-	titleScreen.push_back(title);
-	Text* contToPlay = new Text(spriteSheet, 0.0, 781.0, 1876.0, 116.0, 1.0, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
-	titleScreen.push_back(contToPlay);
-	mode = TITLE;
-
 	while (!done) {
 		float ticks = (float)SDL_GetTicks() / 1000.0f;
 		float elapsed = ticks - lastFrameTicks;
@@ -661,14 +717,33 @@ int main(int argc, char *argv[])
 
 		if (mode == TITLE) 
 		{
+			viewMatrix.Identity();
+			textured.SetViewMatrix(viewMatrix);
 			titleProcessEvents();
 			titleUpdate(elapsed);
 			titleRender();
 		}
-		else {
+		else if (mode == LEVEL)
+		{
 			ProcessEvents(elapsed);
 			Update(elapsed);
 			Render();
+		}
+		else if (mode == WON)
+		{
+			viewMatrix.Identity();
+			textured.SetViewMatrix(viewMatrix);
+			wonProcessEvents();
+			wonUpdate(elapsed);
+			wonRender();
+		}
+		else if (mode == LOSS)
+		{
+			viewMatrix.Identity();
+			textured.SetViewMatrix(viewMatrix);
+			lossProcessEvents();
+			lossUpdate(elapsed);
+			lossRender();
 		}
 		SDL_GL_SwapWindow(displayWindow);
 	}
