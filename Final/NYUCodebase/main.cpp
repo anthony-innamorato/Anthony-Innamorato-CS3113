@@ -168,6 +168,7 @@ struct Entity
 	bool isEnemy = false;
 	Vector originalVec;
 	bool invertY = false;
+	Entity* owner;
 };
 
 float distance(Entity* e1, Entity* e2)
@@ -218,18 +219,25 @@ struct Bullet : public Entity
 
 	void shoot(Entity* owner)
 	{
+		this->owner = owner;
 		if (owner == entities[0])
 		{
 			position = owner->position; angle = owner->angle;
 		}
 		else
 		{
+			float temp = rand() % 3 -1; //-1,0,1
+			angle = 45.0 * temp;
+			if (angle == 90.0) { done = true; }
+			//angle = 45.0; left correct
+			//angle = 0.0; straight down
+			//angle = -45.0; right correct
 			position = originalVec; 
 		}
 		alive = true;
 		if (!first) { timeAlive = 0.0; }
 		if (owner == entities[0]) { Mix_PlayChannel(-1, playerBulletSound, 0); }
-		else { Mix_PlayChannel(-1, enemyBulletSound, 0); maxLife = .4; }
+		else { Mix_VolumeChunk(enemyBulletSound, 20); Mix_PlayChannel(-1, enemyBulletSound, 0); maxLife = .4; }
 	}
 	void update(float elapsed)
 	{
@@ -254,7 +262,9 @@ struct Bullet : public Entity
 			modelMatrix.Identity();
 			modelMatrix.Translate(position.x, position.y, position.z);
 			modelMatrix.Scale(xScale, yScale, 1.0);
-			modelMatrix.Rotate((angle - 240.0) * (3.14159265 / 180.0));
+			if (owner == entities[0] || angle == 0.0) { modelMatrix.Rotate((angle - 240.0) * (3.14159265 / 180.0)); }
+			else if (angle == 45.0) { modelMatrix.Rotate((angle + 210) * (3.14159265 / 180.0)); }
+			else { modelMatrix.Rotate((angle + 210) * (3.14159265 / 180.0)); } //-45
 			glUseProgram(textured.programID);
 			textured.SetModelMatrix(modelMatrix);
 
@@ -413,11 +423,13 @@ void Setup()
 		cp->alive = true;
 		cpVec.push_back(cp);
 	}
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 2[; i++)
 	{
 		Vector eBullVec = e1Vec;
 		if (i == 0) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x -= entities[1]->halfLengths.x/1.5; }
-		else { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x/1.5; }
+		else if (i ==1) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x/1.5; }
+		//else if (i == 2) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x / 1.5; }
+		//else { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x / 1.5; }
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
