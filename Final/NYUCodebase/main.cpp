@@ -46,6 +46,7 @@ Mix_Chunk *explosion;
 Mix_Music *levelMusic;
 Mix_Music *wonMusic;
 Mix_Music *lossMusic;
+bool first = true;
 
 
 GLuint LoadTexture(const char *filePath) {
@@ -152,6 +153,7 @@ struct Entity
 	Vector position;
 	GLuint textureImage;
 	int health = 100;
+	float timeAlive = 0.0;
 	float u;
 	float v;
 	float width;
@@ -160,9 +162,12 @@ struct Entity
 	float xScale;
 	float yScale;
 	float angle;
+	float maxLife = .25;
 	std::vector<Vector> points;
 	Vector halfLengths;
 	bool isEnemy = false;
+	Vector originalVec;
+	bool invertY = false;
 };
 
 float distance(Entity* e1, Entity* e2)
@@ -213,25 +218,32 @@ struct Bullet : public Entity
 
 	void shoot(Entity* owner)
 	{
-		position = entities[0]->position;
+		if (owner == entities[0])
+		{
+			position = owner->position; angle = owner->angle;
+		}
+		else
+		{
+			position = originalVec; 
+		}
 		alive = true;
-		angle = owner->angle;
+		if (!first) { timeAlive = 0.0; }
 		if (owner == entities[0]) { Mix_PlayChannel(-1, playerBulletSound, 0); }
-		else { Mix_PlayChannel(-1, enemyBulletSound, 0); }
+		else { Mix_PlayChannel(-1, enemyBulletSound, 0); maxLife = .4; }
 	}
 	void update(float elapsed)
 	{
 		if (alive)
 		{
 			position.x += elapsed * -sin(angle * (3.14159265 / 180.0)) * 20;
-			position.y += elapsed * cos(angle * (3.14159265 / 180.0)) * 20;
+			if (!invertY) { position.y += elapsed * cos(angle * (3.14159265 / 180.0)) * 20; }
+			else { position.y -= elapsed * cos(angle * (3.14159265 / 180.0)) * 20; }
 			timeAlive += elapsed;
 			//distance to player and run collisions on enemies
 			//if (timeAlive > .25 || collisions(this, entities[1]))
-			if (timeAlive > .25)
+			if (timeAlive > maxLife)
 			{
 				alive = false;
-				timeAlive = 0;
 			}
 		}
 	}
@@ -282,7 +294,6 @@ struct Bullet : public Entity
 			modelMatrix.Identity();
 		}
 	}
-	float timeAlive = 0.0;
 };
 
 struct Star : public Entity
@@ -339,17 +350,6 @@ struct CriticalPoint : public Entity
 {
 	CriticalPoint(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
 		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {	}
-	void update(float elapsed)
-	{
-		if (alive && playerBullet->alive)
-		{
-			if (collisions(playerBullet, this))
-			{
-				alive = false;
-			}
-		}
-	}
-
 };
 
 
@@ -412,6 +412,21 @@ void Setup()
 		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cpVector, 1.0, 1.0, 0.0);
 		cp->alive = true;
 		cpVec.push_back(cp);
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		Vector eBullVec = e1Vec;
+		if (i == 0) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x -= entities[1]->halfLengths.x/1.5; }
+		else { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x/1.5; }
+		for (int j = 0; j < 3; j++)
+		{
+			//create new bullet
+			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, eBullVec, 10.0, 10.0, 0.0);
+			enemyBullet->originalVec = eBullVec;
+			enemyBullet->invertY = true;
+			enemyBullet->timeAlive = j / 20.0;
+			enemyBullets.push_back(enemyBullet);
+		}
 	}
 }
 
@@ -476,21 +491,30 @@ void Update(float elapsed)
 	{
 		star->update(elapsed);
 	}
-	if (playerBullet->alive) { playerBullet->update(elapsed); }
-	for (Entity* bullet : enemyBullets)
+	playerBullet->update(elapsed);
+	if (entities[1]->alive)
 	{
-		bullet->update(elapsed);
+		for (Entity* bullet : enemyBullets)
+		{
+			if (!bullet->alive) { bullet->shoot(entities[1]); }
+			bullet->update(elapsed);
+		}
+		bool someAlive = false;
+		for (Entity* cp : cpVec)
+		{
+			if (collisions(playerBullet, cp))
+			{
+				cp->health -= .01;
+				if (cp->health <= 0) { cp->alive = false; }
+			}
+			if (cp->alive) { someAlive = true; }
+		}
+		if (!someAlive)
+		{
+			entities[1]->alive = false;
+		}
 	}
-	bool someAlive = false;
-	for (Entity* cp : cpVec)
-	{
-		cp->update(elapsed);
-		if (cp->alive) { someAlive = true; }
-	}
-	if (!someAlive)
-	{
-		entities[1]->alive = false;
-	}
+	first = false;
 }
 
 void Render()
@@ -499,10 +523,13 @@ void Render()
 	{
 		curr->draw();
 	}
-	if (playerBullet->alive) { playerBullet->draw(); }
-	for (Entity* bullet : enemyBullets)
+	playerBullet->draw();
+	if (entities[1]->alive)
 	{
-		bullet->draw();
+		for (Entity* bullet : enemyBullets)
+		{
+			bullet->draw();
+		}
 	}
 	for (Entity* curr : entities)
 	{
