@@ -680,6 +680,22 @@ void wonRender()
 	for (Text* text : wonScreen) { text->draw(&textured); }
 }
 
+void resetLevel1()
+{
+	//reset player pos
+	Vector p1Vec = Vector(-10.0, 0.0, 0.0);
+	entities[0]->position = p1Vec;
+	//reset player bullet
+	playerBullet->alive = false;
+	//reset enemy alive
+	entities[1]->alive = true;
+	//reset cps (health and alive)
+	for (Entity* cp : cpVec)
+	{
+		cp->alive = true;
+		cp->health = 0.0;
+	}
+}
 
 void lossProcessEvents()
 {
@@ -690,7 +706,7 @@ void lossProcessEvents()
 		}
 		if (event.type == SDL_KEYDOWN)
 		{
-			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) { mode = TITLE; }
+			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) { mode = TITLE; resetLevel1(); }
 		}
 	}
 }
@@ -741,6 +757,7 @@ int main(int argc, char *argv[])
 		{
 			viewMatrix.Identity();
 			textured.SetViewMatrix(viewMatrix);
+			//reset levels in process events
 			lossProcessEvents();
 			lossUpdate(elapsed);
 			lossRender();
