@@ -51,9 +51,10 @@ Mix_Chunk *explosion;
 Mix_Music *levelMusic;
 Mix_Music *wonMusic;
 Mix_Music *lossMusic;
-enum GameMode { TITLE, LEVEL, WON, LOSS};
+enum GameMode { TITLE, LEVEL1, WON, LOSS, LEVEL2, LEVEL3};
 GameMode mode;
 bool first = true;
+float delayAccum = 0.0;
 
 
 GLuint LoadTexture(const char *filePath) {
@@ -555,13 +556,6 @@ void ProcessEvents(float elapsed)
 			playerBullet->shoot(entities[0]);
 		}
 	}
-	if (keys[SDL_SCANCODE_1] && keys[SDL_SCANCODE_2])
-	{
-		//halt music and play won music
-		Mix_HaltMusic();
-		if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
-		mode = WON;
-	}
 	if (keys[SDL_SCANCODE_3] && keys[SDL_SCANCODE_4])
 	{
 		//halt music and play loss music
@@ -571,7 +565,7 @@ void ProcessEvents(float elapsed)
 	}
 }
 
-void Update(float elapsed)
+void level1Update(float elapsed)
 {
 	for (size_t i = 0; i < entities.size(); i++)
 	{
@@ -612,12 +606,207 @@ void Update(float elapsed)
 		if (!someAlive)
 		{
 			entities[1]->alive = false;
+			delayAccum += elapsed;
+		}
+		if (delayAccum >= 5.0)
+		{
+			//halt music and play won music
+			Mix_HaltMusic();
+			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
+			mode = WON;
+		}
+	}
+	else
+	{
+		delayAccum += elapsed;
+		if (delayAccum >= 5.0)
+		{
+			//halt music and play won music
+			Mix_HaltMusic();
+			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
+			mode = WON;
 		}
 	}
 	first = false;
 }
 
-void Render()
+void level1Render()
+{
+	for (Entity* curr : starsVec)
+	{
+		curr->draw();
+	}
+	playerBullet->draw();
+	if (entities[1]->alive)
+	{
+		for (Entity* bullet : enemyBullets)
+		{
+			bullet->draw();
+		}
+	}
+	for (Entity* curr : entities)
+	{
+		curr->draw();
+	}
+	for (Entity* cp : cpVec)
+	{
+		cp->draw();
+	}
+}
+void level2Update(float elapsed)
+{
+	for (size_t i = 0; i < entities.size(); i++)
+	{
+		entities[i]->update(elapsed);
+		for (size_t j = i; j < entities.size(); j++)
+		{
+			if (i != j && entities[i]->alive && entities[j]->alive)
+			{
+				collisions(entities[i], entities[j]);
+			}
+		}
+	}
+	viewMatrix.Identity();
+	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
+	textured.SetViewMatrix(viewMatrix);
+	for (Entity* star : starsVec)
+	{
+		star->update(elapsed);
+	}
+	playerBullet->update(elapsed);
+	if (entities[1]->alive)
+	{
+		for (Entity* bullet : enemyBullets)
+		{
+			if (!bullet->alive) { bullet->shoot(entities[1]); }
+			bullet->update(elapsed);
+		}
+		bool someAlive = false;
+		for (Entity* cp : cpVec)
+		{
+			if (collisions(playerBullet, cp))
+			{
+				cp->health -= .01;
+				if (cp->health <= 0) { cp->alive = false; }
+			}
+			if (cp->alive) { someAlive = true; }
+		}
+		if (!someAlive)
+		{
+			entities[1]->alive = false;
+			delayAccum += elapsed;
+		}
+		if (delayAccum >= 5.0)
+		{
+			//halt music and play won music
+			Mix_HaltMusic();
+			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
+			mode = WON;
+		}
+	}
+	else
+	{
+		delayAccum += elapsed;
+		if (delayAccum >= 5.0)
+		{
+			//halt music and play won music
+			Mix_HaltMusic();
+			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
+			mode = WON;
+		}
+	}
+	first = false;
+}
+
+void level2Render()
+{
+	for (Entity* curr : starsVec)
+	{
+		curr->draw();
+	}
+	playerBullet->draw();
+	if (entities[1]->alive)
+	{
+		for (Entity* bullet : enemyBullets)
+		{
+			bullet->draw();
+		}
+	}
+	for (Entity* curr : entities)
+	{
+		curr->draw();
+	}
+	for (Entity* cp : cpVec)
+	{
+		cp->draw();
+	}
+}
+void level3Update(float elapsed)
+{
+	for (size_t i = 0; i < entities.size(); i++)
+	{
+		entities[i]->update(elapsed);
+		for (size_t j = i; j < entities.size(); j++)
+		{
+			if (i != j && entities[i]->alive && entities[j]->alive)
+			{
+				collisions(entities[i], entities[j]);
+			}
+		}
+	}
+	viewMatrix.Identity();
+	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
+	textured.SetViewMatrix(viewMatrix);
+	for (Entity* star : starsVec)
+	{
+		star->update(elapsed);
+	}
+	playerBullet->update(elapsed);
+	if (entities[1]->alive)
+	{
+		for (Entity* bullet : enemyBullets)
+		{
+			if (!bullet->alive) { bullet->shoot(entities[1]); }
+			bullet->update(elapsed);
+		}
+		bool someAlive = false;
+		for (Entity* cp : cpVec)
+		{
+			if (collisions(playerBullet, cp))
+			{
+				cp->health -= .01;
+				if (cp->health <= 0) { cp->alive = false; }
+			}
+			if (cp->alive) { someAlive = true; }
+		}
+		if (!someAlive)
+		{
+			entities[1]->alive = false;
+			delayAccum += elapsed;
+		}
+		if (delayAccum >= 5.0)
+		{
+			//halt music and play won music
+			Mix_HaltMusic();
+			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
+			mode = WON;
+		}
+	}
+	else
+	{
+		delayAccum += elapsed;
+		if (delayAccum >= 5.0)
+		{
+			//halt music and play won music
+			Mix_HaltMusic();
+			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
+			mode = WON;
+		}
+	}
+	first = false;
+}
+
+void level3Render()
 {
 	for (Entity* curr : starsVec)
 	{
@@ -650,7 +839,7 @@ void titleProcessEvents()
 		}
 		if (event.type == SDL_KEYDOWN)
 		{
-			if (event.key.keysym.scancode == SDL_SCANCODE_RETURN) { mode = LEVEL;}
+			if (event.key.keysym.scancode == SDL_SCANCODE_RETURN) { mode = LEVEL1;}
 		}
 	}
 }
@@ -753,11 +942,11 @@ int main(int argc, char *argv[])
 			titleUpdate(elapsed);
 			titleRender();
 		}
-		else if (mode == LEVEL)
+		else if (mode == LEVEL1)
 		{
 			ProcessEvents(elapsed);
-			Update(elapsed);
-			Render();
+			level1Update(elapsed);
+			level1Render();
 		}
 		else if (mode == WON)
 		{
@@ -775,6 +964,22 @@ int main(int argc, char *argv[])
 			lossProcessEvents();
 			lossUpdate(elapsed);
 			lossRender();
+		}
+		else if (mode == LEVEL2)
+		{
+			ProcessEvents(elapsed);
+			//LEVEL2 update
+			level2Update(elapsed);
+			//LEVEL2 RENDER
+			level2Render();
+		}
+		else if (mode == LEVEL3)
+		{
+			ProcessEvents(elapsed);
+			//LEVEL3 UPDATE
+			level3Update(elapsed);
+			//LEVEL3 RENDER
+			level3Render();
 		}
 		SDL_GL_SwapWindow(displayWindow);
 	}
