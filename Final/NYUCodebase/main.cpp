@@ -228,10 +228,7 @@ struct Bullet : public Entity
 	void shoot(Entity* owner)
 	{
 		this->owner = owner;
-		if (owner == entities[0])
-		{
-			position = owner->position; angle = owner->angle;
-		}
+		if (owner == entities[0]) { position = owner->position; angle = owner->angle; }
 		else
 		{
 			float temp = rand() % 3 -1; //-1,0,1
@@ -257,10 +254,7 @@ struct Bullet : public Entity
 			timeAlive += elapsed;
 			//distance to player and run collisions on enemies
 			//if (timeAlive > .25 || collisions(this, entities[1]))
-			if (timeAlive > maxLife)
-			{
-				alive = false;
-			}
+			if (timeAlive > maxLife) {alive = false; }
 		}
 	}
 	void draw()
@@ -273,10 +267,7 @@ struct Bullet : public Entity
 			if (owner == entities[0] || angle == 0.0) { modelMatrix.Rotate((angle - 240.0) * (3.14159265 / 180.0)); }
 			else //angle equal -45 or 45
 			{
-				if (!invertY)
-				{
-					modelMatrix.Rotate((angle + 120) * (3.14159265 / 180.0));
-				}
+				if (!invertY) { modelMatrix.Rotate((angle + 120) * (3.14159265 / 180.0));}
 				else { modelMatrix.Rotate((angle + 210) * (3.14159265 / 180.0)); }
 			}
 
@@ -332,11 +323,7 @@ struct Star : public Entity
 		if (alive)
 		{
 			position.x -= elapsed;
-			if (position.x <= -17.75)
-			{
-				position.x = 17.75;
-				return;
-			}
+			if (position.x <= -17.75) { position.x = 17.75;}
 		}
 	}
 
@@ -362,10 +349,7 @@ struct Enemy : public Entity
 	}
 	void draw()
 	{
-		for (Entity* curr : AIvec)
-		{
-			curr->draw();
-		}
+		for (Entity* curr : AIvec) { curr->draw(); }
 		Entity::draw();
 	}
 	std::vector<Entity*> AIvec;
@@ -497,7 +481,6 @@ void Setup()
 			enemyBullets.push_back(enemyBullet);
 		}
 	}
-
 	Text* title = new Text(spriteSheet, 0.0, 522.0, 2139.0, 257.0, 2.0, Vector(0, 3.5, 0), 1.0, 1.0, 0.0);
 	titleScreen.push_back(title);
 	Text* contToPlay = new Text(spriteSheet, 0.0, 781.0, 1876.0, 116.0, 1.0, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
@@ -517,6 +500,13 @@ void Setup()
 	mode = TITLE;
 }
 
+float returnLvlBounds()
+{
+	if (mode == LEVEL1) { return 10.0; }
+	else if (mode == LEVEL2) { return 15.0; }
+	else { return 20.0; }
+}
+
 void ProcessEvents(float elapsed)
 {
 	while (SDL_PollEvent(&event)) {
@@ -525,19 +515,20 @@ void ProcessEvents(float elapsed)
 			done = true;
 		}
 	}
-	if (keys[SDL_SCANCODE_W] && entities[0]->position.y + entities[0]->halfLengths.y <= 2.0 * 5)
+	float lvlBounds = returnLvlBounds();
+	if (keys[SDL_SCANCODE_W] && entities[0]->position.y + entities[0]->halfLengths.y <= lvlBounds)
 	{
 		entities[0]->position.y += elapsed * 5.0; 
 	}
-	if (keys[SDL_SCANCODE_A] && entities[0]->position.x - entities[0]->halfLengths.x >= -10.0)
+	if (keys[SDL_SCANCODE_A] && entities[0]->position.x - entities[0]->halfLengths.x >= -lvlBounds)
 	{
 		entities[0]->position.x -= elapsed * 5.0;
 	}
-	if (keys[SDL_SCANCODE_S] && entities[0]->position.y - entities[0]->halfLengths.y >= -2.0 * 5)
+	if (keys[SDL_SCANCODE_S] && entities[0]->position.y - entities[0]->halfLengths.y >= -lvlBounds)
 	{
 		entities[0]->position.y -= elapsed * 5.0;
 	}
-	if (keys[SDL_SCANCODE_D] && entities[0]->position.x + entities[0]->halfLengths.y <= 10.0)
+	if (keys[SDL_SCANCODE_D] && entities[0]->position.x + entities[0]->halfLengths.y <= lvlBounds)
 	{
 		entities[0]->position.x += elapsed * 5.0;
 	}
@@ -551,10 +542,7 @@ void ProcessEvents(float elapsed)
 	}
 	if (keys[SDL_SCANCODE_SPACE])
 	{
-		if (!playerBullet->alive)
-		{
-			playerBullet->shoot(entities[0]);
-		}
+		if (!playerBullet->alive) { playerBullet->shoot(entities[0]); }
 	}
 	if (keys[SDL_SCANCODE_3] && keys[SDL_SCANCODE_4])
 	{
@@ -572,19 +560,13 @@ void level1Update(float elapsed)
 		entities[i]->update(elapsed);
 		for (size_t j = i; j < entities.size(); j++)
 		{
-			if (i != j && entities[i]->alive && entities[j]->alive)
-			{
-				collisions(entities[i], entities[j]);
-			}
+			if (i != j && entities[i]->alive && entities[j]->alive) { collisions(entities[i], entities[j]);}
 		}
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
 	textured.SetViewMatrix(viewMatrix);
-	for (Entity* star : starsVec)
-	{
-		star->update(elapsed);
-	}
+	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
 	if (entities[1]->alive)
 	{
@@ -620,38 +602,21 @@ void level1Update(float elapsed)
 	{
 		delayAccum += elapsed;
 		if (delayAccum >= 5.0)
-		{
-			//halt music and play won music
-			Mix_HaltMusic();
-			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
-			mode = WON;
-		}
+		{ mode = LEVEL2; }
 	}
 	first = false;
 }
 
 void level1Render()
 {
-	for (Entity* curr : starsVec)
-	{
-		curr->draw();
-	}
+	for (Entity* curr : starsVec) { curr->draw(); }
 	playerBullet->draw();
 	if (entities[1]->alive)
 	{
-		for (Entity* bullet : enemyBullets)
-		{
-			bullet->draw();
-		}
+		for (Entity* bullet : enemyBullets) { bullet->draw(); }
 	}
-	for (Entity* curr : entities)
-	{
-		curr->draw();
-	}
-	for (Entity* cp : cpVec)
-	{
-		cp->draw();
-	}
+	for (Entity* curr : entities) { curr->draw(); }
+	for (Entity* cp : cpVec) { cp->draw(); }
 }
 void level2Update(float elapsed)
 {
@@ -660,19 +625,13 @@ void level2Update(float elapsed)
 		entities[i]->update(elapsed);
 		for (size_t j = i; j < entities.size(); j++)
 		{
-			if (i != j && entities[i]->alive && entities[j]->alive)
-			{
-				collisions(entities[i], entities[j]);
-			}
+			if (i != j && entities[i]->alive && entities[j]->alive) { collisions(entities[i], entities[j]); }
 		}
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
 	textured.SetViewMatrix(viewMatrix);
-	for (Entity* star : starsVec)
-	{
-		star->update(elapsed);
-	}
+	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
 	if (entities[1]->alive)
 	{
@@ -707,39 +666,21 @@ void level2Update(float elapsed)
 	else
 	{
 		delayAccum += elapsed;
-		if (delayAccum >= 5.0)
-		{
-			//halt music and play won music
-			Mix_HaltMusic();
-			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
-			mode = WON;
-		}
+		if (delayAccum >= 5.0) { mode = LEVEL3; }
 	}
 	first = false;
 }
 
 void level2Render()
 {
-	for (Entity* curr : starsVec)
-	{
-		curr->draw();
-	}
+	for (Entity* curr : starsVec) {curr->draw();}
 	playerBullet->draw();
 	if (entities[1]->alive)
 	{
-		for (Entity* bullet : enemyBullets)
-		{
-			bullet->draw();
-		}
+		for (Entity* bullet : enemyBullets) { bullet->draw(); }
 	}
-	for (Entity* curr : entities)
-	{
-		curr->draw();
-	}
-	for (Entity* cp : cpVec)
-	{
-		cp->draw();
-	}
+	for (Entity* curr : entities) { curr->draw(); }
+	for (Entity* cp : cpVec) { cp->draw(); }
 }
 void level3Update(float elapsed)
 {
@@ -748,19 +689,13 @@ void level3Update(float elapsed)
 		entities[i]->update(elapsed);
 		for (size_t j = i; j < entities.size(); j++)
 		{
-			if (i != j && entities[i]->alive && entities[j]->alive)
-			{
-				collisions(entities[i], entities[j]);
-			}
+			if (i != j && entities[i]->alive && entities[j]->alive) { collisions(entities[i], entities[j]);}
 		}
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
 	textured.SetViewMatrix(viewMatrix);
-	for (Entity* star : starsVec)
-	{
-		star->update(elapsed);
-	}
+	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
 	if (entities[1]->alive)
 	{
@@ -808,26 +743,14 @@ void level3Update(float elapsed)
 
 void level3Render()
 {
-	for (Entity* curr : starsVec)
-	{
-		curr->draw();
-	}
+	for (Entity* curr : starsVec) { curr->draw(); }
 	playerBullet->draw();
 	if (entities[1]->alive)
 	{
-		for (Entity* bullet : enemyBullets)
-		{
-			bullet->draw();
-		}
+		for (Entity* bullet : enemyBullets) { bullet->draw(); }
 	}
-	for (Entity* curr : entities)
-	{
-		curr->draw();
-	}
-	for (Entity* cp : cpVec)
-	{
-		cp->draw();
-	}
+	for (Entity* curr : entities) { curr->draw(); }
+	for (Entity* cp : cpVec) { cp->draw(); }
 }
 
 void titleProcessEvents()
