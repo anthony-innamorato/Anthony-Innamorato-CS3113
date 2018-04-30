@@ -441,6 +441,8 @@ void Setup()
 	enemyBulletSound = Mix_LoadWAV("enemy.wav");
 	explosion = Mix_LoadWAV("explosion.wav");
 	levelMusic = Mix_LoadMUS("levelMusic.mp3");
+	lossMusic = Mix_LoadMUS("lost.mp3");
+	wonMusic = Mix_LoadMUS("won.mp3");
 	Mix_PlayMusic(levelMusic, -1);
 
 	Vector p1Vec = Vector(-10.0, 0.0, 0.0);
@@ -555,10 +557,16 @@ void ProcessEvents(float elapsed)
 	}
 	if (keys[SDL_SCANCODE_1] && keys[SDL_SCANCODE_2])
 	{
+		//halt music and play won music
+		Mix_HaltMusic();
+		if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
 		mode = WON;
 	}
 	if (keys[SDL_SCANCODE_3] && keys[SDL_SCANCODE_4])
 	{
+		//halt music and play loss music
+		Mix_HaltMusic();
+		if (Mix_PlayMusic(lossMusic, -1) == -1) { done = true; }
 		mode = LOSS;
 	}
 }
@@ -666,7 +674,7 @@ void wonProcessEvents()
 		}
 		if (event.type == SDL_KEYDOWN)
 		{
-			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) { done = true; }
+			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)  { done = true;}
 		}
 	}
 }
@@ -706,7 +714,13 @@ void lossProcessEvents()
 		}
 		if (event.type == SDL_KEYDOWN)
 		{
-			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) { mode = TITLE; resetLevel1(); }
+			if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) 
+			{ 
+				mode = TITLE; 
+				Mix_HaltMusic();
+				Mix_PlayMusic(levelMusic, -1);
+				resetLevel1(); 
+			}
 		}
 	}
 }
