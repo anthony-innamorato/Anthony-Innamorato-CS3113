@@ -40,7 +40,11 @@ std::vector<Entity*> entities;
 vector<Entity*> starsVec;
 Entity* playerBullet;
 vector<Entity*> enemyBullets;
+vector<Entity*> enemy2Bullets;
+vector<Entity*> enemy3Bullets;
 vector<Entity*> cpVec;
+vector<Entity*> cp2Vec;
+vector<Entity*> cp3Vec;
 vector<Text*> titleScreen;
 vector<Text*> wonScreen;
 vector<Text*> lossScreen;
@@ -435,6 +439,8 @@ void Setup()
 	Player* p1 = new Player(spriteSheet, 887.0, 3734.0, 241.0, 159.0, 1.0, p1Vec, .75, .75, 0.0);
 	p1->alive = true;
 	entities.push_back(p1);
+
+	//level 1
 	Enemy* e1 = new Enemy(spriteSheet, 887.0, 3570.0, 173.0, 162.0, 1.0, e1Vec, 10.0, 10.0, 0.0);
 	e1->alive = true;
 	entities.push_back(e1);
@@ -453,9 +459,9 @@ void Setup()
 		y -= 3;
 		x = -14.0;
 	}
+	Vector cpVector = e1Vec;
 	for (int i = 0; i < 3; i++)
 	{
-		Vector cpVector = e1Vec;
 		if (i == 0) { cpVector.y += (entities[1]->halfLengths.y / 1.5); cpVector.x += .1; }
 		else if (i == 1) { cpVector.y -= (entities[1]->halfLengths.y/2 + .3); cpVector.x -= (entities[1]->halfLengths.x/3 + .05); }
 		else { cpVector.y -= (entities[1]->halfLengths.y / 2 + .3); cpVector.x += (entities[1]->halfLengths.x / 2.8 + .15); }
@@ -464,9 +470,9 @@ void Setup()
 		cpVec.push_back(cp);
 	}
 	bool invY = true;
+	Vector eBullVec = e1Vec;
 	for (int i = 0; i < 4; i++)
 	{
-		Vector eBullVec = e1Vec;
 		if (i == 0) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x -= entities[1]->halfLengths.x/1.5; }
 		else if (i ==1) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x/1.5; }
 		else if (i == 2) { eBullVec.y += entities[1]->halfLengths.y; eBullVec.x -= (entities[1]->halfLengths.x / 2 - .9); invY = false; }
@@ -481,6 +487,78 @@ void Setup()
 			enemyBullets.push_back(enemyBullet);
 		}
 	}
+
+
+
+	//level2
+	Vector e2Vec = Vector(0.0, 0.0, 0.0);
+	Enemy* e2 = new Enemy(spriteSheet, 887.0, 3570.0, 173.0, 162.0, 1.0, e2Vec, 10.0, 10.0, 0.0);
+	e2->alive = true;
+	entities.push_back(e2);
+	Vector cp2Vector = e2Vec;
+	for (int i = 0; i < 3; i++)
+	{
+		if (i == 0) { cp2Vector.y += (entities[2]->halfLengths.y / 1.5); cp2Vector.x += .1; }
+		else if (i == 1) { cp2Vector.y -= (entities[2]->halfLengths.y / 2 + .3); cp2Vector.x -= (entities[2]->halfLengths.x / 3 + .05); }
+		else { cp2Vector.y -= (entities[2]->halfLengths.y / 2 + .3); cp2Vector.x += (entities[2]->halfLengths.x / 2.8 + .15); }
+		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cp2Vector, 1.0, 1.0, 0.0);
+		cp->alive = true;
+		cp2Vec.push_back(cp);
+	}
+	bool inv2Y = true;
+	Vector eBull2Vec = e2Vec;
+	for (int i = 0; i < 4; i++)
+	{
+		if (i == 0) { eBull2Vec.y -= entities[2]->halfLengths.y; eBull2Vec.x -= entities[2]->halfLengths.x / 1.5; }
+		else if (i == 1) { eBull2Vec.y -= entities[2]->halfLengths.y; eBull2Vec.x += entities[2]->halfLengths.x / 1.5; }
+		else if (i == 2) { eBull2Vec.y += entities[2]->halfLengths.y; eBull2Vec.x -= (entities[2]->halfLengths.x / 2 - .9); invY = false; }
+		else { eBull2Vec.y += entities[2]->halfLengths.y; eBull2Vec.x += (entities[2]->halfLengths.x / 2 - .9); }
+		for (int j = 0; j < 3; j++)
+		{
+			//create new bullet
+			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, eBull2Vec, 10.0, 10.0, 0.0);
+			enemyBullet->originalVec = eBull2Vec;
+			enemyBullet->invertY = inv2Y;
+			enemyBullet->timeAlive = j / 20.0;
+			enemy2Bullets.push_back(enemyBullet);
+		}
+	}
+
+	//level2
+	Vector e3Vec = Vector(0.0, 0.0, 0.0);
+	Enemy* e3 = new Enemy(spriteSheet, 887.0, 3570.0, 173.0, 162.0, 1.0, e3Vec, 10.0, 10.0, 0.0);
+	e3->alive = true;
+	entities.push_back(e3);
+	Vector cp3Vector = e3Vec;
+	for (int i = 0; i < 3; i++)
+	{
+		if (i == 0) { cp3Vector.y += (entities[3]->halfLengths.y / 1.5); cp3Vector.x += .1; }
+		else if (i == 1) { cp3Vector.y -= (entities[3]->halfLengths.y / 2 + .3); cp3Vector.x -= (entities[3]->halfLengths.x / 3 + .05); }
+		else { cp3Vector.y -= (entities[3]->halfLengths.y / 2 + .3); cp3Vector.x += (entities[3]->halfLengths.x / 2.8 + .15); }
+		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cp3Vector, 1.0, 1.0, 0.0);
+		cp->alive = true;
+		cp3Vec.push_back(cp);
+	}
+	bool inv3Y = true;
+	Vector eBull3Vec = e3Vec;
+	for (int i = 0; i < 4; i++)
+	{
+		if (i == 0) { eBull3Vec.y -= entities[3]->halfLengths.y; eBull3Vec.x -= entities[3]->halfLengths.x / 1.5; }
+		else if (i == 1) { eBull3Vec.y -= entities[3]->halfLengths.y; eBull3Vec.x += entities[3]->halfLengths.x / 1.5; }
+		else if (i == 2) { eBull3Vec.y += entities[3]->halfLengths.y; eBull3Vec.x -= (entities[3]->halfLengths.x / 2 - .9); invY = false; }
+		else { eBull3Vec.y += entities[3]->halfLengths.y; eBull3Vec.x += (entities[3]->halfLengths.x / 2 - .9); }
+		for (int j = 0; j < 3; j++)
+		{
+			//create new bullet
+			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, eBull3Vec, 10.0, 10.0, 0.0);
+			enemyBullet->originalVec = eBull3Vec;
+			enemyBullet->invertY = inv3Y;
+			enemyBullet->timeAlive = j / 20.0;
+			enemy3Bullets.push_back(enemyBullet);
+		}
+	}
+
+	//texts
 	Text* title = new Text(spriteSheet, 0.0, 522.0, 2139.0, 257.0, 2.0, Vector(0, 3.5, 0), 1.0, 1.0, 0.0);
 	titleScreen.push_back(title);
 	Text* contToPlay = new Text(spriteSheet, 0.0, 781.0, 1876.0, 116.0, 1.0, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
@@ -555,13 +633,10 @@ void ProcessEvents(float elapsed)
 
 void level1Update(float elapsed)
 {
-	for (size_t i = 0; i < entities.size(); i++)
+	for (size_t i = 0; i < 2; i++)
 	{
 		entities[i]->update(elapsed);
-		for (size_t j = i; j < entities.size(); j++)
-		{
-			if (i != j && entities[i]->alive && entities[j]->alive) { collisions(entities[i], entities[j]);}
-		}
+		if (entities[1]->alive) { collisions(entities[0], entities[1]);}
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
@@ -588,21 +663,21 @@ void level1Update(float elapsed)
 		if (!someAlive)
 		{
 			entities[1]->alive = false;
-			delayAccum += elapsed;
-		}
-		if (delayAccum >= 5.0)
-		{
-			//halt music and play won music
-			Mix_HaltMusic();
-			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
-			mode = WON;
 		}
 	}
 	else
 	{
 		delayAccum += elapsed;
-		if (delayAccum >= 5.0)
-		{ mode = LEVEL2; }
+		if (delayAccum >= 5.0) 
+		{ 
+			mode = LEVEL2; 
+			delayAccum = 0.0; 
+			Vector p1Vec = Vector(-10.0, 0.0, 0.0);
+			entities[0]->position = p1Vec;
+			playerBullet->alive = false;
+			Vector temp = Vector(-100, -100, 0);
+			playerBullet->position = temp;
+		}
 	}
 	first = false;
 }
@@ -615,33 +690,30 @@ void level1Render()
 	{
 		for (Entity* bullet : enemyBullets) { bullet->draw(); }
 	}
-	for (Entity* curr : entities) { curr->draw(); }
+	for (size_t i = 0; i < 2; i++) { entities[i]->draw(); }
 	for (Entity* cp : cpVec) { cp->draw(); }
 }
 void level2Update(float elapsed)
 {
-	for (size_t i = 0; i < entities.size(); i++)
+	for (size_t i = 0; i < 3; i+=2)
 	{
 		entities[i]->update(elapsed);
-		for (size_t j = i; j < entities.size(); j++)
-		{
-			if (i != j && entities[i]->alive && entities[j]->alive) { collisions(entities[i], entities[j]); }
-		}
+		if (entities[2]->alive) { collisions(entities[0], entities[2]); }
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
 	textured.SetViewMatrix(viewMatrix);
 	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
-	if (entities[1]->alive)
+	if (entities[2]->alive)
 	{
-		for (Entity* bullet : enemyBullets)
+		for (Entity* bullet : enemy2Bullets)
 		{
-			if (!bullet->alive) { bullet->shoot(entities[1]); }
+			if (!bullet->alive) { bullet->shoot(entities[2]); }
 			bullet->update(elapsed);
 		}
 		bool someAlive = false;
-		for (Entity* cp : cpVec)
+		for (Entity* cp : cp2Vec)
 		{
 			if (collisions(playerBullet, cp))
 			{
@@ -652,21 +724,22 @@ void level2Update(float elapsed)
 		}
 		if (!someAlive)
 		{
-			entities[1]->alive = false;
-			delayAccum += elapsed;
-		}
-		if (delayAccum >= 5.0)
-		{
-			//halt music and play won music
-			Mix_HaltMusic();
-			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
-			mode = WON;
+			entities[2]->alive = false;
 		}
 	}
 	else
 	{
 		delayAccum += elapsed;
-		if (delayAccum >= 5.0) { mode = LEVEL3; }
+		if (delayAccum >= 5.0) 
+		{
+			mode = LEVEL3; 
+			delayAccum = 0.0; 
+			Vector p1Vec = Vector(-10.0, 0.0, 0.0);
+			entities[0]->position = p1Vec;
+			playerBullet->alive = false;
+			Vector temp = Vector(-100, -100, 0);
+			playerBullet->position = temp;
+		}
 	}
 	first = false;
 }
@@ -675,37 +748,34 @@ void level2Render()
 {
 	for (Entity* curr : starsVec) {curr->draw();}
 	playerBullet->draw();
-	if (entities[1]->alive)
+	if (entities[2]->alive)
 	{
-		for (Entity* bullet : enemyBullets) { bullet->draw(); }
+		for (Entity* bullet : enemy2Bullets) { bullet->draw(); }
 	}
-	for (Entity* curr : entities) { curr->draw(); }
-	for (Entity* cp : cpVec) { cp->draw(); }
+	for (size_t i = 0; i < 3; i+=2) { entities[i]->draw(); }
+	for (Entity* cp : cp2Vec) { cp->draw(); }
 }
 void level3Update(float elapsed)
 {
-	for (size_t i = 0; i < entities.size(); i++)
+	for (size_t i = 0; i < 4; i+=3)
 	{
 		entities[i]->update(elapsed);
-		for (size_t j = i; j < entities.size(); j++)
-		{
-			if (i != j && entities[i]->alive && entities[j]->alive) { collisions(entities[i], entities[j]);}
-		}
+		if (entities[3]->alive) { collisions(entities[0], entities[3]);}
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
 	textured.SetViewMatrix(viewMatrix);
 	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
-	if (entities[1]->alive)
+	if (entities[3]->alive)
 	{
-		for (Entity* bullet : enemyBullets)
+		for (Entity* bullet : enemy3Bullets)
 		{
-			if (!bullet->alive) { bullet->shoot(entities[1]); }
+			if (!bullet->alive) { bullet->shoot(entities[3]); }
 			bullet->update(elapsed);
 		}
 		bool someAlive = false;
-		for (Entity* cp : cpVec)
+		for (Entity* cp : cp3Vec)
 		{
 			if (collisions(playerBullet, cp))
 			{
@@ -716,15 +786,7 @@ void level3Update(float elapsed)
 		}
 		if (!someAlive)
 		{
-			entities[1]->alive = false;
-			delayAccum += elapsed;
-		}
-		if (delayAccum >= 5.0)
-		{
-			//halt music and play won music
-			Mix_HaltMusic();
-			if (Mix_PlayMusic(wonMusic, -1) == -1) { done = true; }
-			mode = WON;
+			entities[3]->alive = false;
 		}
 	}
 	else
@@ -745,12 +807,12 @@ void level3Render()
 {
 	for (Entity* curr : starsVec) { curr->draw(); }
 	playerBullet->draw();
-	if (entities[1]->alive)
+	if (entities[3]->alive)
 	{
-		for (Entity* bullet : enemyBullets) { bullet->draw(); }
+		for (Entity* bullet : enemy3Bullets) { bullet->draw(); }
 	}
-	for (Entity* curr : entities) { curr->draw(); }
-	for (Entity* cp : cpVec) { cp->draw(); }
+	for (size_t i = 0; i < 4; i+=3) { entities[i]->draw(); }
+	for (Entity* cp : cp3Vec) { cp->draw(); }
 }
 
 void titleProcessEvents()
@@ -817,6 +879,40 @@ void resetLevel1()
 	}
 }
 
+void resetLevel2()
+{
+	//reset player pos
+	Vector p1Vec = Vector(-10.0, 0.0, 0.0);
+	entities[0]->position = p1Vec;
+	//reset player bullet
+	playerBullet->alive = false;
+	//reset enemy alive
+	entities[2]->alive = true;
+	//reset cps (health and alive)
+	for (Entity* cp : cp2Vec)
+	{
+		cp->alive = true;
+		cp->health = 0.0;
+	}
+}
+
+void resetLevel3()
+{
+	//reset player pos
+	Vector p1Vec = Vector(-10.0, 0.0, 0.0);
+	entities[0]->position = p1Vec;
+	//reset player bullet
+	playerBullet->alive = false;
+	//reset enemy alive
+	entities[3]->alive = true;
+	//reset cps (health and alive)
+	for (Entity* cp : cp3Vec)
+	{
+		cp->alive = true;
+		cp->health = 0.0;
+	}
+}
+
 void lossProcessEvents()
 {
 	while (SDL_PollEvent(&event)) {
@@ -832,6 +928,8 @@ void lossProcessEvents()
 				Mix_HaltMusic();
 				Mix_PlayMusic(levelMusic, -1);
 				resetLevel1(); 
+				resetLevel2();
+				resetLevel3();
 			}
 		}
 	}
