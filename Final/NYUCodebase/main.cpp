@@ -459,21 +459,21 @@ void Setup()
 	for (int i = 0; i < 3; i++)
 	{
 		Vector cpVector = e1Vec;
-		if (i == 0) { cpVector.y += (entities[1]->halfLengths.y *(.666667)); }
-		else if (i == 1) { cpVector.y -= (entities[1]->halfLengths.y * (.666667)); cpVector.x -= (entities[1]->halfLengths.x/2); }
-		else { cpVector.y -= (entities[1]->halfLengths.y * (.666667)); cpVector.x += (entities[1]->halfLengths.x * (.5)); }
+		if (i == 0) { cpVector.y += entities[1]->halfLengths.y * 2.1; cpVector.x += .1; }
+		else if (i == 1) { cpVector.y -= (entities[1]->halfLengths.y * 1.8 + .1); cpVector.x -= (entities[1]->halfLengths.x + .05); }
+		else { cpVector.y -= (entities[1]->halfLengths.y * 1.8 + .1); cpVector.x += (entities[1]->halfLengths.x + .2); }
 		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cpVector, 0.0);
 		cp->alive = true;
 		cpVec.push_back(cp);
 	}
-	bool invY = true;
+	bool invY = false;
 	for (int i = 0; i < 4; i++)
 	{
 		Vector eBullVec = e1Vec;
-		if (i == 0) { eBullVec.y += entities[1]->halfLengths.y; eBullVec.x -= entities[1]->halfLengths.x * (.5); }
-		else if (i ==1) { eBullVec.y += entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x * (.5); }
-		else if (i == 2) { eBullVec.y -= entities[1]->halfLengths.y * (.66667); eBullVec.x -= (entities[1]->halfLengths.x * (.2)); invY = false; }
-		else { eBullVec.y -= entities[1]->halfLengths.y * (.66667); eBullVec.x += (entities[1]->halfLengths.x * (.2)); }
+		if (i == 0) { eBullVec.y += (entities[1]->halfLengths.y * 3); eBullVec.x -= (entities[1]->halfLengths.x + .05); }
+		else if (i == 1) { eBullVec.y += entities[1]->halfLengths.y * 3; eBullVec.x += (entities[1]->halfLengths.x + .2); }
+		else if (i == 2) { eBullVec.y -= (entities[1]->halfLengths.y * 1.8 + .3); eBullVec.x -= (entities[1]->halfLengths.x * (.2) + .15); invY = true; }
+		else { eBullVec.y -= (entities[1]->halfLengths.y * 1.8 + .3); eBullVec.x += (entities[1]->halfLengths.x * (.2) + .3); }
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
