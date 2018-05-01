@@ -324,7 +324,7 @@ struct Star : public Entity
 		if (alive)
 		{
 			position.x -= elapsed;
-			if (position.x <= -17.75) { position.x = 17.75;}
+			if (position.x <= -30.0) { position.x = 30.0;}
 		}
 	}
 
@@ -442,11 +442,11 @@ void Setup()
 	e1->alive = true;
 	entities.push_back(e1);
 	playerBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, p1Vec, 0.0);
-	float y = 12.0;
-	float x = -14.0;
-	for (int i = 0; i < 9; i++)
+	float y = 30.0;
+	float x = -30.0;
+	for (int i = 0; i < 22; i++)
 	{
-		for (int j = 0; j < 10; j++)
+		for (int j = 0; j < 22; j++)
 		{
 			Vector starVec = Vector(x, y, 0.0);
 			Star* star = new Star(spriteSheet, 465.0, 3992.0, 90.0, 92.0, .35, starVec, 0.0);
@@ -454,7 +454,7 @@ void Setup()
 			starsVec.push_back(star);
 		}
 		y -= 3;
-		x = -14.0;
+		x = -30.0;
 	}
 	Vector cpVector = e1Vec;
 	for (int i = 0; i < 3; i++)
