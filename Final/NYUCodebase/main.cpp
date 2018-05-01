@@ -182,6 +182,7 @@ struct Entity
 	Entity* _owner;
 	bool horizBull = false;
 	bool shootLeft = false;
+	float shiftedAngle = 0.0;
 };
 
 float distance(Entity* e1, Entity* e2)
@@ -237,8 +238,7 @@ struct Bullet : public Entity
 		else
 		{
 			float temp = rand() % 3 -1; //-1,0,1
-			angle = 45.0 * temp;
-			if (angle == 90.0) { done = true; }
+			angle = 45.0 * temp + shiftedAngle;
 			//angle = 45.0; left correct
 			//angle = 0.0; straight down
 			//angle = -45.0; right correct
@@ -472,20 +472,21 @@ void Setup()
 		cp->alive = true;
 		cpVec.push_back(cp);
 	}
-	bool invY = false;
+	float angle = 0.0;
 	for (int i = 0; i < 4; i++)
 	{
 		Vector eBullVec = e1Vec;
 		if (i == 0) { eBullVec.y += (entities[1]->halfLengths.y * 3); eBullVec.x -= (entities[1]->halfLengths.x + .05); }
 		else if (i == 1) { eBullVec.y += entities[1]->halfLengths.y * 3; eBullVec.x += (entities[1]->halfLengths.x + .2); }
-		else if (i == 2) { eBullVec.y -= (entities[1]->halfLengths.y * 1.8 + .3); eBullVec.x -= (entities[1]->halfLengths.x * (.2) + .15); invY = true; }
+		else if (i == 2) { eBullVec.y -= (entities[1]->halfLengths.y * 1.8 + .3); eBullVec.x -= (entities[1]->halfLengths.x * (.2) + .15); angle = 180.0; }
 		else { eBullVec.y -= (entities[1]->halfLengths.y * 1.8 + .3); eBullVec.x += (entities[1]->halfLengths.x * (.2) + .3); }
 		for (int j = 0; j < 8; j++)
 		{
 			//create new bullet
 			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, eBullVec, 0.0);
 			enemyBullet->originalVec = eBullVec;
-			enemyBullet->invertY = invY;
+			//enemyBullet->invertY = invY;
+			enemyBullet->shiftedAngle = angle;
 			enemyBullet->timeAlive = j / 20.0;
 			enemyBullets.push_back(enemyBullet);
 		}
@@ -510,23 +511,23 @@ void Setup()
 		cp->alive = true;
 		cp2Vec.push_back(cp);
 	}
-	bool inv2Y = false;
+	float angle2 = 0.0;
 	for (int i = 0; i < 7; i++)
 	{
 		Vector eBull2Vec = e2Vec;
-		if (i == 0) { inv2Y = true; eBull2Vec.x -= (entities[2]->halfLengths.x * 3); eBull2Vec.y += (entities[2]->halfLengths.y * (1.7) + .5); }
-		else if (i == 1) { eBull2Vec.x -= (entities[2]->halfLengths.x * 3); eBull2Vec.y -= (entities[2]->halfLengths.y * (1.7) + .5); inv2Y = false; }
-		else if (i == 2) { eBull2Vec.y += (entities[2]->halfLengths.y * (3)) - .2; inv2Y = false; }
-		else if (i == 3) { eBull2Vec.y -= (entities[2]->halfLengths.y * (3)) - .2; inv2Y = true; }
+		if (i == 0) { angle2 = 180.0; eBull2Vec.x -= (entities[2]->halfLengths.x * 3); eBull2Vec.y += (entities[2]->halfLengths.y * (1.7) + .5); }
+		else if (i == 1) { eBull2Vec.x -= (entities[2]->halfLengths.x * 3); eBull2Vec.y -= (entities[2]->halfLengths.y * (1.7) + .5); angle2 = 0.0; }
+		else if (i == 2) { eBull2Vec.y += (entities[2]->halfLengths.y * (3)) - .2; }
+		else if (i == 3) { eBull2Vec.y -= (entities[2]->halfLengths.y * (3)) - .2; angle2 = 180.0; }
 		else if (i == 4) { continue; }
-		else if (i == 5) { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y += (entities[2]->halfLengths.y * (1.7) - .1); inv2Y = false; }
-		else { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y -= (entities[2]->halfLengths.y * (1.7) - .1); inv2Y = true; }
+		else if (i == 5) { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y += (entities[2]->halfLengths.y * (1.7) - .1); angle2 = 0.0; }
+		else { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y -= (entities[2]->halfLengths.y * (1.7) - .1); angle2 = 180.0; }
 		for (int j = 0; j < 8; j++)
 		{
 			//create new bullet
 			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, eBull2Vec, 0.0);
 			enemyBullet->originalVec = eBull2Vec;
-			enemyBullet->invertY = inv2Y;
+			enemyBullet->shiftedAngle = angle2;
 			enemyBullet->timeAlive = j / 20.0;
 			enemy2Bullets.push_back(enemyBullet);
 		}
@@ -555,26 +556,26 @@ void Setup()
 		cp->alive = true;
 		cp3Vec.push_back(cp);
 	}
-	bool inv3Y = true;
+	float angle3 = 0.0;
 	for (int i = 0; i < 10; i++)
 	{
 		Vector eBull3Vec = e3Vec;
-		if (i == 0) { eBull3Vec.x -= entities[3]->halfLengths.x * (14.0 / 3) - .5; eBull3Vec.y += entities[3]->halfLengths.y * 3; inv3Y = false; }
-		else if (i == 1) { eBull3Vec.x -= entities[3]->halfLengths.x * (.66667 * 6) - .4; }
-		else if (i == 2) { eBull3Vec.x -= entities[3]->halfLengths.x * (14.0 / 3) - .5; eBull3Vec.y -= entities[3]->halfLengths.y * 3; inv3Y = true; }
-		else if (i == 3) { eBull3Vec.x -= entities[3]->halfLengths.x * (.33333 * 5) - .8; eBull3Vec.y -= entities[3]->halfLengths.y * (.66667 * 5); }
-		else if (i == 4) { eBull3Vec.x += entities[3]->halfLengths.x * (4.0 / 3) + .1; eBull3Vec.y -= entities[3]->halfLengths.y * 4.8 + .1; inv3Y = true; }
-		else if (i == 5) { eBull3Vec.x += entities[3]->halfLengths.x * (.66667 * 4) + .1; eBull3Vec.y -= entities[3]->halfLengths.y * (.5 * 4) + .15; }
-		else if (i == 6) { eBull3Vec.x += entities[3]->halfLengths.x * (.9 * 5.5) + .2; }
-		else if (i == 7) { eBull3Vec.x += entities[3]->halfLengths.x * (.66667 * 4) + .1; eBull3Vec.y += entities[3]->halfLengths.y * (.5 * 4) + .15; inv3Y = false; }
-		else if (i == 8) { eBull3Vec.x += entities[3]->halfLengths.x * (4.0 / 3) + .1; eBull3Vec.y += entities[3]->halfLengths.y * 4.8 + .1; inv3Y = false; }
-		else { eBull3Vec.x -= entities[3]->halfLengths.x * (.33333 * 4); eBull3Vec.y += entities[3]->halfLengths.y * (.66667 * 5); }
+		if (i == 0) { eBull3Vec.x -= entities[3]->halfLengths.x * (14.0 / 3) - .5; eBull3Vec.y += entities[3]->halfLengths.y * 3; angle3 = 45.0; }
+		else if (i == 1) { eBull3Vec.x -= entities[3]->halfLengths.x * (.66667 * 6) - .4; angle3 = 90.0; }
+		else if (i == 2) { eBull3Vec.x -= entities[3]->halfLengths.x * (14.0 / 3) - .5; eBull3Vec.y -= entities[3]->halfLengths.y * 3; angle3 = 135.0; }
+		else if (i == 3) { eBull3Vec.x -= entities[3]->halfLengths.x * (.33333 * 5) - .8; eBull3Vec.y -= entities[3]->halfLengths.y * (.66667 * 5); angle3 = 170.0; }
+		else if (i == 4) { eBull3Vec.x += entities[3]->halfLengths.x * (4.0 / 3) + .1; eBull3Vec.y -= entities[3]->halfLengths.y * 4.8 + .1; angle3 = 195.0; }
+		else if (i == 5) { eBull3Vec.x += entities[3]->halfLengths.x * (.66667 * 4) + .1; eBull3Vec.y -= entities[3]->halfLengths.y * (.5 * 4) + .15; angle3 = 225.0; }
+		else if (i == 6) { eBull3Vec.x += entities[3]->halfLengths.x * (.9 * 5.5) + .2; angle3 = 270.0; }
+		else if (i == 7) { eBull3Vec.x += entities[3]->halfLengths.x * (.66667 * 4) + .1; eBull3Vec.y += entities[3]->halfLengths.y * (.5 * 4) + .15; angle3 = 315.0; }
+		else if (i == 8) { eBull3Vec.x += entities[3]->halfLengths.x * (4.0 / 3) + .1; eBull3Vec.y += entities[3]->halfLengths.y * 4.8 + .1; angle3 = 340.0; }
+		else { eBull3Vec.x -= entities[3]->halfLengths.x * (.33333 * 4); eBull3Vec.y += entities[3]->halfLengths.y * (.66667 * 5); angle3 = 30.0;}
 		for (int j = 0; j < 8; j++)
 		{
 			//create new bullet
 			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, eBull3Vec, 0.0);
+			enemyBullet->shiftedAngle = angle3;
 			enemyBullet->originalVec = eBull3Vec;
-			enemyBullet->invertY = inv3Y;
 			enemyBullet->timeAlive = j / 20.0;
 			enemy3Bullets.push_back(enemyBullet);
 		}
