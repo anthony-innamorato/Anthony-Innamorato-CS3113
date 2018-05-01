@@ -102,7 +102,7 @@ struct Entity
 	Entity(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle) 
 		: textureImage(texture), u(u / 4096.0), v(v / 4096.0), width(width / 4096.0), height(height / 4096.0), size(size), position(position), angle(angle)
 	{
-		halfLengths = Vector(size * (width / height) * .5, size * .5, 0);
+		halfLengths = Vector(size * (width / height) * .5, size * .5 * (height/width), 0);
 		points.push_back(Vector(-halfLengths.x, -halfLengths.y, 0) * modelMatrix);
 		points.push_back(Vector(halfLengths.x, -halfLengths.y, 0) * modelMatrix);
 		points.push_back(Vector(halfLengths.x, halfLengths.y, 0) * modelMatrix);
@@ -456,24 +456,24 @@ void Setup()
 		y -= 3;
 		x = -30.0;
 	}
-	Vector cpVector = e1Vec;
 	for (int i = 0; i < 3; i++)
 	{
-		if (i == 0) { cpVector.y += (entities[1]->halfLengths.y / 1.5); cpVector.x += .1; }
-		else if (i == 1) { cpVector.y -= (entities[1]->halfLengths.y/2 + .3); cpVector.x -= (entities[1]->halfLengths.x/3 + .05); }
-		else { cpVector.y -= (entities[1]->halfLengths.y / 2 + .3); cpVector.x += (entities[1]->halfLengths.x / 2.8 + .15); }
+		Vector cpVector = e1Vec;
+		if (i == 0) { cpVector.y += (entities[1]->halfLengths.y *(.666667)); }
+		else if (i == 1) { cpVector.y -= (entities[1]->halfLengths.y * (.666667)); cpVector.x -= (entities[1]->halfLengths.x/2); }
+		else { cpVector.y -= (entities[1]->halfLengths.y * (.666667)); cpVector.x += (entities[1]->halfLengths.x * (.5)); }
 		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cpVector, 0.0);
 		cp->alive = true;
 		cpVec.push_back(cp);
 	}
 	bool invY = true;
-	Vector eBullVec = e1Vec;
 	for (int i = 0; i < 4; i++)
 	{
-		if (i == 0) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x -= entities[1]->halfLengths.x/1.5; }
-		else if (i ==1) { eBullVec.y -= entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x/1.5; }
-		else if (i == 2) { eBullVec.y += entities[1]->halfLengths.y; eBullVec.x -= (entities[1]->halfLengths.x / 2 - .9); invY = false; }
-		else { eBullVec.y += entities[1]->halfLengths.y; eBullVec.x += (entities[1]->halfLengths.x / 2 -.9); }
+		Vector eBullVec = e1Vec;
+		if (i == 0) { eBullVec.y += entities[1]->halfLengths.y; eBullVec.x -= entities[1]->halfLengths.x * (.5); }
+		else if (i ==1) { eBullVec.y += entities[1]->halfLengths.y; eBullVec.x += entities[1]->halfLengths.x * (.5); }
+		else if (i == 2) { eBullVec.y -= entities[1]->halfLengths.y * (.66667); eBullVec.x -= (entities[1]->halfLengths.x * (.2)); invY = false; }
+		else { eBullVec.y -= entities[1]->halfLengths.y * (.66667); eBullVec.x += (entities[1]->halfLengths.x * (.2)); }
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
@@ -492,9 +492,9 @@ void Setup()
 	Enemy* e2 = new Enemy(spriteSheet, 1152.0, 3255.0, 898.0, 700.0, 4.0, e2Vec, 0.0);
 	e2->alive = true;
 	entities.push_back(e2);
-	Vector cp2Vector = e2Vec;
 	for (int i = 0; i < 3; i++)
 	{
+		Vector cp2Vector = e2Vec;
 		if (i == 0) { cp2Vector.y += (entities[2]->halfLengths.y / 1.5); cp2Vector.x += .1; }
 		else if (i == 1) { cp2Vector.y -= (entities[2]->halfLengths.y / 2 + .3); cp2Vector.x -= (entities[2]->halfLengths.x / 3 + .05); }
 		else { cp2Vector.y -= (entities[2]->halfLengths.y / 2 + .3); cp2Vector.x += (entities[2]->halfLengths.x / 2.8 + .15); }
@@ -503,9 +503,9 @@ void Setup()
 		cp2Vec.push_back(cp);
 	}
 	bool inv2Y = true;
-	Vector eBull2Vec = e2Vec;
 	for (int i = 0; i < 4; i++)
 	{
+		Vector eBull2Vec = e2Vec;
 		if (i == 0) { eBull2Vec.y -= entities[2]->halfLengths.y; eBull2Vec.x -= entities[2]->halfLengths.x / 1.5; }
 		else if (i == 1) { eBull2Vec.y -= entities[2]->halfLengths.y; eBull2Vec.x += entities[2]->halfLengths.x / 1.5; }
 		else if (i == 2) { eBull2Vec.y += entities[2]->halfLengths.y; eBull2Vec.x -= (entities[2]->halfLengths.x / 2 - .9); invY = false; }
@@ -527,9 +527,9 @@ void Setup()
 	Enemy* e3 = new Enemy(spriteSheet, 0.0, 3570.0, 463.0, 468.0, 5.0, e3Vec, 0.0);
 	e3->alive = true;
 	entities.push_back(e3);
-	Vector cp3Vector = e3Vec;
 	for (int i = 0; i < 3; i++)
 	{
+		Vector cp3Vector = e3Vec;
 		if (i == 0) { cp3Vector.y += (entities[3]->halfLengths.y / 1.5); cp3Vector.x += .1; }
 		else if (i == 1) { cp3Vector.y -= (entities[3]->halfLengths.y / 2 + .3); cp3Vector.x -= (entities[3]->halfLengths.x / 3 + .05); }
 		else { cp3Vector.y -= (entities[3]->halfLengths.y / 2 + .3); cp3Vector.x += (entities[3]->halfLengths.x / 2.8 + .15); }
@@ -538,9 +538,9 @@ void Setup()
 		cp3Vec.push_back(cp);
 	}
 	bool inv3Y = true;
-	Vector eBull3Vec = e3Vec;
 	for (int i = 0; i < 4; i++)
 	{
+		Vector eBull3Vec = e3Vec;
 		if (i == 0) { eBull3Vec.y -= entities[3]->halfLengths.y; eBull3Vec.x -= entities[3]->halfLengths.x / 1.5; }
 		else if (i == 1) { eBull3Vec.y -= entities[3]->halfLengths.y; eBull3Vec.x += entities[3]->halfLengths.x / 1.5; }
 		else if (i == 2) { eBull3Vec.y += entities[3]->halfLengths.y; eBull3Vec.x -= (entities[3]->halfLengths.x / 2 - .9); invY = false; }
