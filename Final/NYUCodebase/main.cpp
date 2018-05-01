@@ -537,16 +537,16 @@ void Setup()
 	for (int i = 0; i < 10; i++)
 	{
 		Vector cp3Vector = e3Vec;
-		if (i == 0) { ; }
-		else if (i == 1) { ; }
-		else if (i == 2) { ; }
-		else if (i == 3) { ; }
-		else if (i == 4) { ; }
-		else if (i == 5) { ; }
-		else if (i == 6) { ; }
-		else if (i == 7) { ; }
-		else if (i == 8) { ; }
-		else { ; }
+		if (i == 0) { cp3Vector.x -= entities[3]->halfLengths.x * (.66667 * 5.5) + .2; cp3Vector.y += entities[3]->halfLengths.y * (.5 * 5); }
+		else if (i == 1) { cp3Vector.x -= entities[3]->halfLengths.x * (.66667 * 6) - .4;}
+		else if (i == 2) { cp3Vector.x -= entities[3]->halfLengths.x * (.66667 * 5.5) + .2; cp3Vector.y -= entities[3]->halfLengths.y * (.5 * 5); }
+		else if (i == 3) { cp3Vector.x -= entities[3]->halfLengths.x * (.33333 * 5) - .8; cp3Vector.y-= entities[3]->halfLengths.y * (.66667 * 5); }
+		else if (i == 4) { cp3Vector.x += entities[3]->halfLengths.x * (.33333 * 3.5) - .1; cp3Vector.y -= entities[3]->halfLengths.y * (.8 * 5) + .2; }
+		else if (i == 5) { cp3Vector.x += entities[3]->halfLengths.x * (.66667 * 4) + .1; cp3Vector.y -= entities[3]->halfLengths.y * (.5 * 4) + .15; }
+		else if (i == 6) { cp3Vector.x += entities[3]->halfLengths.x * (.9 * 4.5) + .2; }
+		else if (i == 7) { cp3Vector.x += entities[3]->halfLengths.x * (.66667 * 4) + .1; cp3Vector.y += entities[3]->halfLengths.y * (.5 * 4) + .15; }
+		else if (i == 8) { cp3Vector.x += entities[3]->halfLengths.x * (.33333 * 3.5) - .1; cp3Vector.y += entities[3]->halfLengths.y * (.8 * 5) + .2; }
+		else { cp3Vector.x -= entities[3]->halfLengths.x * (.33333 * 4); cp3Vector.y += entities[3]->halfLengths.y * (.66667 * 5); }
 		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cp3Vector, 0.0);
 		cp->alive = true;
 		cp3Vec.push_back(cp);
@@ -705,7 +705,7 @@ void level1Update(float elapsed)
 		{ 
 			mode = LEVEL2; 
 			delayAccum = 0.0; 
-			Vector p1Vec = Vector(-10.0, 0.0, 0.0);
+			Vector p1Vec = Vector(-15.0, 0.0, 0.0);
 			entities[0]->position = p1Vec;
 			playerBullet->alive = false;
 			Vector temp = Vector(-100, -100, 0);
@@ -767,7 +767,7 @@ void level2Update(float elapsed)
 		{
 			mode = LEVEL3; 
 			delayAccum = 0.0; 
-			Vector p1Vec = Vector(-10.0, 0.0, 0.0);
+			Vector p1Vec = Vector(-20.0, 0.0, 0.0);
 			entities[0]->position = p1Vec;
 			playerBullet->alive = false;
 			Vector temp = Vector(-100, -100, 0);
@@ -793,7 +793,7 @@ void level3Update(float elapsed)
 	for (size_t i = 0; i < 4; i+=3)
 	{
 		entities[i]->update(elapsed);
-		if (entities[3]->alive) { collisions(entities[0], entities[3]);}
+		//if (entities[3]->alive) { collisions(entities[0], entities[3]);}
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
