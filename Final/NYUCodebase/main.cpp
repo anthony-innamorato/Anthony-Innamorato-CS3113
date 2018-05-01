@@ -510,13 +510,13 @@ void Setup()
 	for (int i = 0; i < 7; i++)
 	{
 		Vector eBull2Vec = e2Vec;
-		if (i == 0) { ; }
-		else if (i == 1) { ; }
-		else if (i == 2) { ; inv2Y = false; }
-		else if (i == 3) { ; }
-		else if (i == 4) { ; inv2Y = true; }
-		else if (i == 5) { ; inv2Y = false; }
-		else { ; inv2Y = true; }
+		if (i == 0) { inv2Y = true; eBull2Vec.x -= (entities[2]->halfLengths.x * 3); eBull2Vec.y += (entities[2]->halfLengths.y * (1.7) + .5); }
+		else if (i == 1) { eBull2Vec.x -= (entities[2]->halfLengths.x * 3); eBull2Vec.y -= (entities[2]->halfLengths.y * (1.7) + .5); inv2Y = false; }
+		else if (i == 2) { eBull2Vec.y += (entities[2]->halfLengths.y * (3)) - .2; inv2Y = false; }
+		else if (i == 3) { eBull2Vec.y -= (entities[2]->halfLengths.y * (3)) - .2; inv2Y = true; }
+		else if (i == 4) { continue; }
+		else if (i == 5) { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y += (entities[2]->halfLengths.y * (1.7) - .1); inv2Y = false; }
+		else { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y -= (entities[2]->halfLengths.y * (1.7) - .1); inv2Y = true; }
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
@@ -552,7 +552,7 @@ void Setup()
 		cp3Vec.push_back(cp);
 	}
 	bool inv3Y = true;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		Vector eBull3Vec = e3Vec;
 		if (i == 0) { ; }
@@ -666,7 +666,7 @@ void level1Update(float elapsed)
 	for (size_t i = 0; i < 2; i++)
 	{
 		entities[i]->update(elapsed);
-		if (entities[1]->alive) { collisions(entities[0], entities[1]);}
+		//if (entities[1]->alive) { collisions(entities[0], entities[1]);}
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
@@ -731,7 +731,7 @@ void level2Update(float elapsed)
 	for (size_t i = 0; i < 3; i+=2)
 	{
 		entities[i]->update(elapsed);
-		if (entities[2]->alive) { collisions(entities[0], entities[2]); }
+		//if (entities[2]->alive) { collisions(entities[0], entities[2]); }
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
