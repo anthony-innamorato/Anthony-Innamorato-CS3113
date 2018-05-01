@@ -174,13 +174,13 @@ struct Entity
 	float xScale;
 	float yScale;
 	float angle;
-	float maxLife = .25;
+	float maxLife = .35;
 	std::vector<Vector> points;
 	Vector halfLengths;
 	bool isEnemy = false;
 	Vector originalVec;
 	bool invertY = false;
-	Entity* owner;
+	Entity* _owner;
 };
 
 float distance(Entity* e1, Entity* e2)
@@ -231,7 +231,7 @@ struct Bullet : public Entity
 
 	void shoot(Entity* owner)
 	{
-		this->owner = owner;
+		this->_owner = owner;
 		if (owner == entities[0]) { position = owner->position; angle = owner->angle; }
 		else
 		{
@@ -268,7 +268,7 @@ struct Bullet : public Entity
 			modelMatrix.Identity();
 			modelMatrix.Translate(position.x, position.y, position.z);
 			modelMatrix.Scale(xScale, yScale, 1.0);
-			if (owner == entities[0] || angle == 0.0) { modelMatrix.Rotate((angle - 240.0) * (3.14159265 / 180.0)); }
+			if (_owner == entities[0] || angle == 0.0) { modelMatrix.Rotate((angle - 240.0) * (3.14159265 / 180.0)); }
 			else //angle equal -45 or 45
 			{
 				if (!invertY) { modelMatrix.Rotate((angle + 120) * (3.14159265 / 180.0));}
@@ -492,7 +492,7 @@ void Setup()
 
 	//level2
 	Vector e2Vec = Vector(0.0, 0.0, 0.0);
-	Enemy* e2 = new Enemy(spriteSheet, 887.0, 3570.0, 173.0, 162.0, 1.0, e2Vec, 10.0, 10.0, 0.0);
+	Enemy* e2 = new Enemy(spriteSheet, 1152.0, 3255.0, 898.0, 700.0, 13.0, e2Vec, 1.0, 1.0, 0.0);
 	e2->alive = true;
 	entities.push_back(e2);
 	Vector cp2Vector = e2Vec;
@@ -524,9 +524,10 @@ void Setup()
 		}
 	}
 
-	//level2
+	//level3
 	Vector e3Vec = Vector(0.0, 0.0, 0.0);
-	Enemy* e3 = new Enemy(spriteSheet, 887.0, 3570.0, 173.0, 162.0, 1.0, e3Vec, 10.0, 10.0, 0.0);
+	//height = "468" width = "463" y = "3570" x = "0"
+	Enemy* e3 = new Enemy(spriteSheet, 0.0, 3570.0, 463.0, 468.0, 20.0, e3Vec, 1.0, 1.0, 0.0);
 	e3->alive = true;
 	entities.push_back(e3);
 	Vector cp3Vector = e3Vec;
@@ -629,6 +630,18 @@ void ProcessEvents(float elapsed)
 		if (Mix_PlayMusic(lossMusic, -1) == -1) { done = true; }
 		mode = LOSS;
 	}
+	if (keys[SDL_SCANCODE_L] && keys[SDL_SCANCODE_1])
+	{
+		mode = LEVEL1;
+	}
+	if (keys[SDL_SCANCODE_L] && keys[SDL_SCANCODE_2])
+	{
+		mode = LEVEL2;
+	}
+	if (keys[SDL_SCANCODE_L] && keys[SDL_SCANCODE_3])
+	{
+		mode = LEVEL3;
+	}
 }
 
 void level1Update(float elapsed)
@@ -653,10 +666,13 @@ void level1Update(float elapsed)
 		bool someAlive = false;
 		for (Entity* cp : cpVec)
 		{
-			if (collisions(playerBullet, cp))
+			if (playerBullet->alive) 
 			{
-				cp->health -= .01;
-				if (cp->health <= 0) { cp->alive = false; }
+				if (collisions(playerBullet, cp))
+				{
+					cp->health -= .01;
+					if (cp->health <= 0) { cp->alive = false; }
+				}
 			}
 			if (cp->alive) { someAlive = true; }
 		}
