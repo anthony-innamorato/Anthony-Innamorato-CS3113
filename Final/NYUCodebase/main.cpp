@@ -555,16 +555,16 @@ void Setup()
 	for (int i = 0; i < 10; i++)
 	{
 		Vector eBull3Vec = e3Vec;
-		if (i == 0) { ; }
-		else if (i == 1) { ; }
-		else if (i == 2) { ; }
-		else if (i == 3) { ; }
-		else if (i == 4) { ; }
-		else if (i == 5) { ; }
-		else if (i == 6) { ; }
-		else if (i == 7) { ; }
-		else if (i == 8) { ; }
-		else { ; }
+		if (i == 0) { eBull3Vec.x -= entities[3]->halfLengths.x * (14.0 / 3) - .5; eBull3Vec.y += entities[3]->halfLengths.y * 3; inv3Y = false; }
+		else if (i == 1) { eBull3Vec.x -= entities[3]->halfLengths.x * (.66667 * 6) - .4; }
+		else if (i == 2) { eBull3Vec.x -= entities[3]->halfLengths.x * (14.0 / 3) - .5; eBull3Vec.y -= entities[3]->halfLengths.y * 3; inv3Y = true; }
+		else if (i == 3) { eBull3Vec.x -= entities[3]->halfLengths.x * (.33333 * 5) - .8; eBull3Vec.y -= entities[3]->halfLengths.y * (.66667 * 5); }
+		else if (i == 4) { eBull3Vec.x += entities[3]->halfLengths.x * (4.0 / 3) + .1; eBull3Vec.y -= entities[3]->halfLengths.y * 4.8 + .1; inv3Y = true; }
+		else if (i == 5) { eBull3Vec.x += entities[3]->halfLengths.x * (.66667 * 4) + .1; eBull3Vec.y -= entities[3]->halfLengths.y * (.5 * 4) + .15; }
+		else if (i == 6) { eBull3Vec.x += entities[3]->halfLengths.x * (.9 * 5.5) + .2; }
+		else if (i == 7) { eBull3Vec.x += entities[3]->halfLengths.x * (.66667 * 4) + .1; eBull3Vec.y += entities[3]->halfLengths.y * (.5 * 4) + .15; inv3Y = false; }
+		else if (i == 8) { eBull3Vec.x += entities[3]->halfLengths.x * (4.0 / 3) + .1; eBull3Vec.y += entities[3]->halfLengths.y * 4.8 + .1; inv3Y = false; }
+		else { eBull3Vec.x -= entities[3]->halfLengths.x * (.33333 * 4); eBull3Vec.y += entities[3]->halfLengths.y * (.66667 * 5); }
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
