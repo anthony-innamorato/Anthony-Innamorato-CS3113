@@ -519,7 +519,7 @@ void Setup()
 		else if (i == 1) { eBull2Vec.x -= (entities[2]->halfLengths.x * 3); eBull2Vec.y -= (entities[2]->halfLengths.y * (1.7) + .5); angle2 = 0.0; }
 		else if (i == 2) { eBull2Vec.y += (entities[2]->halfLengths.y * (3)) - .2; }
 		else if (i == 3) { eBull2Vec.y -= (entities[2]->halfLengths.y * (3)) - .2; angle2 = 180.0; }
-		else if (i == 4) { continue; }
+		else if (i == 4) { eBull2Vec.x += entities[2]->halfLengths.x * (1.4) - .2; angle2 = 270.0; }
 		else if (i == 5) { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y += (entities[2]->halfLengths.y * (1.7) - .1); angle2 = 0.0; }
 		else { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y -= (entities[2]->halfLengths.y * (1.7) - .1); angle2 = 180.0; }
 		for (int j = 0; j < 8; j++)
