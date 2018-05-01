@@ -178,6 +178,8 @@ struct Entity
 	Vector originalVec;
 	bool invertY = false;
 	Entity* _owner;
+	bool horizBull = false;
+	bool shootLeft = false;
 };
 
 float distance(Entity* e1, Entity* e2)
@@ -492,24 +494,29 @@ void Setup()
 	Enemy* e2 = new Enemy(spriteSheet, 1152.0, 3255.0, 898.0, 700.0, 4.0, e2Vec, 0.0);
 	e2->alive = true;
 	entities.push_back(e2);
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		Vector cp2Vector = e2Vec;
-		if (i == 0) { cp2Vector.y += (entities[2]->halfLengths.y / 1.5); cp2Vector.x += .1; }
-		else if (i == 1) { cp2Vector.y -= (entities[2]->halfLengths.y / 2 + .3); cp2Vector.x -= (entities[2]->halfLengths.x / 3 + .05); }
-		else { cp2Vector.y -= (entities[2]->halfLengths.y / 2 + .3); cp2Vector.x += (entities[2]->halfLengths.x / 2.8 + .15); }
+		if (i == 0) { cp2Vector.x -= entities[2]->halfLengths.x * (2) - .4; }
+		else if (i == 1) { cp2Vector.x -= (entities[2]->halfLengths.x + .1) ; cp2Vector.y += (entities[2]->halfLengths.y * (3.9)); }
+		else if (i == 2) { cp2Vector.x -= (entities[2]->halfLengths.x + .1) ; cp2Vector.y -= (entities[2]->halfLengths.y * (4.0)); }
+		else if (i == 3) { cp2Vector.x += entities[2]->halfLengths.x * (1.4); cp2Vector.y += (entities[2]->halfLengths.y * (1.7)); }
+		else { cp2Vector.x += entities[2]->halfLengths.x * (1.4); cp2Vector.y -= (entities[2]->halfLengths.y * (1.7)); }
 		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cp2Vector, 0.0);
 		cp->alive = true;
 		cp2Vec.push_back(cp);
 	}
-	bool inv2Y = true;
-	for (int i = 0; i < 4; i++)
+	bool inv2Y = false;
+	for (int i = 0; i < 7; i++)
 	{
 		Vector eBull2Vec = e2Vec;
-		if (i == 0) { eBull2Vec.y -= entities[2]->halfLengths.y; eBull2Vec.x -= entities[2]->halfLengths.x / 1.5; }
-		else if (i == 1) { eBull2Vec.y -= entities[2]->halfLengths.y; eBull2Vec.x += entities[2]->halfLengths.x / 1.5; }
-		else if (i == 2) { eBull2Vec.y += entities[2]->halfLengths.y; eBull2Vec.x -= (entities[2]->halfLengths.x / 2 - .9); invY = false; }
-		else { eBull2Vec.y += entities[2]->halfLengths.y; eBull2Vec.x += (entities[2]->halfLengths.x / 2 - .9); }
+		if (i == 0) { ; }
+		else if (i == 1) { ; }
+		else if (i == 2) { ; inv2Y = false; }
+		else if (i == 3) { ; }
+		else if (i == 4) { ; inv2Y = true; }
+		else if (i == 5) { ; inv2Y = false; }
+		else { ; inv2Y = true; }
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
@@ -527,12 +534,19 @@ void Setup()
 	Enemy* e3 = new Enemy(spriteSheet, 0.0, 3570.0, 463.0, 468.0, 5.0, e3Vec, 0.0);
 	e3->alive = true;
 	entities.push_back(e3);
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		Vector cp3Vector = e3Vec;
-		if (i == 0) { cp3Vector.y += (entities[3]->halfLengths.y / 1.5); cp3Vector.x += .1; }
-		else if (i == 1) { cp3Vector.y -= (entities[3]->halfLengths.y / 2 + .3); cp3Vector.x -= (entities[3]->halfLengths.x / 3 + .05); }
-		else { cp3Vector.y -= (entities[3]->halfLengths.y / 2 + .3); cp3Vector.x += (entities[3]->halfLengths.x / 2.8 + .15); }
+		if (i == 0) { ; }
+		else if (i == 1) { ; }
+		else if (i == 2) { ; }
+		else if (i == 3) { ; }
+		else if (i == 4) { ; }
+		else if (i == 5) { ; }
+		else if (i == 6) { ; }
+		else if (i == 7) { ; }
+		else if (i == 8) { ; }
+		else { ; }
 		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cp3Vector, 0.0);
 		cp->alive = true;
 		cp3Vec.push_back(cp);
@@ -541,10 +555,16 @@ void Setup()
 	for (int i = 0; i < 4; i++)
 	{
 		Vector eBull3Vec = e3Vec;
-		if (i == 0) { eBull3Vec.y -= entities[3]->halfLengths.y; eBull3Vec.x -= entities[3]->halfLengths.x / 1.5; }
-		else if (i == 1) { eBull3Vec.y -= entities[3]->halfLengths.y; eBull3Vec.x += entities[3]->halfLengths.x / 1.5; }
-		else if (i == 2) { eBull3Vec.y += entities[3]->halfLengths.y; eBull3Vec.x -= (entities[3]->halfLengths.x / 2 - .9); invY = false; }
-		else { eBull3Vec.y += entities[3]->halfLengths.y; eBull3Vec.x += (entities[3]->halfLengths.x / 2 - .9); }
+		if (i == 0) { ; }
+		else if (i == 1) { ; }
+		else if (i == 2) { ; }
+		else if (i == 3) { ; }
+		else if (i == 4) { ; }
+		else if (i == 5) { ; }
+		else if (i == 6) { ; }
+		else if (i == 7) { ; }
+		else if (i == 8) { ; }
+		else { ; }
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
