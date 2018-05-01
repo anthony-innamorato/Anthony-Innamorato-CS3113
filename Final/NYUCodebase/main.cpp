@@ -99,11 +99,10 @@ struct Vector
 struct Entity
 {
 	Entity() {}
-	Entity(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle) 
-		: textureImage(texture), u(u / 4096.0), v(v / 4096.0), width(width / 4096.0), height(height / 4096.0), size(size), position(position), 
-			xScale(xScale), yScale(yScale), angle(angle)
+	Entity(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle) 
+		: textureImage(texture), u(u / 4096.0), v(v / 4096.0), width(width / 4096.0), height(height / 4096.0), size(size), position(position), angle(angle)
 	{
-		halfLengths = Vector(size * (width / height) * .5 * xScale, size * .5 * yScale, 0);
+		halfLengths = Vector(size * (width / height) * .5, size * .5, 0);
 		points.push_back(Vector(-halfLengths.x, -halfLengths.y, 0) * modelMatrix);
 		points.push_back(Vector(halfLengths.x, -halfLengths.y, 0) * modelMatrix);
 		points.push_back(Vector(halfLengths.x, halfLengths.y, 0) * modelMatrix);
@@ -116,7 +115,7 @@ struct Entity
 		{
 			modelMatrix.Identity();
 			modelMatrix.Translate(position.x, position.y, position.z);
-			modelMatrix.Scale(xScale, yScale, 1.0);
+			modelMatrix.Scale(size, size, 1.0);
 			modelMatrix.Rotate(angle * (3.14159265 / 180.0));
 			glUseProgram(textured.programID);
 			textured.SetModelMatrix(modelMatrix);
@@ -171,8 +170,6 @@ struct Entity
 	float width;
 	float height;
 	float size;
-	float xScale;
-	float yScale;
 	float angle;
 	float maxLife = .35;
 	std::vector<Vector> points;
@@ -224,8 +221,8 @@ bool collisions(Entity* entity1, Entity* entity2)
 
 struct Bullet : public Entity
 {
-	Bullet(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
-		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {
+	Bullet(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle)
+		: Entity(texture, u, v, width, height, size, position, angle) {
 		alive = false;
 	}
 
@@ -267,7 +264,7 @@ struct Bullet : public Entity
 		{
 			modelMatrix.Identity();
 			modelMatrix.Translate(position.x, position.y, position.z);
-			modelMatrix.Scale(xScale, yScale, 1.0);
+			modelMatrix.Scale(size, size, 1.0);
 			if (_owner == entities[0] || angle == 0.0) { modelMatrix.Rotate((angle - 240.0) * (3.14159265 / 180.0)); }
 			else //angle equal -45 or 45
 			{
@@ -318,8 +315,8 @@ struct Bullet : public Entity
 
 struct Star : public Entity
 {
-	Star(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
-		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {
+	Star(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle)
+		: Entity(texture, u, v, width, height, size, position, angle) {
 		alive = true;
 	}
 	void update(float elapsed)
@@ -335,20 +332,20 @@ struct Star : public Entity
 
 struct Player : public Entity
 {
-	Player(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle) 
-		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {}
+	Player(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle) 
+		: Entity(texture, u, v, width, height, size, position, angle) {}
 };
 
 struct AI : public Entity
 {
-	AI(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
-		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {}
+	AI(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle)
+		: Entity(texture, u, v, width, height, size, position, angle) {}
 };
 
 struct Enemy : public Entity
 {
-	Enemy(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
-		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {
+	Enemy(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle)
+		: Entity(texture, u, v, width, height, size, position, angle) {
 		isEnemy = true;
 	}
 	void draw()
@@ -361,15 +358,15 @@ struct Enemy : public Entity
 
 struct CriticalPoint : public Entity
 {
-	CriticalPoint(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
-		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {	}
+	CriticalPoint(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle)
+		: Entity(texture, u, v, width, height, size, position, angle) {	}
 };
 
 
 struct Text : public Entity
 {
-	Text(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float xScale, float yScale, float angle)
-		: Entity(texture, u, v, width, height, size, position, xScale, yScale, angle) {}
+	Text(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle)
+		: Entity(texture, u, v, width, height, size, position, angle) {}
 	void draw(ShaderProgram* program)
 	{
 		modelMatrix.Identity();
@@ -436,15 +433,15 @@ void Setup()
 
 	Vector p1Vec = Vector(-10.0, 0.0, 0.0);
 	Vector e1Vec = Vector(0.0, 0.0, 0.0);
-	Player* p1 = new Player(spriteSheet, 887.0, 3734.0, 241.0, 159.0, 1.0, p1Vec, .75, .75, 0.0);
+	Player* p1 = new Player(spriteSheet, 887.0, 3734.0, 241.0, 159.0, .75, p1Vec, 0.0);
 	p1->alive = true;
 	entities.push_back(p1);
 
 	//level 1
-	Enemy* e1 = new Enemy(spriteSheet, 887.0, 3570.0, 173.0, 162.0, 1.0, e1Vec, 10.0, 10.0, 0.0);
+	Enemy* e1 = new Enemy(spriteSheet, 887.0, 3570.0, 173.0, 162.0, 3.0, e1Vec, 0.0);
 	e1->alive = true;
 	entities.push_back(e1);
-	playerBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, p1Vec, 10.0, 10.0, 0.0);
+	playerBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, p1Vec, 0.0);
 	float y = 12.0;
 	float x = -14.0;
 	for (int i = 0; i < 9; i++)
@@ -452,7 +449,7 @@ void Setup()
 		for (int j = 0; j < 10; j++)
 		{
 			Vector starVec = Vector(x, y, 0.0);
-			Star* star = new Star(spriteSheet, 465.0, 3992.0, 90.0, 92.0, 1.0, starVec, .1, .1, 0.0);
+			Star* star = new Star(spriteSheet, 465.0, 3992.0, 90.0, 92.0, .35, starVec, 0.0);
 			x += 3;
 			starsVec.push_back(star);
 		}
@@ -465,7 +462,7 @@ void Setup()
 		if (i == 0) { cpVector.y += (entities[1]->halfLengths.y / 1.5); cpVector.x += .1; }
 		else if (i == 1) { cpVector.y -= (entities[1]->halfLengths.y/2 + .3); cpVector.x -= (entities[1]->halfLengths.x/3 + .05); }
 		else { cpVector.y -= (entities[1]->halfLengths.y / 2 + .3); cpVector.x += (entities[1]->halfLengths.x / 2.8 + .15); }
-		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cpVector, 1.0, 1.0, 0.0);
+		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cpVector, 0.0);
 		cp->alive = true;
 		cpVec.push_back(cp);
 	}
@@ -480,7 +477,7 @@ void Setup()
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
-			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, eBullVec, 10.0, 10.0, 0.0);
+			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, eBullVec, 0.0);
 			enemyBullet->originalVec = eBullVec;
 			enemyBullet->invertY = invY;
 			enemyBullet->timeAlive = j / 20.0;
@@ -492,7 +489,7 @@ void Setup()
 
 	//level2
 	Vector e2Vec = Vector(0.0, 0.0, 0.0);
-	Enemy* e2 = new Enemy(spriteSheet, 1152.0, 3255.0, 898.0, 700.0, 13.0, e2Vec, 1.0, 1.0, 0.0);
+	Enemy* e2 = new Enemy(spriteSheet, 1152.0, 3255.0, 898.0, 700.0, 4.0, e2Vec, 0.0);
 	e2->alive = true;
 	entities.push_back(e2);
 	Vector cp2Vector = e2Vec;
@@ -501,7 +498,7 @@ void Setup()
 		if (i == 0) { cp2Vector.y += (entities[2]->halfLengths.y / 1.5); cp2Vector.x += .1; }
 		else if (i == 1) { cp2Vector.y -= (entities[2]->halfLengths.y / 2 + .3); cp2Vector.x -= (entities[2]->halfLengths.x / 3 + .05); }
 		else { cp2Vector.y -= (entities[2]->halfLengths.y / 2 + .3); cp2Vector.x += (entities[2]->halfLengths.x / 2.8 + .15); }
-		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cp2Vector, 1.0, 1.0, 0.0);
+		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cp2Vector, 0.0);
 		cp->alive = true;
 		cp2Vec.push_back(cp);
 	}
@@ -516,7 +513,7 @@ void Setup()
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
-			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, eBull2Vec, 10.0, 10.0, 0.0);
+			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, eBull2Vec, 0.0);
 			enemyBullet->originalVec = eBull2Vec;
 			enemyBullet->invertY = inv2Y;
 			enemyBullet->timeAlive = j / 20.0;
@@ -527,7 +524,7 @@ void Setup()
 	//level3
 	Vector e3Vec = Vector(0.0, 0.0, 0.0);
 	//height = "468" width = "463" y = "3570" x = "0"
-	Enemy* e3 = new Enemy(spriteSheet, 0.0, 3570.0, 463.0, 468.0, 20.0, e3Vec, 1.0, 1.0, 0.0);
+	Enemy* e3 = new Enemy(spriteSheet, 0.0, 3570.0, 463.0, 468.0, 5.0, e3Vec, 0.0);
 	e3->alive = true;
 	entities.push_back(e3);
 	Vector cp3Vector = e3Vec;
@@ -536,7 +533,7 @@ void Setup()
 		if (i == 0) { cp3Vector.y += (entities[3]->halfLengths.y / 1.5); cp3Vector.x += .1; }
 		else if (i == 1) { cp3Vector.y -= (entities[3]->halfLengths.y / 2 + .3); cp3Vector.x -= (entities[3]->halfLengths.x / 3 + .05); }
 		else { cp3Vector.y -= (entities[3]->halfLengths.y / 2 + .3); cp3Vector.x += (entities[3]->halfLengths.x / 2.8 + .15); }
-		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cp3Vector, 1.0, 1.0, 0.0);
+		CriticalPoint* cp = new CriticalPoint(spriteSheet, 465.0, 3570.0, 420.0, 420.0, 1.0, cp3Vector, 0.0);
 		cp->alive = true;
 		cp3Vec.push_back(cp);
 	}
@@ -551,7 +548,7 @@ void Setup()
 		for (int j = 0; j < 3; j++)
 		{
 			//create new bullet
-			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .05, eBull3Vec, 10.0, 10.0, 0.0);
+			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, eBull3Vec, 0.0);
 			enemyBullet->originalVec = eBull3Vec;
 			enemyBullet->invertY = inv3Y;
 			enemyBullet->timeAlive = j / 20.0;
@@ -560,21 +557,21 @@ void Setup()
 	}
 
 	//texts
-	Text* title = new Text(spriteSheet, 0.0, 522.0, 2139.0, 257.0, 2.0, Vector(0, 3.5, 0), 1.0, 1.0, 0.0);
+	Text* title = new Text(spriteSheet, 0.0, 522.0, 2139.0, 257.0, 2.0, Vector(0, 3.5, 0), 0.0);
 	titleScreen.push_back(title);
-	Text* contToPlay = new Text(spriteSheet, 0.0, 781.0, 1876.0, 116.0, 1.0, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
+	Text* contToPlay = new Text(spriteSheet, 0.0, 781.0, 1876.0, 116.0, 1.0, Vector(0, -.5, 0), 0.0);
 	titleScreen.push_back(contToPlay);
 	//height = "152" width = "2673" y = "184" x = "0"
-	Text* winString = new Text(spriteSheet, 0.0, 184.0, 2673.0, 152.0, 1.15, Vector(0, 3.5, 0), 1.0, 1.0, 0.0);
+	Text* winString = new Text(spriteSheet, 0.0, 184.0, 2673.0, 152.0, 1.15, Vector(0, 3.5, 0), 0.0);
 	wonScreen.push_back(winString);
 	//height = "182" width = "2166" y = "338" x = "0"
-	Text* escToQuit = new Text(spriteSheet, 0.0, 338.0, 2166.0, 182.0, .8, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
+	Text* escToQuit = new Text(spriteSheet, 0.0, 338.0, 2166.0, 182.0, .8, Vector(0, -.5, 0), 0.0);
 	wonScreen.push_back(escToQuit);
 	//height = "313" width = "1150" y = "3255" x = "0"
-	Text* lose = new Text(spriteSheet, 0.0, 3255.0, 1150.0, 313.0, 4.0, Vector(0, 2.5, 0), 1.0, 1.0, 0.0);
+	Text* lose = new Text(spriteSheet, 0.0, 3255.0, 1150.0, 313.0, 4.0, Vector(0, 2.5, 0), 0.0);
 	lossScreen.push_back(lose);
 	//height = "182" width = "2835" y = "0" x = "0"
-	Text* escToTryAgain = new Text(spriteSheet, 0.0, 0.0, 2835.0, 182.0, 1.0, Vector(0, -.5, 0), 1.0, 1.0, 0.0);
+	Text* escToTryAgain = new Text(spriteSheet, 0.0, 0.0, 2835.0, 182.0, 1.0, Vector(0, -.5, 0), 0.0);
 	lossScreen.push_back(escToTryAgain);
 	mode = TITLE;
 }
