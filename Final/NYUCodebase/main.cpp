@@ -57,7 +57,9 @@ Mix_Music *wonMusic;
 Mix_Music *lossMusic;
 enum GameMode { TITLE, LEVEL1, WON, LOSS, LEVEL2, LEVEL3};
 GameMode mode;
-bool first = true;
+bool lvl1first = true;
+bool lvl2first = true;
+bool lvl3first = true;
 float delayAccum = 0.0;
 
 
@@ -243,7 +245,9 @@ struct Bullet : public Entity
 			position = originalVec; 
 		}
 		alive = true;
-		if (!first) { timeAlive = 0.0; }
+		if (!lvl1first && mode == LEVEL1) { timeAlive = 0.0; }
+		if (!lvl2first && mode == LEVEL2) { timeAlive = 0.0; }
+		if (!lvl3first && mode == LEVEL3) { timeAlive = 0.0; }
 		if (owner == entities[0]) { Mix_PlayChannel(-1, playerBulletSound, 0); }
 		else { Mix_VolumeChunk(enemyBulletSound, 15); Mix_PlayChannel(-1, enemyBulletSound, 0); maxLife = .4; }
 	}
@@ -476,7 +480,7 @@ void Setup()
 		else if (i == 1) { eBullVec.y += entities[1]->halfLengths.y * 3; eBullVec.x += (entities[1]->halfLengths.x + .2); }
 		else if (i == 2) { eBullVec.y -= (entities[1]->halfLengths.y * 1.8 + .3); eBullVec.x -= (entities[1]->halfLengths.x * (.2) + .15); invY = true; }
 		else { eBullVec.y -= (entities[1]->halfLengths.y * 1.8 + .3); eBullVec.x += (entities[1]->halfLengths.x * (.2) + .3); }
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 8; j++)
 		{
 			//create new bullet
 			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, eBullVec, 0.0);
@@ -517,7 +521,7 @@ void Setup()
 		else if (i == 4) { continue; }
 		else if (i == 5) { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y += (entities[2]->halfLengths.y * (1.7) - .1); inv2Y = false; }
 		else { eBull2Vec.x += (entities[2]->halfLengths.x * 2.8); eBull2Vec.y -= (entities[2]->halfLengths.y * (1.7) - .1); inv2Y = true; }
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 8; j++)
 		{
 			//create new bullet
 			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, eBull2Vec, 0.0);
@@ -565,7 +569,7 @@ void Setup()
 		else if (i == 7) { eBull3Vec.x += entities[3]->halfLengths.x * (.66667 * 4) + .1; eBull3Vec.y += entities[3]->halfLengths.y * (.5 * 4) + .15; inv3Y = false; }
 		else if (i == 8) { eBull3Vec.x += entities[3]->halfLengths.x * (4.0 / 3) + .1; eBull3Vec.y += entities[3]->halfLengths.y * 4.8 + .1; inv3Y = false; }
 		else { eBull3Vec.x -= entities[3]->halfLengths.x * (.33333 * 4); eBull3Vec.y += entities[3]->halfLengths.y * (.66667 * 5); }
-		for (int j = 0; j < 3; j++)
+		for (int j = 0; j < 8; j++)
 		{
 			//create new bullet
 			Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, eBull3Vec, 0.0);
@@ -712,7 +716,7 @@ void level1Update(float elapsed)
 			playerBullet->position = temp;
 		}
 	}
-	first = false;
+	lvl1first = false;
 }
 
 void level1Render()
@@ -774,7 +778,7 @@ void level2Update(float elapsed)
 			playerBullet->position = temp;
 		}
 	}
-	first = false;
+	lvl2first = false;
 }
 
 void level2Render()
@@ -833,7 +837,7 @@ void level3Update(float elapsed)
 			mode = WON;
 		}
 	}
-	first = false;
+	lvl3first = false;
 }
 
 void level3Render()
