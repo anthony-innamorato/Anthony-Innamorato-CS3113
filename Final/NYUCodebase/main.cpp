@@ -185,6 +185,7 @@ struct Entity
 	float shiftedAngle = 0.0;
 	float xSpeed = 0.0;
 	float ySpeed = 0.0;
+	int AIbound = 6;
 	std::vector<Entity*> AIvec;
 };
 
@@ -355,10 +356,10 @@ struct AI : public Entity
 	{
 		position.x += elapsed * xSpeed;
 		position.y += elapsed * ySpeed;
-		if (position.x + halfLengths.x > (_owner->position.x + _owner->halfLengths.x * 6) && ySpeed == 0.0 && xSpeed == 2.0) { xSpeed = 0.0; ySpeed = 2.0; }
-		else if (position.y + halfLengths.y > (_owner->position.y + _owner->halfLengths.y * 6) && xSpeed == 0.0 && ySpeed == 2.0) { xSpeed = -2.0; ySpeed = 0.0; }
-		else if (position.x - halfLengths.x < (_owner->position.x - _owner->halfLengths.x * 6) && ySpeed == 0.0 && xSpeed == -2.0) { xSpeed = 0.0; ySpeed = -2.0; }
-		else if (position.y - halfLengths.y < (_owner->position.y - _owner->halfLengths.y * 6) && xSpeed == 0.0 && ySpeed == -2.0) { xSpeed = 2.0; ySpeed = 0.0; }
+		if (position.x + halfLengths.x > (_owner->position.x + _owner->halfLengths.x * AIbound) && ySpeed == 0.0 && xSpeed == 2.0) { xSpeed = 0.0; ySpeed = 2.0; }
+		else if (position.y + halfLengths.y > (_owner->position.y + _owner->halfLengths.y * AIbound) && xSpeed == 0.0 && ySpeed == 2.0) { xSpeed = -2.0; ySpeed = 0.0; }
+		else if (position.x - halfLengths.x < (_owner->position.x - _owner->halfLengths.x * AIbound) && ySpeed == 0.0 && xSpeed == -2.0) { xSpeed = 0.0; ySpeed = -2.0; }
+		else if (position.y - halfLengths.y < (_owner->position.y - _owner->halfLengths.y * AIbound) && xSpeed == 0.0 && ySpeed == -2.0) { xSpeed = 2.0; ySpeed = 0.0; }
 	}
 };
 
@@ -615,6 +616,27 @@ void Setup()
 			enemyBullet->timeAlive = j / 20.0;
 			enemy3Bullets.push_back(enemyBullet);
 		}
+	}
+	for (int i = 0; i < 8; i++)
+	{
+		Vector AIVec = e2Vec;
+		float xSpeed;
+		float ySpeed;
+		if (i == 0) { AIVec.x += entities[3]->halfLengths.x * 3;  AIVec.y += entities[3]->halfLengths.y * 6; xSpeed = -2.0; ySpeed = 0.0; }
+		else if (i == 1) { AIVec.x -= entities[3]->halfLengths.x * 3;  AIVec.y += entities[3]->halfLengths.y * 6; xSpeed = -2.0; ySpeed = 0.0; }
+		else if (i == 2) { AIVec.x -= entities[3]->halfLengths.x * 6;  AIVec.y += entities[3]->halfLengths.y * 3; xSpeed = 0.0; ySpeed = -2.0; }
+		else if (i == 3) { AIVec.x -= entities[3]->halfLengths.x * 6;  AIVec.y -= entities[3]->halfLengths.y * 3; xSpeed = 0.0; ySpeed = -2.0; }
+		else if (i == 4) { AIVec.x -= entities[3]->halfLengths.x * 3;  AIVec.y -= entities[3]->halfLengths.y * 6; xSpeed = 2.0; ySpeed = 0.0; }
+		else if (i == 5) { AIVec.x += entities[3]->halfLengths.x * 3;  AIVec.y -= entities[3]->halfLengths.y * 6; xSpeed = 2.0; ySpeed = 0.0; }
+		else if (i == 6) { AIVec.x += entities[3]->halfLengths.x * 6;  AIVec.y -= entities[3]->halfLengths.y * 3; xSpeed = 0.0; ySpeed = 2.0; }
+		else { AIVec.x += entities[3]->halfLengths.x * 5.5;  AIVec.y += entities[3]->halfLengths.y * 2.75; xSpeed = 0.0; ySpeed = 2.0; }
+		//height="1497" width="1497" y="899" x="0"
+		Entity* curr = new AI(spriteSheet, 0.0, 899.0, 1497.0, 1497.0, 1.5, AIVec, 0.0, entities[3]);
+		curr->AIbound = 6;
+		curr->xSpeed = xSpeed;
+		curr->ySpeed = ySpeed;
+		curr->alive = true;
+		entities[3]->AIvec.push_back(curr);
 	}
 
 	//texts
