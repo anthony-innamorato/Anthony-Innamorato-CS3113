@@ -237,8 +237,8 @@ struct Bullet : public Entity
 		if (owner == entities[0]) { position = owner->position; angle = owner->angle; }
 		else
 		{
-			float temp = rand() % 3 -1; //-1,0,1
-			angle = 45.0 * temp + shiftedAngle;
+			float temp = rand() % 21 -10; //-1,0,1
+			angle = 45.0 * (temp/10) + shiftedAngle;
 			//angle = 45.0; left correct
 			//angle = 0.0; straight down
 			//angle = -45.0; right correct
