@@ -183,6 +183,9 @@ struct Entity
 	bool horizBull = false;
 	bool shootLeft = false;
 	float shiftedAngle = 0.0;
+	float xSpeed = 0.0;
+	float ySpeed = 0.0;
+	std::vector<Entity*> AIvec;
 };
 
 float distance(Entity* e1, Entity* e2)
@@ -344,8 +347,19 @@ struct Player : public Entity
 
 struct AI : public Entity
 {
-	AI(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle)
-		: Entity(texture, u, v, width, height, size, position, angle) {}
+	AI(const GLuint& texture, float u, float v, float width, float height, float size, Vector position, float angle, Entity* owner)
+		: Entity(texture, u, v, width, height, size, position, angle) {
+		_owner = owner;
+	}
+	void update(float elapsed)
+	{
+		position.x += elapsed * xSpeed;
+		position.y += elapsed * ySpeed;
+		if (position.x + halfLengths.x > (_owner->position.x + _owner->halfLengths.x * 6) && ySpeed == 0.0 && xSpeed == 2.0) { xSpeed = 0.0; ySpeed = 2.0; }
+		else if (position.y + halfLengths.y > (_owner->position.y + _owner->halfLengths.y * 6) && xSpeed == 0.0 && ySpeed == 2.0) { xSpeed = -2.0; ySpeed = 0.0; }
+		else if (position.x - halfLengths.x < (_owner->position.x - _owner->halfLengths.x * 6) && ySpeed == 0.0 && xSpeed == -2.0) { xSpeed = 0.0; ySpeed = -2.0; }
+		else if (position.y - halfLengths.y < (_owner->position.y - _owner->halfLengths.y * 6) && xSpeed == 0.0 && ySpeed == -2.0) { xSpeed = 2.0; ySpeed = 0.0; }
+	}
 };
 
 struct Enemy : public Entity
@@ -359,7 +373,13 @@ struct Enemy : public Entity
 		for (Entity* curr : AIvec) { curr->draw(); }
 		Entity::draw();
 	}
-	std::vector<Entity*> AIvec;
+	void update(float elapsed)
+	{
+		for (Entity* curr : AIvec)
+		{
+			curr->update(elapsed);
+		}
+	}
 };
 
 struct CriticalPoint : public Entity
@@ -531,6 +551,22 @@ void Setup()
 			enemyBullet->timeAlive = j / 20.0;
 			enemy2Bullets.push_back(enemyBullet);
 		}
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		Vector AIVec = e2Vec;
+		float xSpeed;
+		float ySpeed;
+		if (i == 0) { AIVec.y += entities[2]->halfLengths.y * 6; xSpeed = -2.0; ySpeed = 0.0; }
+		else if (i == 1) { AIVec.y -= entities[2]->halfLengths.y * 6; xSpeed = 2.0; ySpeed = 0.0; }
+		else if (i == 2) { AIVec.x -= entities[2]->halfLengths.x * 6; xSpeed = 0.0; ySpeed = -2.0; }
+		else { AIVec.x += entities[2]->halfLengths.x * 6; xSpeed = 0.0; ySpeed = 2.0; }
+		//height="1497" width="1497" y="899" x="0"
+		Entity* curr = new AI(spriteSheet, 0.0, 899.0, 1497.0, 1497.0, 1.5, AIVec, 0.0, entities[2]);
+		curr->xSpeed = xSpeed;
+		curr->ySpeed = ySpeed;
+		curr->alive = true;
+		entities[2]->AIvec.push_back(curr);
 	}
 
 	//level3
