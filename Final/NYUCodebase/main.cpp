@@ -98,6 +98,8 @@ struct Vector
 	float z;
 };
 
+float distance(Entity* e1, Entity* e2);
+Vector distanceVec(Entity* e1, Entity* e2);
 struct Entity
 {
 	Entity() {}
@@ -161,6 +163,7 @@ struct Entity
 
 	virtual void update(float elapsed) {}
 	virtual void shoot(Entity* owner) {}
+	virtual void AIshoot(Entity* owner) {}
 	bool alive = false;
 	Matrix modelMatrix;
 	Vector position;
@@ -187,6 +190,8 @@ struct Entity
 	float ySpeed = 0.0;
 	int AIbound = 6;
 	std::vector<Entity*> AIvec;
+	bool isAI = false;
+	Entity* AIBull;
 };
 
 float distance(Entity* e1, Entity* e2)
@@ -196,7 +201,7 @@ float distance(Entity* e1, Entity* e2)
 
 Vector distanceVec(Entity* e1, Entity* e2)
 {
-	return Vector(abs(e1->position.x - e2->position.x), abs(e1->position.x - e2->position.x), 0.0);
+	return Vector(abs(e2->position.x - e1->position.x), abs(e2->position.y - e1->position.y), 0.0);
 }
 
 bool collisions(Entity* entity1, Entity* entity2)
@@ -259,6 +264,19 @@ struct Bullet : public Entity
 		if (!lvl3first && mode == LEVEL3) { timeAlive = 0.0; }
 		if (owner == entities[0]) { Mix_PlayChannel(-1, playerBulletSound, 0); }
 		else { Mix_VolumeChunk(enemyBulletSound, 15); Mix_PlayChannel(-1, enemyBulletSound, 0); maxLife = .4; }
+	}
+	void AIshoot(Entity* owner)
+	{
+		this->_owner = owner;
+		position = owner->position;
+		Vector vecToPlayer = distanceVec(owner, entities[0]);
+		//if (vecToPlayer.x == 0.0 && vecToPlayer.y == 0.0) { done = true; } bugFixing
+		angle = atan(vecToPlayer.y / vecToPlayer.x) * 180 / 3.14159265 + 150;
+		//if (angle == 0.0) { done = true; } bugFixing
+		alive = true;
+		Mix_PlayChannel(-1, enemyBulletSound, 0); 
+		maxLife = .4;
+		timeAlive = 0.0;
 	}
 	void update(float elapsed)
 	{
@@ -365,6 +383,8 @@ struct AI : public Entity
 		else if (position.y + halfLengths.y > (_owner->position.y + _owner->halfLengths.y * AIbound) && xSpeed == 0.0 && ySpeed == 2.0) { xSpeed = -2.0; ySpeed = 0.0; angle = 90.0; }
 		else if (position.x - halfLengths.x < (_owner->position.x - _owner->halfLengths.x * AIbound) && ySpeed == 0.0 && xSpeed == -2.0) { xSpeed = 0.0; ySpeed = -2.0; angle = 180.0; }
 		else if (position.y - halfLengths.y < (_owner->position.y - _owner->halfLengths.y * AIbound) && xSpeed == 0.0 && ySpeed == -2.0) { xSpeed = 2.0; ySpeed = 0.0; angle = 270.0; }
+		if (distance(this, entities[0]) < 5.0 && !AIBull->alive) { AIBull->AIshoot(this); }
+		else { AIBull->update(elapsed); }
 	}
 };
 
@@ -376,7 +396,7 @@ struct Enemy : public Entity
 	}
 	void draw()
 	{
-		for (Entity* curr : AIvec) { curr->draw(); }
+		for (Entity* curr : AIvec) { curr->draw(); curr->AIBull->draw(); }
 		Entity::draw();
 	}
 	void update(float elapsed)
@@ -570,10 +590,13 @@ void Setup()
 		else { AIVec.x += entities[2]->halfLengths.x * 6; xSpeed = 0.0; ySpeed = 2.0; angle = 0.0; }
 		//height="1497" width="1497" y="899" x="0"
 		Entity* curr = new AI(spriteSheet, 0.0, 899.0, 1497.0, 1497.0, 1.5, AIVec, 0.0, entities[2]);
+		Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, AIVec, 0.0);
 		curr->xSpeed = xSpeed;
 		curr->ySpeed = ySpeed;
 		curr->angle = angle;
 		curr->alive = true;
+		curr->isAI = true;
+		curr->AIBull = enemyBullet;
 		entities[2]->AIvec.push_back(curr);
 	}
 
@@ -640,11 +663,14 @@ void Setup()
 		else { AIVec.x += entities[3]->halfLengths.x * 5.5;  AIVec.y += entities[3]->halfLengths.y * 2.75; xSpeed = 0.0; ySpeed = 2.0; angle = 0.0; }
 		//height="1497" width="1497" y="899" x="0"
 		Entity* curr = new AI(spriteSheet, 0.0, 899.0, 1497.0, 1497.0, 1.5, AIVec, 0.0, entities[3]);
+		Bullet* enemyBullet = new Bullet(spriteSheet, 0.0, 2398.0, 1403.0, 855.0, .5, AIVec, 0.0);
 		curr->AIbound = 6;
 		curr->xSpeed = xSpeed;
 		curr->ySpeed = ySpeed;
 		curr->angle = angle;
 		curr->alive = true;
+		curr->isAI = true;
+		curr->AIBull = enemyBullet;
 		entities[3]->AIvec.push_back(curr);
 	}
 
