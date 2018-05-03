@@ -194,6 +194,11 @@ float distance(Entity* e1, Entity* e2)
 	return abs(sqrt(pow(e2->position.x - e1->position.x, 2) + pow(e2->position.y - e1->position.y, 2)));
 }
 
+Vector distanceVec(Entity* e1, Entity* e2)
+{
+	return Vector(abs(e1->position.x - e2->position.x), abs(e1->position.x - e2->position.x), 0.0);
+}
+
 bool collisions(Entity* entity1, Entity* entity2)
 {
 	std::pair<float, float> penetration;
@@ -755,7 +760,7 @@ void level1Update(float elapsed)
 				if (collisions(playerBullet, cp))
 				{
 					cp->health -= .01;
-					if (cp->health <= 0) { cp->alive = false; }
+					if (cp->health <= 0) { cp->alive = false; Mix_PlayChannel(-1, explosion, 0); }
 				}
 			}
 			if (cp->alive) { someAlive = true; }
@@ -818,7 +823,7 @@ void level2Update(float elapsed)
 			if (collisions(playerBullet, cp))
 			{
 				cp->health -= .01;
-				if (cp->health <= 0) { cp->alive = false; }
+				if (cp->health <= 0) { cp->alive = false; Mix_PlayChannel(-1, explosion, 0); }
 			}
 			if (cp->alive) { someAlive = true; }
 		}
@@ -880,7 +885,7 @@ void level3Update(float elapsed)
 			if (collisions(playerBullet, cp))
 			{
 				cp->health -= .01;
-				if (cp->health <= 0) { cp->alive = false; }
+				if (cp->health <= 0) { cp->alive = false; Mix_PlayChannel(-1, explosion, 0); }
 			}
 			if (cp->alive) { someAlive = true; }
 		}
