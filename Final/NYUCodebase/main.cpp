@@ -192,6 +192,7 @@ struct Entity
 	std::vector<Entity*> AIvec;
 	bool isAI = false;
 	Entity* AIBull;
+	int playerHealth = 100;
 };
 
 float distance(Entity* e1, Entity* e2)
@@ -288,9 +289,24 @@ struct Bullet : public Entity
 			if (!invertY) { position.y += elapsed * cos(angle * (3.14159265 / 180.0)) * 20; }
 			else { position.y -= elapsed * cos(angle * (3.14159265 / 180.0)) * 20; }
 			timeAlive += elapsed;
-			//distance to player and run collisions on enemies
-			//if (timeAlive > .25 || collisions(this, entities[1]))
-			if (timeAlive > maxLife) {alive = false; }
+			if (_owner != entities[0])
+			{
+				if (collisions(this, entities[0]))
+				{
+					timeAlive = maxLife;
+					entities[0]->playerHealth--;
+					position = Vector(-100, 0, 0);
+					if (entities[0]->playerHealth <= 0)
+					{
+						mode = LOSS;
+						Mix_HaltMusic();
+						if (Mix_PlayMusic(lossMusic, -1) == -1) { done = true; }
+						entities[0]->playerHealth = 100;
+
+					}
+				}
+			}
+			if (timeAlive > maxLife) { alive = false; timeAlive = 0.0; }
 		}
 	}
 	void draw()
