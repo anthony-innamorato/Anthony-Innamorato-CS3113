@@ -61,6 +61,7 @@ bool lvl1first = true;
 bool lvl2first = true;
 bool lvl3first = true;
 float delayAccum = 0.0;
+float screenShakeValue = 0.0;
 
 
 GLuint LoadTexture(const char *filePath) {
@@ -787,6 +788,7 @@ void level1Update(float elapsed)
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
+	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 2, 0.0); screenShakeValue -= 1; }
 	textured.SetViewMatrix(viewMatrix);
 	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
@@ -806,7 +808,7 @@ void level1Update(float elapsed)
 				{
 					playerBullet->timeAlive = playerBullet->maxLife;
 					cp->health -= 1;
-					if (cp->health <= 0) { cp->alive = false; Mix_PlayChannel(-1, explosion, 0); }
+					if (cp->health <= 0 && cp->alive) { cp->alive = false; Mix_PlayChannel(-1, explosion, 0); if (screenShakeValue == 0.0) { screenShakeValue = 100.0; } }
 				}
 			}
 			if (cp->alive) { someAlive = true; }
