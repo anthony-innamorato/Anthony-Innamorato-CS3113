@@ -283,7 +283,7 @@ struct Bullet : public Entity
 	}
 	void update(float elapsed)
 	{
-		if (alive)
+		if (alive && (!lvl1first || !lvl2first || !lvl3first))
 		{
 			position.x += elapsed * -sin(angle * (3.14159265 / 180.0)) * 20;
 			if (!invertY) { position.y += elapsed * cos(angle * (3.14159265 / 180.0)) * 20; }
@@ -397,6 +397,7 @@ struct AI : public Entity
 	{
 		position.x += elapsed * xSpeed;
 		position.y += elapsed * ySpeed;
+		collisions(this, entities[0]);
 		if (position.x + halfLengths.x > (_owner->position.x + _owner->halfLengths.x * AIbound) && ySpeed == 0.0 && xSpeed == 2.0) { xSpeed = 0.0; ySpeed = 2.0; angle = 0.0; }
 		else if (position.y + halfLengths.y > (_owner->position.y + _owner->halfLengths.y * AIbound) && xSpeed == 0.0 && ySpeed == 2.0) { xSpeed = -2.0; ySpeed = 0.0; angle = 90.0; }
 		else if (position.x - halfLengths.x < (_owner->position.x - _owner->halfLengths.x * AIbound) && ySpeed == 0.0 && xSpeed == -2.0) { xSpeed = 0.0; ySpeed = -2.0; angle = 180.0; }
@@ -782,7 +783,7 @@ void level1Update(float elapsed)
 	for (size_t i = 0; i < 2; i++)
 	{
 		entities[i]->update(elapsed);
-		//if (entities[1]->alive) { collisions(entities[0], entities[1]);}
+		if (entities[1]->alive) { collisions(entities[0], entities[1]);}
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
@@ -827,6 +828,7 @@ void level1Update(float elapsed)
 			playerBullet->alive = false;
 			Vector temp = Vector(-100, -100, 0);
 			playerBullet->position = temp;
+			entities[0]->playerHealth = 100;
 		}
 	}
 	lvl1first = false;
@@ -848,7 +850,7 @@ void level2Update(float elapsed)
 	for (size_t i = 0; i < 3; i+=2)
 	{
 		entities[i]->update(elapsed);
-		//if (entities[2]->alive) { collisions(entities[0], entities[2]); }
+		if (entities[2]->alive) { collisions(entities[0], entities[2]); }
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
@@ -890,6 +892,7 @@ void level2Update(float elapsed)
 			playerBullet->alive = false;
 			Vector temp = Vector(-100, -100, 0);
 			playerBullet->position = temp;
+			entities[0]->playerHealth = 100;
 		}
 	}
 	lvl2first = false;
@@ -911,7 +914,7 @@ void level3Update(float elapsed)
 	for (size_t i = 0; i < 4; i+=3)
 	{
 		entities[i]->update(elapsed);
-		//if (entities[3]->alive) { collisions(entities[0], entities[3]);}
+		if (entities[3]->alive) { collisions(entities[0], entities[3]);}
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
@@ -1082,6 +1085,9 @@ void lossProcessEvents()
 				resetLevel1(); 
 				resetLevel2();
 				resetLevel3();
+				lvl1first = true;
+				lvl2first = true;
+				lvl3first = true;
 			}
 		}
 	}
