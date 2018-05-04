@@ -168,7 +168,7 @@ struct Entity
 	Matrix modelMatrix;
 	Vector position;
 	GLuint textureImage;
-	int health = 100;
+	int health = 20;
 	float timeAlive = 0.0;
 	float u;
 	float v;
@@ -201,7 +201,7 @@ float distance(Entity* e1, Entity* e2)
 
 Vector distanceVec(Entity* e1, Entity* e2)
 {
-	return Vector(abs(e2->position.x - e1->position.x), abs(e2->position.y - e1->position.y), 0.0);
+	return Vector(e2->position.x - e1->position.x, e2->position.y - e1->position.y, 0.0);
 }
 
 bool collisions(Entity* entity1, Entity* entity2)
@@ -271,8 +271,10 @@ struct Bullet : public Entity
 		position = owner->position;
 		Vector vecToPlayer = distanceVec(owner, entities[0]);
 		//if (vecToPlayer.x == 0.0 && vecToPlayer.y == 0.0) { done = true; } bugFixing
-		angle = atan(vecToPlayer.y / vecToPlayer.x) * 180 / 3.14159265 + 150;
-		//if (angle == 0.0) { done = true; } bugFixing
+		angle = atan(vecToPlayer.y / vecToPlayer.x) * 180 / 3.14159265;
+		if (vecToPlayer.x < 0 && vecToPlayer.y < 0) { angle += 180.0; }
+		else if (vecToPlayer.x < 0 && vecToPlayer.y > 0) { angle += 90.0; }
+		else if (vecToPlayer.x > 0 && vecToPlayer.y < 0) { angle += 270.0; }
 		alive = true;
 		Mix_PlayChannel(-1, enemyBulletSound, 0); 
 		maxLife = .4;
@@ -785,7 +787,8 @@ void level1Update(float elapsed)
 			{
 				if (collisions(playerBullet, cp))
 				{
-					cp->health -= .01;
+					playerBullet->timeAlive = playerBullet->maxLife;
+					cp->health -= 1;
 					if (cp->health <= 0) { cp->alive = false; Mix_PlayChannel(-1, explosion, 0); }
 				}
 			}
@@ -848,7 +851,8 @@ void level2Update(float elapsed)
 		{
 			if (collisions(playerBullet, cp))
 			{
-				cp->health -= .01;
+				playerBullet->timeAlive = playerBullet->maxLife;
+				cp->health -= 1;
 				if (cp->health <= 0) { cp->alive = false; Mix_PlayChannel(-1, explosion, 0); }
 			}
 			if (cp->alive) { someAlive = true; }
@@ -910,7 +914,8 @@ void level3Update(float elapsed)
 		{
 			if (collisions(playerBullet, cp))
 			{
-				cp->health -= .01;
+				playerBullet->timeAlive = playerBullet->maxLife;
+				cp->health -= 1;
 				if (cp->health <= 0) { cp->alive = false; Mix_PlayChannel(-1, explosion, 0); }
 			}
 			if (cp->alive) { someAlive = true; }
