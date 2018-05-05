@@ -64,7 +64,8 @@ float delayAccum = 0.0;
 float screenShakeValue = 0.0;
 
 
-GLuint LoadTexture(const char *filePath) {
+GLuint LoadTexture(const char *filePath) 
+{
 	int w, h, comp;
 	unsigned char* image = stbi_load(filePath, &w, &h, &comp, STBI_rgb_alpha);
 
@@ -83,6 +84,34 @@ GLuint LoadTexture(const char *filePath) {
 
 	stbi_image_free(image);
 	return retTexture;
+}
+
+float easeIn(float from, float to, float time) 
+{
+	float tVal = time * time*time*time*time;
+	return (1.0f - tVal)*from + tVal * to;
+}
+
+float easeOut(float from, float to, float time) 
+{
+	float oneMinusT = 1.0f - time;
+	float tVal = 1.0f - (oneMinusT * oneMinusT * oneMinusT * oneMinusT * oneMinusT);
+	return (1.0f - tVal)*from + tVal * to;
+}
+
+float easeInOut(float from, float to, float time) 
+{
+	float tVal;
+	if (time > 0.5) 
+	{
+		float oneMinusT = 1.0f - ((0.5f - time)*-2.0f);
+		tVal = 1.0f - ((oneMinusT * oneMinusT * oneMinusT * oneMinusT * oneMinusT) * 0.5f);
+	}
+	else {
+		time *= 2.0;
+		tVal = (time*time*time*time*time) / 2.0;
+	}
+	return (1.0f - tVal)*from + tVal * to;
 }
 
 struct Vector
@@ -788,7 +817,8 @@ void level1Update(float elapsed)
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
-	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 2, 0.0); screenShakeValue -= 1; }
+	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 2, 0.0); screenShakeValue -= elapsed; }
+	if (screenShakeValue <= 0) { screenShakeValue = 0.0; }
 	textured.SetViewMatrix(viewMatrix);
 	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
@@ -812,7 +842,7 @@ void level1Update(float elapsed)
 					{ 
 						cp->alive = false; 
 						Mix_PlayChannel(-1, explosion, 0); 
-						if (screenShakeValue == 0.0) { screenShakeValue = 50.0; } 
+						if (screenShakeValue == 0.0) { screenShakeValue = 1.5; } 
 					}
 				}
 			}
@@ -861,7 +891,8 @@ void level2Update(float elapsed)
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
-	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 2, 0.0); screenShakeValue -= 1; }
+	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 2, 0.0); screenShakeValue -= elapsed; }
+	if (screenShakeValue <= 0) { screenShakeValue = 0.0; }
 	textured.SetViewMatrix(viewMatrix);
 	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
@@ -883,7 +914,7 @@ void level2Update(float elapsed)
 				{
 					cp->alive = false;
 					Mix_PlayChannel(-1, explosion, 0);
-					if (screenShakeValue == 0.0) { screenShakeValue = 50.0; }
+					if (screenShakeValue == 0.0) { screenShakeValue = 1.5; }
 				}
 			}
 			if (cp->alive) { someAlive = true; }
@@ -931,7 +962,8 @@ void level3Update(float elapsed)
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
-	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 1, 0.0); screenShakeValue -= 1; }
+	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 2, 0.0); screenShakeValue -= elapsed; }
+	if (screenShakeValue <= 0) { screenShakeValue = 0.0; }
 	textured.SetViewMatrix(viewMatrix);
 	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
@@ -953,7 +985,7 @@ void level3Update(float elapsed)
 				{
 					cp->alive = false;
 					Mix_PlayChannel(-1, explosion, 0);
-					if (screenShakeValue == 0.0) { screenShakeValue = 50.0; }
+					if (screenShakeValue == 0.0) { screenShakeValue = 1.5; }
 				}
 			}
 			if (cp->alive) { someAlive = true; }
