@@ -22,6 +22,7 @@
 #include <math.h>
 #include <cmath>
 #include <SDL_mixer.h>
+#include "PerlinNoise.h"
 using namespace std;
 
 SDL_Window* displayWindow;
@@ -61,7 +62,7 @@ bool lvl1first = true;
 bool lvl2first = true;
 bool lvl3first = true;
 float delayAccum = 0.0;
-float screenShakeValue = 0.0;
+float perlinValue = 0.0;
 
 
 GLuint LoadTexture(const char *filePath) 
@@ -817,8 +818,16 @@ void level1Update(float elapsed)
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
-	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 2, 0.0); screenShakeValue -= elapsed; }
-	if (screenShakeValue <= 0) { screenShakeValue = 0.0; }
+	if (perlinValue != 0)
+	{
+		perlinValue += elapsed;
+		float coord[2] = { perlinValue, 0.0 };
+		float val = noise2(coord);
+		coord[1] = 0.5f;
+		float val2 = noise2(coord);
+		viewMatrix.Translate(val * 3, val2 * 3, 0.0);
+	}
+	if (perlinValue >= 2) { perlinValue = 0.0; }
 	textured.SetViewMatrix(viewMatrix);
 	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
@@ -842,7 +851,7 @@ void level1Update(float elapsed)
 					{ 
 						cp->alive = false; 
 						Mix_PlayChannel(-1, explosion, 0); 
-						if (screenShakeValue == 0.0) { screenShakeValue = 1.5; } 
+						if (perlinValue == 0.0) { perlinValue = .001; } 
 					}
 				}
 			}
@@ -891,8 +900,16 @@ void level2Update(float elapsed)
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
-	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 2, 0.0); screenShakeValue -= elapsed; }
-	if (screenShakeValue <= 0) { screenShakeValue = 0.0; }
+	if (perlinValue != 0)
+	{
+		perlinValue += elapsed;
+		float coord[2] = { perlinValue, 0.0 };
+		float val = noise2(coord);
+		coord[1] = 0.5f;
+		float val2 = noise2(coord);
+		viewMatrix.Translate(val * 3, val2 * 3, 0.0);
+	}
+	if (perlinValue >= 2) { perlinValue = 0.0; }
 	textured.SetViewMatrix(viewMatrix);
 	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
@@ -914,7 +931,7 @@ void level2Update(float elapsed)
 				{
 					cp->alive = false;
 					Mix_PlayChannel(-1, explosion, 0);
-					if (screenShakeValue == 0.0) { screenShakeValue = 1.5; }
+					if (perlinValue == 0.0) { perlinValue = .001; }
 				}
 			}
 			if (cp->alive) { someAlive = true; }
@@ -962,8 +979,16 @@ void level3Update(float elapsed)
 	}
 	viewMatrix.Identity();
 	viewMatrix.Translate(-entities[0]->position.x, -entities[0]->position.y, 0);
-	if (screenShakeValue != 0) { viewMatrix.Translate(0.0, sin(screenShakeValue * 5) * 2, 0.0); screenShakeValue -= elapsed; }
-	if (screenShakeValue <= 0) { screenShakeValue = 0.0; }
+	if (perlinValue != 0)
+	{
+		perlinValue += elapsed;
+		float coord[2] = { perlinValue, 0.0 };
+		float val = noise2(coord);
+		coord[1] = 0.5f;
+		float val2 = noise2(coord);
+		viewMatrix.Translate(val * 3, val2 * 3, 0.0);
+	}
+	if (perlinValue >= 2) { perlinValue = 0.0; }
 	textured.SetViewMatrix(viewMatrix);
 	for (Entity* star : starsVec) { star->update(elapsed); }
 	playerBullet->update(elapsed);
@@ -985,7 +1010,7 @@ void level3Update(float elapsed)
 				{
 					cp->alive = false;
 					Mix_PlayChannel(-1, explosion, 0);
-					if (screenShakeValue == 0.0) { screenShakeValue = 1.5; }
+					if (perlinValue == 0.0) { perlinValue = .001; }
 				}
 			}
 			if (cp->alive) { someAlive = true; }
