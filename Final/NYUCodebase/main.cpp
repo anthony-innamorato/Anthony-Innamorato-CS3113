@@ -36,6 +36,7 @@ float lastFrameTicks = 0.0f;
 const Uint8 *keys = SDL_GetKeyboardState(NULL);
 struct Entity;
 struct Text;
+struct Number;
 
 std::vector<Entity*> entities;
 vector<Entity*> starsVec;
@@ -50,6 +51,7 @@ vector<Text*> titleScreen;
 vector<Text*> wonScreen;
 vector<Text*> lossScreen;
 GLuint spriteSheet;
+GLuint numSpriteSheet;
 Mix_Chunk *playerBulletSound;
 Mix_Chunk *enemyBulletSound;
 Mix_Chunk *explosion;
@@ -63,6 +65,8 @@ bool lvl2first = true;
 bool lvl3first = true;
 float delayAccum = 0.0;
 float perlinValue = 0.0;
+unsigned int bulletBuffer = 0;
+vector<Number*> numPtrs;
 
 
 GLuint LoadTexture(const char *filePath) 
@@ -295,7 +299,19 @@ struct Bullet : public Entity
 		if (!lvl2first && mode == LEVEL2) { timeAlive = 0.0; }
 		if (!lvl3first && mode == LEVEL3) { timeAlive = 0.0; }
 		if (owner == entities[0]) { Mix_PlayChannel(-1, playerBulletSound, 0); }
-		else { Mix_VolumeChunk(enemyBulletSound, 15); Mix_PlayChannel(-1, enemyBulletSound, 0); maxLife = .4; }
+		else if (_owner->isEnemy)
+		{
+			Mix_VolumeChunk(enemyBulletSound, 30);
+			if (bulletBuffer % 50 == 0) { Mix_PlayChannel(-1, enemyBulletSound, 0); }
+			maxLife = .4;
+			bulletBuffer++;
+		}
+		else
+		{
+			Mix_VolumeChunk(enemyBulletSound, 128);
+			Mix_PlayChannel(-1, enemyBulletSound, 0);
+			maxLife = .4;
+		}
 	}
 	void AIshoot(Entity* owner)
 	{
@@ -505,6 +521,136 @@ struct Text : public Entity
 	}
 };
 
+struct Number
+{
+	Number(int index, float u, float v, float width, float height, float size) : texture(numSpriteSheet), index(index), u(u/512), v(v/256), width(width/512), height(height/256), size(size) {}
+	void Draw(Vector numVec)
+	{
+		//modelMatrix.Translate(entities[0]->position.x + numVec.x, entities[0]->position.y - numVec.y, entities[0]->position.x - numVec.z);
+		modelMatrix.Translate(entities[0]->position.x + numVec.x, entities[0]->position.y + numVec.y, 0.0);
+		GLfloat texCoords[] = {
+			u, v + height,
+			u + width, v,
+			u, v,
+			u + width, v,
+			u, v + height,
+			u + width, v + height
+		};
+		float aspect = width / height;
+		float vertices[] = {
+			-0.5f * size * aspect, -0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, 0.5f * size,
+			0.5f * size * aspect, 0.5f * size,
+			-0.5f * size * aspect, -0.5f * size ,
+			0.5f * size * aspect, -0.5f * size };
+
+		glUseProgram(textured.programID);
+		textured.SetModelMatrix(modelMatrix);
+
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glVertexAttribPointer(textured.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+		glEnableVertexAttribArray(textured.positionAttribute);
+
+		glVertexAttribPointer(textured.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+		glEnableVertexAttribArray(textured.texCoordAttribute);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDisableVertexAttribArray(textured.positionAttribute);
+		glDisableVertexAttribArray(textured.texCoordAttribute);
+		modelMatrix.Identity();
+	}
+	int index;
+	GLuint texture;
+	Matrix modelMatrix;
+	float u;
+	float v;
+	float width;
+	float height;
+	float size;
+};
+
+void drawScore()
+{
+	std::string sumStr = std::to_string(entities[0]->playerHealth);
+	float x = 7.0;
+	float y = -5.5;
+	for (int i = 0; i < sumStr.size(); i++)
+	{
+		Vector vec = Vector(x, y, 0);
+		int res = sumStr[i] - '0';
+		numPtrs[res]->Draw(vec);
+		x += 1;
+	}
+}
+
+void SetupNumbers()
+{
+	for (int i = 0; i < 10; i++)
+	{
+		//int index, float u, float v, float width, float height, float size
+		if (i == 0)
+		{
+			//height = "101" width = "89" y = "0" x = "100" name = "0.png" / >
+			Number* num = new Number(0, 100.0, 0.0, 89.0, 101.0, 2.0);
+			numPtrs.push_back(num);
+		}
+		else if (i == 1)
+		{
+			//height="101" width="69" y="104" x="367" 
+			Number* num = new Number(1, 367.0, 104.0, 69.0, 101.0, 2.0);
+			numPtrs.push_back(num);
+		}
+		else if (i == 2)
+		{
+			// height="102" width="87" y="0" x="367"
+			Number* num = new Number(2, 367.0, 0.0, 87.0, 102.0, 2.0);
+			numPtrs.push_back(num);
+		}
+		else if (i == 3)
+		{
+			//height="102" width="90" y="103" x="94" 
+			Number* num = new Number(3, 94.0, 103.0, 90.0, 102.0, 2.0);
+			numPtrs.push_back(num);
+		}
+		else if (i == 4)
+		{
+			//height="99" width="80" y="0" x="281"
+			Number* num = new Number(4, 281.0, 0.0, 80.0, 99.0, 2.0);
+			numPtrs.push_back(num);
+		}
+		else if (i == 5)
+		{
+			// height="101" width="92" y="103" x="0"
+			Number* num = new Number(5, 0.0, 103.0, 92.0, 101.0, 2.0);
+			numPtrs.push_back(num);
+		}
+		else if (i == 6)
+		{
+			// height="101" width="88" y="0" x="191
+			Number* num = new Number(6, 191.0, 0.0, 88.0, 101.0, 2.0);
+			numPtrs.push_back(num);
+		}
+		else if (i == 7)
+		{
+			//height="101" width="98" y="0" x="0"
+			Number* num = new Number(7, 0.0, 0.0, 98.0, 101.0, 2.0);
+			numPtrs.push_back(num);
+		}
+		else if (i == 8)
+		{
+			//height="101" width="89" y="103" x="186
+			Number* num = new Number(8, 186.0, 103.0, 89.0, 101.0, 2.0);
+			numPtrs.push_back(num);
+		}
+		else
+		{
+			// height="102" width="88" y="103" x="277
+			Number* num = new Number(9, 277.0, 103.0, 88.0, 102.0, 2.0);
+			numPtrs.push_back(num);
+		}
+	}
+}
+
 
 void Setup()
 {
@@ -531,6 +677,8 @@ void Setup()
 	levelMusic = Mix_LoadMUS("levelMusic.mp3");
 	lossMusic = Mix_LoadMUS("lost.mp3");
 	wonMusic = Mix_LoadMUS("won.mp3");
+	numSpriteSheet = LoadTexture(RESOURCE_FOLDER"numSpriteSheet.png");
+	SetupNumbers();
 	Mix_PlayMusic(levelMusic, -1);
 
 	Vector p1Vec = Vector(-10.0, 0.0, 0.0);
@@ -850,7 +998,8 @@ void level1Update(float elapsed)
 					if (cp->health <= 0 && cp->alive) 
 					{ 
 						cp->alive = false; 
-						Mix_PlayChannel(-1, explosion, 0); 
+						Mix_HaltChannel(1);
+						Mix_PlayChannel(1, explosion, 0); 
 						if (perlinValue == 0.0) { perlinValue = .001; } 
 					}
 				}
@@ -890,6 +1039,7 @@ void level1Render()
 	}
 	for (size_t i = 0; i < 2; i++) { entities[i]->draw(); }
 	for (Entity* cp : cpVec) { cp->draw(); }
+	drawScore();
 }
 void level2Update(float elapsed)
 {
@@ -930,7 +1080,8 @@ void level2Update(float elapsed)
 				if (cp->health <= 0 && cp->alive)
 				{
 					cp->alive = false;
-					Mix_PlayChannel(-1, explosion, 0);
+					Mix_HaltChannel(1);
+					Mix_PlayChannel(1, explosion, 0);
 					if (perlinValue == 0.0) { perlinValue = .001; }
 				}
 			}
@@ -969,6 +1120,7 @@ void level2Render()
 	}
 	for (size_t i = 0; i < 3; i+=2) { entities[i]->draw(); }
 	for (Entity* cp : cp2Vec) { cp->draw(); }
+	drawScore();
 }
 void level3Update(float elapsed)
 {
@@ -1009,7 +1161,8 @@ void level3Update(float elapsed)
 				if (cp->health <= 0 && cp->alive)
 				{
 					cp->alive = false;
-					Mix_PlayChannel(-1, explosion, 0);
+					Mix_HaltChannel(1);
+					Mix_PlayChannel(1, explosion, 0);
 					if (perlinValue == 0.0) { perlinValue = .001; }
 				}
 			}
@@ -1044,6 +1197,7 @@ void level3Render()
 	}
 	for (size_t i = 0; i < 4; i+=3) { entities[i]->draw(); }
 	for (Entity* cp : cp3Vec) { cp->draw(); }
+	drawScore();
 }
 
 void titleProcessEvents()
