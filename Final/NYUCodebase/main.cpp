@@ -955,6 +955,10 @@ void ProcessEvents(float elapsed)
 	{
 		mode = LEVEL3;
 	}
+	if (keys[SDL_SCANCODE_H] && keys[SDL_SCANCODE_E])
+	{
+		entities[0]->playerHealth = 10000;
+	}
 }
 
 void level1Update(float elapsed)
