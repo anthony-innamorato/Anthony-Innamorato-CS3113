@@ -957,7 +957,7 @@ void ProcessEvents(float elapsed)
 	}
 	if (keys[SDL_SCANCODE_H] && keys[SDL_SCANCODE_E])
 	{
-		entities[0]->playerHealth = 10000;
+		entities[0]->playerHealth = 1000;
 	}
 }
 
