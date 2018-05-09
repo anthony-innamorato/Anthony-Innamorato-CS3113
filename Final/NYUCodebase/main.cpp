@@ -573,7 +573,7 @@ void drawScore()
 {
 	std::string sumStr = std::to_string(entities[0]->playerHealth);
 	float x = 7.0;
-	float y = -5.5;
+	float y = -5.0;
 	for (int i = 0; i < sumStr.size(); i++)
 	{
 		Vector vec = Vector(x, y, 0);
